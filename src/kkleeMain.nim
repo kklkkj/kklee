@@ -12,6 +12,8 @@ st.height = "100%"
 st.transition = "width 0.5s"
 st.position = "relative"
 st.backgroundColor = "#cfd8dc"
+st.borderTopLeftRadius = "3px"
+st.borderTopRightRadius = "3px"
 root.class = "buttonShadow"
 document.getElementById("mapeditor").appendChild(root)
 
@@ -30,13 +32,15 @@ type
 
 var state* = StateObject(kind: seHidden)
 
+proc rerender* = kxi.redraw()
 
 proc bonkButton(label: string, onClick: proc): VNode =
   buildHtml(tdiv(class = "brownButton brownButton_classic buttonShadow")):
     text label
     proc onClick = onClick()
 
-proc bonkInput[T](variable: var T; parser: string -> T): VNode =
+proc bonkInput[T](variable: var T; parser: string -> T,
+    afterInput: proc(): void = nil): VNode =
   buildHtml(tdiv):
     input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
         value = $variable):
@@ -44,6 +48,8 @@ proc bonkInput[T](variable: var T; parser: string -> T): VNode =
         try:
           variable = parser $n.value
           e.target.style.color = ""
+          if not afterInput.isNil:
+            afterInput()
         except CatchableError:
           e.target.style.color = "rgb(204, 68, 68)"
 
@@ -61,10 +67,12 @@ proc removeVertexMarker =
   markerFxi = none int
   updateRenderer(true)
 
-proc setVertexMarker(p: MapPosition) =
+proc setVertexMarker(vi: int) =
   removeVertexMarker()
+  let s = state.fxi.getFx.fxShape
+  let v = s.poV[vi]
   mapObject.physics.shapes.add MapShape(
-    stype: "ci", ciR: 3.0, ciSk: false, c: p
+    stype: "ci", ciR: 3.0, ciSk: false, c: [v.x * s.poS, v.y * s.poS]
   )
   mapObject.physics.fixtures.add MapFixture(
     n: "temp marker", np: true, f: 0xff0000,
@@ -80,14 +88,16 @@ proc vertexEditor: VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
       span(style = "width: 40px".toCss):
         text &"{i}."
-      text "X:"
-      bonkInput v.x, parseFloat
-      text "Y:"
+      template cbi(va): untyped = bonkInput(va, parseFloat, () =>
+          setVertexMarker(i))
+      text "x:"
+      cbi v.x
+      text "y:"
+      cbi v.y
 
-      bonkInput v.y, parseFloat
-      bonkButton("X", () => poV.delete(i))
+      bonkButton(" X ", () => poV.delete(i))
 
-      proc onMouseEnter = setVertexMarker(v)
+      proc onMouseEnter = setVertexMarker(i)
       proc onMouseLeave =
         removeVertexMarker()
   buildHtml:
@@ -98,7 +108,21 @@ proc vertexEditor: VNode =
       template poV: untyped = state.fxi.getFx.fxShape.poV
       for i, v in poV.mpairs:
         vertex(i, v, poV)
+      bonkButton("Add vertex", () => poV.add([0.0, 0.0]))
 
+      tdiv(style = "display: flex; flex-flow: row wrap".toCss):
+        tdiv(style = "width: 100%".toCss): text "Scale verticies:"
+        var scale {.global.}: MapPosition = [1.0, 1.0]
+        text "x:"
+        bonkInput scale.x, parseFloat
+        text "y:"
+        bonkInput scale.y, parseFloat
+
+        bonkButton "Apply", proc(): void =
+          for v in poV.mitems:
+            v.x *= scale.x
+            v.y *= scale.y
+          rerender()
 
 proc render: VNode =
   st.width = "200px"
@@ -120,11 +144,10 @@ proc render: VNode =
         text "Vertex Editor"
         vertexEditor()
 
-      tdiv(style = "width: 100%".toCss):
+      tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))
 
 setRenderer(render, karaxRoot.id)
 
-proc rerender* = kxi.redraw()
 
 rerender()
