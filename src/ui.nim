@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar, strutils
+import strformat, dom, algorithm, sugar, strutils, options
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 import kkleeApi
 
@@ -47,8 +47,49 @@ proc bonkInput[T](variable: var T; parser: string -> T): VNode =
         except CatchableError:
           e.target.style.color = "rgb(204, 68, 68)"
 
+var markerFxi: Option[int]
+
+proc removeVertexMarker =
+  if markerFxi.isNone: return
+  let mfxi = markerFxi.get
+  for i, j in state.bi.getBody.fx:
+    if j == mfxi:
+      state.bi.getBody.fx.delete i
+      break
+  mapObject.physics.shapes.delete mfxi.getFx.sh
+  mapObject.physics.fixtures.delete mfxi
+  markerFxi = none int
+  updateRenderer(true)
+
+proc setVertexMarker(p: MapPosition) =
+  removeVertexMarker()
+  mapObject.physics.shapes.add MapShape(
+    stype: "ci", ciR: 3.0, ciSk: false, c: p
+  )
+  mapObject.physics.fixtures.add MapFixture(
+    n: "temp marker", np: true, f: 0xff0000,
+    sh: mapObject.physics.shapes.high
+  )
+  let fxi = mapObject.physics.fixtures.high
+  state.bi.getBody.fx.add fxi
+  markerFxi = some fxi
+  updateRenderer(true)
 
 proc vertexEditor: VNode =
+  proc vertex(i: int; v: var MapPosition; poV: var seq[MapPosition]): VNode =
+    buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
+      span(style = "width: 40px".toCss):
+        text &"{i}."
+      text "X:"
+      bonkInput v.x, parseFloat
+      text "Y:"
+
+      bonkInput v.y, parseFloat
+      bonkButton("X", () => poV.delete(i))
+
+      proc onMouseEnter = setVertexMarker(v)
+      proc onMouseLeave =
+        removeVertexMarker()
   buildHtml:
     block:
       updateRenderer(true)
@@ -56,15 +97,8 @@ proc vertexEditor: VNode =
     tdiv(style = "flex: auto; overflow-y: auto;".toCss):
       template poV: untyped = state.fxi.getFx.fxShape.poV
       for i, v in poV.mpairs:
-        tdiv(style = "display: flex; flex-flow: row wrap".toCss):
-          span(style = "width: 40px".toCss):
-            text &"{i}."
-          text "X:"
-          bonkInput v.x, parseFloat
-          text "Y:"
-          bonkInput v.y, parseFloat
-          let fn = block: capture i: () => pov.delete(i)
-          bonkButton("X", fn)
+        vertex(i, v, poV)
+
 
 proc render: VNode =
   st.width = "200px"

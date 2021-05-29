@@ -23,7 +23,7 @@ importCurrentThing(Spawn)
 importCurrentThing(CapZone)
 
 type
-  MapPosition = array[2, float]
+  MapPosition* = array[2, float]
   MapData* = ref object
     v*: int
     m*: MapMetaData
