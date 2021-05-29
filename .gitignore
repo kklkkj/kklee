@@ -1,0 +1,4 @@
+node_modules/
+src/nimBuild.js
+dist/*
+!dist/manifest.json

@@ -1,0 +1,2 @@
+--backend: js
+--define: release

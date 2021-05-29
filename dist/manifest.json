@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Editor Extension",
+  "version": "0.0",
+  "description": "",
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "*://bonk.io/*"
+  ],
+  "background": {
+    "scripts": [
+      "./background.js"
+    ]
+  },
+  "web_accessible_resources": [
+    "inject.js"
+  ]
+}
