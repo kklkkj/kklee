@@ -89,5 +89,8 @@ window.kklee.setCurrent${nn}=function(v){return ${on}=v;};`;
 
 })().catch(err => {
   console.error("kklee error: ", err);
-  alert("error");
+  alert(
+    "Whoops! KKLEE was unable to load. This may be due to an update to Bonk.io.\
+\n\nPlease report this error!"
+  );
 });
