@@ -11,9 +11,6 @@ st.width = "0px"
 st.height = "100%"
 st.transition = "width 0.5s"
 st.position = "relative"
-# st.left = "50%"
-# st.top = "70%"
-# st.translate = "-50% -50%"
 st.backgroundColor = "#cfd8dc"
 root.class = "buttonShadow"
 document.getElementById("mapeditor").appendChild(root)
@@ -91,11 +88,6 @@ proc render: VNode =
 
       tdiv(style = "width: 100%".toCss):
         bonkButton("Close", () => (state.kind = seHidden))
-
-
-    # tdiv(class = "windowCloseButton brownButton brownButton_classic buttonShadow"):
-    #   proc onClick =
-    #     state.kind = seHidden
 
 setRenderer(render, karaxRoot.id)
 
