@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar, strutils, options
+import strformat, dom, algorithm, sugar, strutils, options, math
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 import kkleeApi
 
@@ -69,10 +69,20 @@ proc removeVertexMarker =
 
 proc setVertexMarker(vi: int) =
   removeVertexMarker()
-  let s = state.fxi.getFx.fxShape
-  let v = s.poV[vi]
+  let
+    s = state.fxi.getFx.fxShape
+    v = s.poV[vi]
+    # Only scaled marker positions
+    smp: MapPosition = [
+      v.x * s.poS,
+      v.y * s.poS
+    ]
+    markerPos: MapPosition = [
+      smp.x * cos(s.poA) - smp.y * sin(s.poA) + s.c.x,
+      smp.x * sin(s.poA) + smp.y * cos(s.poA) + s.c.y
+    ]
   mapObject.physics.shapes.add MapShape(
-    stype: "ci", ciR: 3.0, ciSk: false, c: [v.x * s.poS, v.y * s.poS]
+    stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
   )
   mapObject.physics.fixtures.add MapFixture(
     n: "temp marker", np: true, f: 0xff0000,
@@ -88,14 +98,21 @@ proc vertexEditor: VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
       span(style = "width: 40px".toCss):
         text &"{i}."
-      template cbi(va): untyped = bonkInput(va, parseFloat, () =>
-          setVertexMarker(i))
+      template cbi(va): untyped = bonkInput(va, parseFloat, proc =
+        removeVertexMarker()
+        saveToUndoHistory()
+        setVertexMarker(i)
+      )
       text "x:"
       cbi v.x
       text "y:"
       cbi v.y
 
-      bonkButton(" X ", () => poV.delete(i))
+      bonkButton(" X ", proc =
+        removeVertexMarker()
+        poV.delete(i);
+        saveToUndoHistory()
+      )
 
       proc onMouseEnter = setVertexMarker(i)
       proc onMouseLeave =
@@ -108,7 +125,7 @@ proc vertexEditor: VNode =
       template poV: untyped = state.fxi.getFx.fxShape.poV
       for i, v in poV.mpairs:
         vertex(i, v, poV)
-      bonkButton("Add vertex", () => poV.add([0.0, 0.0]))
+      bonkButton("Add vertex", proc = poV.add([0.0, 0.0]); saveToUndoHistory())
 
       tdiv(style = "display: flex; flex-flow: row wrap".toCss):
         tdiv(style = "width: 100%".toCss): text "Scale verticies:"
@@ -122,6 +139,7 @@ proc vertexEditor: VNode =
           for v in poV.mitems:
             v.x *= scale.x
             v.y *= scale.y
+          saveToUndoHistory()
           rerender()
 
 proc render: VNode =

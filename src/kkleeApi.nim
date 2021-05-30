@@ -1,7 +1,7 @@
 import strutils
 
 template importUpdateFunction(name: untyped;
-    procType: type = proc: void) =
+    procType: type = proc(): void) =
   let `update name`* {.importc: "window.kklee.$1"inject.}: procType
   var `afterUpdate name`* {.importc: "window.kklee.$1"inject.}: procType
 
@@ -13,6 +13,7 @@ importUpdateFunction(UndoButtons)
 importUpdateFunction(ModeDropdown)
 
 var afterNewMapObject* {.importc: "window.kklee.$1".}: proc(): void
+let saveToUndoHistory* {.importc: "window.kklee.$1".}: proc(): void
 
 template importCurrentThing(name: untyped) =
   let `getCurrent name`* {.importc: "window.kklee.$1"inject.}: proc(): int

@@ -9,12 +9,13 @@ window.kklee = kklee;
     src.match(/rxid:[a-zA-Z0-9]{3}\[\d+\]/)[0].split(":")[1];
   // Escape regex special characters
   const monEsc = mapObjectName.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+  const varArrName = mapObjectName.split("[")[0];
 
   // When a new map object is created, also assign it to a global variable
   src = src.replace(
     new RegExp(`(${monEsc}=[^;]+;)`, "g"),
     `$1window.kklee.mapObject=${mapObjectName};\
-window.kklee.afterNewMapObject();`
+if(window.kklee.afterNewMapObject)window.kklee.afterNewMapObject();`
   );
 
   const mapEncoderName =
@@ -42,7 +43,7 @@ window.kklee.mapEncoder=${mapEncoderName};`
   const updateFunctionNames =
     resetFunctionNames
       .slice(3)
-      .map(s => s.slice(0, 3))
+      .map(s => s.split("(")[0])
     ;
   const currentlySelectedNames =
     resetFunctionNames
@@ -80,7 +81,22 @@ window.kklee.setCurrent${nn}=function(v){return ${on}=v;};`;
     `${theResetFunction};{${ufInj}};`
   );
 
+  // Only part of the function body
+  const saveHistoryFunction =
+    src.match(
+      new RegExp(
+        `function ...\\(\\)\\{.{1,150}${varArrName}\\[\\d{1,3}\\]--;\\}\
+${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
+      ))[0];
+  const saveHistoryFunctionName =
+    saveHistoryFunction.match(/(?<=function )...(?=\(\))/)[0];
 
+  src = src.replace(
+    saveHistoryFunction,
+    `window.kklee.saveToUndoHistory=${saveHistoryFunctionName};\
+${saveHistoryFunction}`
+  );
+  
 
   const script = document.createElement("script");
   script.text = src;
