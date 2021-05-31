@@ -25,5 +25,6 @@ proc moveShape*(msfx: var MapFixture; msb: var MapBody): VNode =
       setCurrentBody(mapObject.physics.bodies.find msb)
       updateLeftBox()
       updateRightBoxBody(fxi)
+      saveToUndoHistory()
 
     , msb.isNil)
