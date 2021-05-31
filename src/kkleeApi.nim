@@ -104,3 +104,5 @@ proc getBody*(bi: int): MapBody = mapObject.physics.bodies[bi]
 
 template x*(arr: MapPosition): untyped = arr[0]
 template y*(arr: MapPosition): untyped = arr[1]
+
+template moph*: untyped = mapObject.physics

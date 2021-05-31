@@ -54,3 +54,13 @@ afterUpdateRightBoxBody = proc(fx: int) =
           )
           rerender()
         ))
+
+import jsconsole
+
+
+console.log proc(b: MapBody) =
+  state = StateObject(
+    kind: seShapeGenerator,
+    sgb: b
+  )
+  rerender()
