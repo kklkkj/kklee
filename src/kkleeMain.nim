@@ -99,9 +99,13 @@ proc vertexEditor: VNode =
       span(style = "width: 40px".toCss):
         text &"{i}."
       template cbi(va): untyped = bonkInput(va, parseFloat, proc =
-        removeVertexMarker()
-        saveToUndoHistory()
-        setVertexMarker(i)
+        if markerFxi.isSome:
+          let mfxi = markerFxi.get
+          removeVertexMarker()
+          saveToUndoHistory()
+          setVertexMarker(i)
+        else:
+          saveToUndoHistory()
       )
       text "x:"
       cbi v.x
@@ -125,7 +129,11 @@ proc vertexEditor: VNode =
       template poV: untyped = state.fxi.getFx.fxShape.poV
       for i, v in poV.mpairs:
         vertex(i, v, poV)
-      bonkButton("Add vertex", proc = poV.add([0.0, 0.0]); saveToUndoHistory())
+      bonkButton("Add vertex", proc =
+        poV.add([0.0, 0.0])
+        removeVertexMarker()
+        saveToUndoHistory()
+      )
 
       tdiv(style = "display: flex; flex-flow: row wrap".toCss):
         tdiv(style = "width: 100%".toCss): text "Scale verticies:"
@@ -139,7 +147,9 @@ proc vertexEditor: VNode =
           for v in poV.mitems:
             v.x *= scale.x
             v.y *= scale.y
+          removeVertexMarker()
           saveToUndoHistory()
+          state.kind = seHidden
           rerender()
 
 proc render: VNode =
