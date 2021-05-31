@@ -22,9 +22,8 @@ proc createBonkButton(label: string; onclick: proc: void): Element =
   result.class = "brownButton brownButton_classic buttonShadow"
   result.onclick = proc(e: Event) = onclick()
 
-afterNewMapObject = proc =
-  state.kind = seHidden
-  rerender()
+afterNewMapObject = hide
+
 
 afterUpdateRightBoxBody = proc(fx: int) =
   if getCurrentBody() notin 0..mapObject.physics.bodies.high:
@@ -42,7 +41,8 @@ afterUpdateRightBoxBody = proc(fx: int) =
       capture fxi, bi:
         se.appendChild shapeTableCell("Verticies", createBonkButton("Edit", proc =
           state = StateObject(
-            kind: seVertexEditor, bi: bi, fxi: fxi
+            kind: seVertexEditor, b: bi.getBody, fx: fxi.getFx,
+            sh: fxi.getFx.fxShape
           )
           rerender()
         ))

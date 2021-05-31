@@ -28,16 +28,25 @@ type
     case kind*: StateKindEnum
     of seHidden: discard
     of seVertexEditor:
-      fxi*, bi*: int
+      fx*: MapFixture
+      b*: MapBody
+      sh*: MapShape
 
 var state* = StateObject(kind: seHidden)
 
 proc rerender* = kxi.redraw()
+proc hide* =
+  state.kind = seHidden
+  rerender()
 
-proc bonkButton(label: string, onClick: proc): VNode =
-  buildHtml(tdiv(class = "brownButton brownButton_classic buttonShadow")):
+proc bonkButton(label: string, onClick: proc; disabled: bool = false): VNode =
+  let disabledClass = if disabled: "brownButtonDisabled" else: ""
+  buildHtml(tdiv(
+    class = &"brownButton brownButton_classic buttonShadow {disabledClass}")
+  ):
     text label
-    proc onClick = onClick()
+    if not disabled:
+      proc onClick = onClick()
 
 proc bonkInput[T](variable: var T; parser: string -> T,
     afterInput: proc(): void = nil): VNode =
@@ -58,9 +67,9 @@ var markerFxi: Option[int]
 proc removeVertexMarker =
   if markerFxi.isNone: return
   let mfxi = markerFxi.get
-  for i, j in state.bi.getBody.fx:
+  for i, j in state.b.fx:
     if j == mfxi:
-      state.bi.getBody.fx.delete i
+      state.b.fx.delete i
       break
   mapObject.physics.shapes.delete mfxi.getFx.sh
   mapObject.physics.fixtures.delete mfxi
@@ -70,7 +79,7 @@ proc removeVertexMarker =
 proc setVertexMarker(vi: int) =
   removeVertexMarker()
   let
-    s = state.fxi.getFx.fxShape
+    s = state.sh
     v = s.poV[vi]
     # Only scaled marker positions
     smp: MapPosition = [
@@ -89,7 +98,7 @@ proc setVertexMarker(vi: int) =
     sh: mapObject.physics.shapes.high
   )
   let fxi = mapObject.physics.fixtures.high
-  state.bi.getBody.fx.add fxi
+  state.b.fx.add fxi
   markerFxi = some fxi
   updateRenderer(true)
 
@@ -112,7 +121,7 @@ proc vertexEditor: VNode =
       text "y:"
       cbi v.y
 
-      bonkButton(" X ", proc =
+      bonkButton("X", proc =
         removeVertexMarker()
         poV.delete(i);
         saveToUndoHistory()
@@ -124,9 +133,9 @@ proc vertexEditor: VNode =
   buildHtml:
     block:
       updateRenderer(true)
-      updateRightBoxBody(state.fxi)
+      updateRightBoxBody(-1)
     tdiv(style = "flex: auto; overflow-y: auto;".toCss):
-      template poV: untyped = state.fxi.getFx.fxShape.poV
+      template poV: untyped = state.sh.poV
       for i, v in poV.mpairs:
         vertex(i, v, poV)
       bonkButton("Add vertex", proc =
@@ -149,8 +158,7 @@ proc vertexEditor: VNode =
             v.y *= scale.y
           removeVertexMarker()
           saveToUndoHistory()
-          state.kind = seHidden
-          rerender()
+          hide()
 
 proc render: VNode =
   st.width = "200px"
