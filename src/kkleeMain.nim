@@ -1,6 +1,6 @@
 import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import kkleeApi
+import kkleeApi, bonkElements, moveShape
 
 let root* = document.createElement("div")
 let karaxRoot* = document.createElement("div")
@@ -43,29 +43,6 @@ proc rerender* = kxi.redraw()
 proc hide* =
   state = StateObject(kind: seHidden)
   rerender()
-
-proc bonkButton(label: string, onClick: proc; disabled: bool = false): VNode =
-  let disabledClass = if disabled: "brownButtonDisabled" else: ""
-  buildHtml(tdiv(
-    class = &"brownButton brownButton_classic buttonShadow {disabledClass}")
-  ):
-    text label
-    if not disabled:
-      proc onClick = onClick()
-
-proc bonkInput[T](variable: var T; parser: string -> T,
-    afterInput: proc(): void = nil): VNode =
-  buildHtml(tdiv):
-    input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-        value = $variable):
-      proc onInput(e: Event; n: VNode) =
-        try:
-          variable = parser $n.value
-          e.target.style.color = ""
-          if not afterInput.isNil:
-            afterInput()
-        except CatchableError:
-          e.target.style.color = "rgb(204, 68, 68)"
 
 var markerFxi: Option[int]
 
@@ -164,31 +141,6 @@ proc vertexEditor: VNode =
           saveToUndoHistory()
           hide()
 
-proc moveShape: VNode =
-  buildHtml(tdiv):
-    select(style = "margin-bottom: 10px".toCss):
-      for bi in mapObject.physics.bro:
-        option:
-          text bi.getBody.n
-
-      proc onInput(e: Event; n: VNode) =
-        state.msb =
-          mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
-      proc onMouseEnter(e: Event; n: VNode) =
-        state.msb =
-          mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
-
-    bonkButton("Move", proc =
-      let fxi = mapObject.physics.fixtures.find(state.msfx)
-      if fxi == -1: return
-      for b in mapObject.physics.bodies:
-        b.fx.keepIf i => i != fxi
-      state.msb.fx.add fxi
-      setCurrentBody(mapObject.physics.bodies.find state.msb)
-      updateLeftBox()
-      updateRightBoxBody(fxi)
-
-    , state.msb.isNil)
 
 proc render: VNode =
   st.width = "200px"
@@ -211,7 +163,7 @@ proc render: VNode =
         vertexEditor()
       of seMoveShape:
         text "Move shape to another body"
-        moveShape()
+        moveShape(state.msfx, state.msb)
 
       tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))
