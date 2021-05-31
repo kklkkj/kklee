@@ -23,7 +23,7 @@ proc createBonkButton(label: string; onclick: proc: void): Element =
   result.onclick = proc(e: Event) = onclick()
 
 afterNewMapObject = hide
-
+afterUpdateLeftBox = rerender
 
 afterUpdateRightBoxBody = proc(fx: int) =
   if getCurrentBody() notin 0..mapObject.physics.bodies.high:
@@ -35,14 +35,22 @@ afterUpdateRightBoxBody = proc(fx: int) =
   for i, se in shapeElements.reversed:
     let
       bi = getCurrentBody()
+      body = bi.getBody
       fxi = bi.getBody.fx[i]
       fixture = getFx fxi
-    if fixture.fxShape.shapeType == stypePo:
-      capture fxi, bi:
-        se.appendChild shapeTableCell("Verticies", createBonkButton("Edit", proc =
+    capture fixture, body:
+      se.appendChild shapeTableCell("", createBonkButton("Move to body", proc =
+        state = StateObject(
+          kind: seMoveShape,
+          msfx: fixture
+        )
+        rerender()
+      ))
+      if fixture.fxShape.shapeType == stypePo:
+        se.appendChild shapeTableCell("", createBonkButton("Edit verticies", proc =
           state = StateObject(
-            kind: seVertexEditor, b: bi.getBody, fx: fxi.getFx,
-            sh: fxi.getFx.fxShape
+            kind: seVertexEditor,
+            veb: body, vefx: fixture, vesh: fixture.fxShape
           )
           rerender()
         ))

@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar, strutils, options, math
+import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 import kkleeApi
 
@@ -23,20 +23,25 @@ midboxst.transition = "width 0.5s"
 
 type
   StateKindEnum* = enum
-    seHidden, seVertexEditor
+    seHidden, seVertexEditor, seMoveShape
   StateObject* = ref object
     case kind*: StateKindEnum
     of seHidden: discard
     of seVertexEditor:
-      fx*: MapFixture
-      b*: MapBody
-      sh*: MapShape
+      vefx*: MapFixture
+      veb*: MapBody
+      vesh*: MapShape
+    of seMoveShape:
+      msfx*: MapFixture
+      msb*: MapBody
+
+
 
 var state* = StateObject(kind: seHidden)
 
 proc rerender* = kxi.redraw()
 proc hide* =
-  state.kind = seHidden
+  state = StateObject(kind: seHidden)
   rerender()
 
 proc bonkButton(label: string, onClick: proc; disabled: bool = false): VNode =
@@ -67,9 +72,9 @@ var markerFxi: Option[int]
 proc removeVertexMarker =
   if markerFxi.isNone: return
   let mfxi = markerFxi.get
-  for i, j in state.b.fx:
+  for i, j in state.veb.fx:
     if j == mfxi:
-      state.b.fx.delete i
+      state.veb.fx.delete i
       break
   mapObject.physics.shapes.delete mfxi.getFx.sh
   mapObject.physics.fixtures.delete mfxi
@@ -79,7 +84,7 @@ proc removeVertexMarker =
 proc setVertexMarker(vi: int) =
   removeVertexMarker()
   let
-    s = state.sh
+    s = state.vesh
     v = s.poV[vi]
     # Only scaled marker positions
     smp: MapPosition = [
@@ -98,7 +103,7 @@ proc setVertexMarker(vi: int) =
     sh: mapObject.physics.shapes.high
   )
   let fxi = mapObject.physics.fixtures.high
-  state.b.fx.add fxi
+  state.veb.fx.add fxi
   markerFxi = some fxi
   updateRenderer(true)
 
@@ -109,7 +114,6 @@ proc vertexEditor: VNode =
         text &"{i}."
       template cbi(va): untyped = bonkInput(va, parseFloat, proc =
         if markerFxi.isSome:
-          let mfxi = markerFxi.get
           removeVertexMarker()
           saveToUndoHistory()
           setVertexMarker(i)
@@ -135,7 +139,7 @@ proc vertexEditor: VNode =
       updateRenderer(true)
       updateRightBoxBody(-1)
     tdiv(style = "flex: auto; overflow-y: auto;".toCss):
-      template poV: untyped = state.sh.poV
+      template poV: untyped = state.vesh.poV
       for i, v in poV.mpairs:
         vertex(i, v, poV)
       bonkButton("Add vertex", proc =
@@ -160,6 +164,32 @@ proc vertexEditor: VNode =
           saveToUndoHistory()
           hide()
 
+proc moveShape: VNode =
+  buildHtml(tdiv):
+    select(style = "margin-bottom: 10px".toCss):
+      for bi in mapObject.physics.bro:
+        option:
+          text bi.getBody.n
+
+      proc onInput(e: Event; n: VNode) =
+        state.msb =
+          mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
+      proc onMouseEnter(e: Event; n: VNode) =
+        state.msb =
+          mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
+
+    bonkButton("Move", proc =
+      let fxi = mapObject.physics.fixtures.find(state.msfx)
+      if fxi == -1: return
+      for b in mapObject.physics.bodies:
+        b.fx.keepIf i => i != fxi
+      state.msb.fx.add fxi
+      setCurrentBody(mapObject.physics.bodies.find state.msb)
+      updateLeftBox()
+      updateRightBoxBody(fxi)
+
+    , state.msb.isNil)
+
 proc render: VNode =
   st.width = "200px"
   midboxst.width = "calc(100% - 580px)"
@@ -179,6 +209,9 @@ proc render: VNode =
       of seVertexEditor:
         text "Vertex Editor"
         vertexEditor()
+      of seMoveShape:
+        text "Move shape to another body"
+        moveShape()
 
       tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))

@@ -17,7 +17,7 @@ let saveToUndoHistory* {.importc: "window.kklee.$1".}: proc(): void
 
 template importCurrentThing(name: untyped) =
   let `getCurrent name`* {.importc: "window.kklee.$1"inject.}: proc(): int
-  let `setCurrent name`* {.importc: "window.kklee.$1"inject.}: proc(): int
+  let `setCurrent name`* {.importc: "window.kklee.$1"inject.}: proc(i: int)
 
 importCurrentThing(Body)
 importCurrentThing(Spawn)
