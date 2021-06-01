@@ -33,6 +33,6 @@ proc prsFLimited*(s: string): float =
   result = s.parseFloat
   if result notin -1e6..1e6: raise newException(ValueError, "prsFLimited")
 
-proc prsFLimitedPostive*(s: string): float =
+proc prsFLimitedPositive*(s: string): float =
   result = s.prsFLimited
   if result < 0.0: raise newException(ValueError, "prsFLimitedPostive")

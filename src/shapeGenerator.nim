@@ -1,4 +1,4 @@
-import dom, strutils, math, sugar
+import dom, strutils, math, sugar, strformat
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 import kkleeApi, bonkElements
 
@@ -8,7 +8,8 @@ type
   ShapeGeneratorState = ref object
     case kind*: ShapeGeneratorKind
     of sgsEllipse:
-      ewr*, ehr*, eaStart*, eaEnd*, eAngle*, ex*, ey*, espiralStart*: float
+      ewr*, ehr*, eaStart*, eaEnd*, eAngle*, ex*, ey*, espiralStart*,
+        eheight*: float
       ehollow*: bool
       eprec*: int
       ecolour*: int
@@ -19,26 +20,61 @@ var
 
 proc generateEllipse(body: MapBody): int =
   if gs.ehollow:
-    discard
+    proc getPos(a: float; s: float): MapPosition =
+      var r = [gs.ewr * sin(a) * s, gs.ehr * cos(a) * s]
+      let sa = gs.eAngle
+      result = [
+        r.x * cos(sa) - r.y * sin(sa) + gs.ex,
+        r.x * sin(sa) + r.y * cos(sa) + gs.ey
+      ]
+
+    let ad = (gs.eaEnd - gs.eaStart) / gs.eprec.float
+
+    for n in 0..gs.eprec-1:
+      let
+        a = gs.eaEnd - ad * n.float
+        spiralMul = gs.espiralStart + (1 - gs.espiralStart) * (n / gs.eprec)
+        spiralMul2 = gs.espiralStart + (1 - gs.espiralStart) *
+          ((n + 1) / gs.eprec)
+        p1 = getPos(a, spiralMul)
+        p2 = getPos(a - ad, spiralMul2)
+
+      let shape = MapShape(
+        stype: "bx",
+        c: [(p1.x + p2.x) / 2, (p1.y + p2.y) / 2].MapPosition,
+        bxH: gs.eheight,
+        bxW: sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2),
+        a: arctan((p1.y - p2.y) / (p1.x - p2.x))
+      )
+      moph.shapes.add shape
+
+      let fixture = MapFixture(n: &"hollowEllipse{n}", de: NaN, re: NaN,
+        fr: NaN, f: gs.ecolour, sh: moph.shapes.high
+      )
+      moph.fixtures.add fixture
+      body.fx.add moph.fixtures.high
+
+    result = gs.eprec
+
   else:
-    result = 1
     let shape = MapShape(
       stype: "po", poS: 1.0, a: gs.eAngle,
       c: [gs.ex, gs.ey].MapPosition
     )
 
-    var n = gs.eaEnd
-    while n > gs.eaStart:
+    for n in 0..gs.eprec:
+      let a = gs.eaEnd - (gs.eaEnd - gs.eaStart) / gs.eprec.float * n.float
       shape.poV.add [
-        sin(n) * gs.ewr, cos(n) * gs.ehr
+        sin(a) * gs.ewr, cos(a) * gs.ehr
       ].MapPosition
-      n -= (gs.eaEnd - gs.eaStart) / gs.eprec.float
 
     moph.shapes.add shape
-    let fixture = MapFixture(n: "Generated shape", de: NaN, re: NaN, fr: NaN,
-        f: gs.ecolour, sh: moph.shapes.high)
+    let fixture = MapFixture(n: "ellipse", de: NaN, re: NaN, fr: NaN,
+        f: gs.ecolour, sh: moph.shapes.high
+    )
     moph.fixtures.add fixture
     body.fx.add moph.fixtures.high
+    result = 1
 
   updateRenderer(true)
   updateRightBoxBody(-1)
@@ -50,7 +86,7 @@ proc setGs(kind: ShapeGeneratorKind) =
       kind: sgsEllipse,
       ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 2 * PI, eAngle: 0.0,
       ex: 0.0, ey: 0.0, ehollow: false, eprec: 16, espiralStart: 1.0,
-      ecolour: 0xffffff
+      eheight: 1.0, ecolour: 0xffffff
     )
 
 setGs sgsEllipse
@@ -129,6 +165,9 @@ proc shapeGenerator*(body: MapBody): VNode =
             gs.ehollow = e.target.Element.checked
             update()
       if gs.ehollow:
+        tdiv(style = fcss):
+          text "Rect height"
+          bonkInput(gs.eheight, prsFLimitedPositive, update, niceFormatFloat)
         tdiv(style = fcss):
           text "Spiral start"
           pbi gs.espiralStart
