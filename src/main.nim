@@ -50,7 +50,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
         se.appendChild shapeTableCell("", createBonkButton("Edit verticies", proc =
           state = StateObject(
             kind: seVertexEditor,
-            veb: body, vefx: fixture, vesh: fixture.fxShape
+            veb: body, vefx: fixture
           )
           rerender()
         ))
