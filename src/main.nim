@@ -86,7 +86,7 @@ document.getelementbyid("newbonklobby_editorbutton")
       document.getElementById("bonkiocontainer").nextSibling
     )
     chat.setAttribute("style",
-      "position: absolute; scale: 1; left: 0px; width: 15%; height: 80%")
+      "position: absolute; scale: 1; left: 0px; top: 50px; width: 15%; height: 80%")
   )
 
 
