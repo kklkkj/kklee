@@ -139,7 +139,40 @@ proc vertexEditor: VNode =
             v.y *= scale.y
           removeVertexMarker()
           saveToUndoHistory()
-          hide()
+
+      tdiv(style =
+        "display: flex; flex-flow: row wrap; justify-content: space-between"
+          .toCss):
+        tdiv(style = "width: 100%".toCss): text "Move vertex:"
+        var vi {.global.}: int
+        bonkInput vi, proc(s: string): int =
+          result = s.parseInt
+          if result notin 0..poV.high: raise newException(ValueError, "")
+
+        bonkButton("Down", proc(): void =
+          swap poV[vi], pov[vi + 1]
+          inc vi
+        , vi == poV.high)
+        bonkButton("Up", proc(): void =
+          swap poV[vi], pov[vi - 1]
+          dec vi
+        , vi == poV.low)
+        bonkButton("Bottom", proc(): void =
+          let v = poV[vi]
+          poV.delete vi
+          poV.insert v, poV.high + 1
+          vi = poV.high
+        , vi == poV.high)
+        bonkButton("Top", proc(): void =
+          let v = poV[vi]
+          poV.delete vi
+          poV.insert v, poV.low
+          vi = poV.low
+        , vi == poV.low)
+
+        proc onMouseEnter = setVertexMarker vi
+        proc onMouseLeave = removeVertexMarker()
+
 
 
 proc render: VNode =

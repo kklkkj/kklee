@@ -12,9 +12,9 @@ proc bonkButton*(label: string, onClick: proc; disabled: bool = false): VNode =
 
 proc bonkInput*[T](variable: var T; parser: string -> T,
     afterInput: proc(): void = nil): VNode =
-  buildHtml(tdiv):
+  buildHtml:
     input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-        value = $variable):
+    value = $variable):
       proc onInput(e: Event; n: VNode) =
         try:
           variable = parser $n.value
