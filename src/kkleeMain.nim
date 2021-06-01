@@ -1,6 +1,5 @@
 import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-
 import kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator
 
 let root* = document.createElement("div")
