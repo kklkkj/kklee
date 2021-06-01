@@ -76,3 +76,24 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
     document.getElementById(
       "mapeditor_rightbox_shapeaddcontainer").nextSibling
   )
+
+let chat = document.getElementById("newbonklobby_chatbox")
+
+document.getelementbyid("newbonklobby_editorbutton")
+  .addEventListener("click", proc(e: Event) =
+    document.getElementById("pagecontainer").insertBefore(
+      chat,
+      document.getElementById("bonkiocontainer").nextSibling
+    )
+    chat.setAttribute("style",
+      "position: absolute; scale: 1; left: 0px; width: 15%; height: 80%")
+  )
+
+
+document.getElementById("mapeditor_close")
+  .addEventListener("click", proc(e: Event) =
+    document.getElementById("newbonklobby").insertBefore(
+      chat, document.getElementById("newbonklobby_settingsbox")
+    )
+    chat.setAttribute("style", "")
+  )
