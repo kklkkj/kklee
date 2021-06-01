@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
+import strformat, dom, sugar, options, strutils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 
 proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
@@ -10,11 +10,16 @@ proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
     if not disabled:
       proc onClick = onClick()
 
+
+proc defaultFormat[T](v: T) = $v
+proc niceFormatFloat*(f: float): string = f.formatFloat(precision = -1)
+
 proc bonkInput*[T](variable: var T; parser: string -> T;
-    afterInput: proc(): void = nil): VNode =
+    afterInput: proc(): void = nil; stringify: T ->
+        string): VNode =
   buildHtml:
     input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-    value = $variable):
+    value = variable.stringify, style = "width: 50px".toCss):
       proc onInput(e: Event; n: VNode) =
         try:
           variable = parser $n.value
@@ -23,3 +28,11 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
             afterInput()
         except CatchableError:
           e.target.style.color = "rgb(204, 68, 68)"
+
+proc prsFLimited*(s: string): float =
+  result = s.parseFloat
+  if result notin -1e6..1e6: raise newException(ValueError, "prsFLimited")
+
+proc prsFLimitedPostive*(s: string): float =
+  result = s.prsFLimited
+  if result < 0.0: raise newException(ValueError, "prsFLimitedPostive")

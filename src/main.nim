@@ -25,17 +25,22 @@ proc createBonkButton(label: string; onclick: proc: void): Element =
 afterNewMapObject = hide
 afterUpdateLeftBox = rerender
 
+var
+  bi: int
+  body: MapBody
+
 afterUpdateRightBoxBody = proc(fx: int) =
   if getCurrentBody() notin 0..moph.bodies.high:
     return
-  let shapeElements = document
-    .getElementById("mapeditor_rightbox_shapetablecontainer")
-    .getElementsByClassName("mapeditor_rightbox_table_shape")
+  let
+    shapeElements = document
+      .getElementById("mapeditor_rightbox_shapetablecontainer")
+      .getElementsByClassName("mapeditor_rightbox_table_shape")
+  bi = getCurrentBody()
+  body = bi.getBody
 
   for i, se in shapeElements.reversed:
     let
-      bi = getCurrentBody()
-      body = bi.getBody
       fxi = bi.getBody.fx[i]
       fixture = getFx fxi
     capture fixture, body:
@@ -55,12 +60,19 @@ afterUpdateRightBoxBody = proc(fx: int) =
           rerender()
         ))
 
-import jsconsole
-
-
-console.log proc(b: MapBody) =
+let shapeGeneratorButton = createBonkButton("Generate shape", proc =
   state = StateObject(
     kind: seShapeGenerator,
-    sgb: b
+    sgb: body
   )
   rerender()
+)
+shapeGeneratorButton.setAttr "style",
+  "float: left; margin-bottom: 10px; margin-left: 10px; width: 190px"
+
+document.getElementById("mapeditor_rightbox_shapetablecontainer")
+  .insertBefore(
+    shapeGeneratorButton,
+    document.getElementById(
+      "mapeditor_rightbox_shapeaddcontainer").nextSibling
+  )

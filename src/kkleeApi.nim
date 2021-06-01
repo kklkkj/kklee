@@ -79,16 +79,15 @@ type
   MapShape* = ref object
     stype* {.exportc: "type".}: cstring
     c*: MapPosition
+    a* {.exportc: "a".}: float
 
     bxW* {.exportc: "w".}: float
     bxH* {.exportc: "h".}: float
-    bxA* {.exportc: "a".}: float
     bxSk* {.exportc: "sk".}: bool
 
     ciR* {.exportc: "r".}: float
     ciSk* {.exportc: "sk".}: bool
 
-    poA* {.exportc: "a".}: float
     poS* {.exportc: "s".}: float
     poV* {.exportc: "v".}: seq[MapPosition]
 
@@ -103,6 +102,8 @@ proc getFx*(fxi: int): MapFixture = mapObject.physics.fixtures[fxi]
 proc getBody*(bi: int): MapBody = mapObject.physics.bodies[bi]
 
 template x*(arr: MapPosition): untyped = arr[0]
+template `x=`*(arr: MapPosition; v): untyped = arr[0] = v
 template y*(arr: MapPosition): untyped = arr[1]
+template `y=`*(arr: MapPosition; v): untyped = arr[1] = v
 
 template moph*: untyped = mapObject.physics

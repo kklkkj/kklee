@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
+import strformat, dom, algorithm, sugar
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 import kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator
 
@@ -44,10 +44,6 @@ proc rerender* = kxi.redraw()
 proc hide* =
   state = StateObject(kind: seHidden)
   rerender()
-
-
-
-
 
 proc render: VNode =
   st.width = "200px"

@@ -31,8 +31,8 @@ proc setVertexMarker(vi: int) =
       v.y * sh.poS
     ]
     markerPos: MapPosition = [
-      smp.x * cos(sh.poA) - smp.y * sin(sh.poA) + sh.c.x,
-      smp.x * sin(sh.poA) + smp.y * cos(sh.poA) + sh.c.y
+      smp.x * cos(sh.a) - smp.y * sin(sh.a) + sh.c.x,
+      smp.x * sin(sh.a) + smp.y * cos(sh.a) + sh.c.y
     ]
   moph.shapes.add MapShape(
     stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
@@ -54,14 +54,14 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
       span(style = "width: 40px".toCss):
         text &"{i}."
-      template cbi(va): untyped = bonkInput(va, parseFloat, proc =
+      template cbi(va): untyped = bonkInput(va, prsFLimited, proc =
         if markerFxi.isSome:
           removeVertexMarker()
           saveToUndoHistory()
           setVertexMarker(i)
         else:
           saveToUndoHistory()
-      )
+      , niceFormatFloat)
       text "x:"
       cbi v.x
       text "y:"
@@ -95,14 +95,14 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         tdiv(style = "width: 100%".toCss): text "Scale verticies:"
         var scale {.global.}: MapPosition = [1.0, 1.0]
         text "x:"
-        bonkInput scale.x, parseFloat
+        bonkInput scale.x, prsFLimitedPostive, nil, niceFormatFloat
         text "y:"
-        bonkInput scale.y, parseFloat
+        bonkInput scale.y, prsFLimitedPostive, nil, niceFormatFloat
 
         bonkButton "Apply", proc(): void =
           for v in poV.mitems:
-            v.x *= scale.x
-            v.y *= scale.y
+            v.x = (v.x * scale.x).clamp(-1e6, 1e6)
+            v.y = (v.y * scale.y).clamp(-1e6, 1e6)
           removeVertexMarker()
           saveToUndoHistory()
 
@@ -111,9 +111,10 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
           .toCss):
         tdiv(style = "width: 100%".toCss): text "Move vertex:"
         var vi {.global.}: int
-        bonkInput vi, proc(s: string): int =
+        bonkInput(vi, proc(s: string): int =
           result = s.parseInt
           if result notin 0..poV.high: raise newException(ValueError, "")
+        , nil, v => $v)
 
         let stuh = proc =
           removeVertexMarker()
