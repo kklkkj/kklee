@@ -1,6 +1,7 @@
 import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import kkleeApi, bonkElements, moveShape, vertexEditor
+
+import kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator
 
 let root* = document.createElement("div")
 let karaxRoot* = document.createElement("div")
@@ -23,7 +24,7 @@ midboxst.transition = "width 0.5s"
 
 type
   StateKindEnum* = enum
-    seHidden, seVertexEditor, seMoveShape
+    seHidden, seVertexEditor, seMoveShape, seShapeGenerator
   StateObject* = ref object
     case kind*: StateKindEnum
     of seHidden: discard
@@ -33,6 +34,8 @@ type
     of seMoveShape:
       msfx*: MapFixture
       msb*: MapBody
+    of seShapeGenerator:
+      sgb*: MapBody
 
 
 
@@ -69,6 +72,9 @@ proc render: VNode =
       of seMoveShape:
         text "Move shape to another body"
         moveShape(state.msfx, state.msb)
+      of seShapeGenerator:
+        text "Generate a shape"
+        shapeGenerator(state.sgb)
 
       tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))

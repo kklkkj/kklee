@@ -1,7 +1,7 @@
 import strformat, dom, algorithm, sugar, strutils, options, math, sequtils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 
-proc bonkButton*(label: string, onClick: proc; disabled: bool = false): VNode =
+proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
   let disabledClass = if disabled: "brownButtonDisabled" else: ""
   buildHtml(tdiv(
     class = &"brownButton brownButton_classic buttonShadow {disabledClass}")
@@ -10,7 +10,7 @@ proc bonkButton*(label: string, onClick: proc; disabled: bool = false): VNode =
     if not disabled:
       proc onClick = onClick()
 
-proc bonkInput*[T](variable: var T; parser: string -> T,
+proc bonkInput*[T](variable: var T; parser: string -> T;
     afterInput: proc(): void = nil): VNode =
   buildHtml:
     input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
