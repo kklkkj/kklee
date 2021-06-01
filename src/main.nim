@@ -26,7 +26,7 @@ afterNewMapObject = hide
 afterUpdateLeftBox = rerender
 
 afterUpdateRightBoxBody = proc(fx: int) =
-  if getCurrentBody() notin 0..mapObject.physics.bodies.high:
+  if getCurrentBody() notin 0..moph.bodies.high:
     return
   let shapeElements = document
     .getElementById("mapeditor_rightbox_shapetablecontainer")

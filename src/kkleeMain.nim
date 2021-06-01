@@ -53,8 +53,8 @@ proc removeVertexMarker =
     if j == mfxi:
       state.veb.fx.delete i
       break
-  mapObject.physics.shapes.delete mfxi.getFx.sh
-  mapObject.physics.fixtures.delete mfxi
+  moph.shapes.delete mfxi.getFx.sh
+  moph.fixtures.delete mfxi
   markerFxi = none int
   updateRenderer(true)
 
@@ -72,14 +72,14 @@ proc setVertexMarker(vi: int) =
       smp.x * cos(s.poA) - smp.y * sin(s.poA) + s.c.x,
       smp.x * sin(s.poA) + smp.y * cos(s.poA) + s.c.y
     ]
-  mapObject.physics.shapes.add MapShape(
+  moph.shapes.add MapShape(
     stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
   )
-  mapObject.physics.fixtures.add MapFixture(
+  moph.fixtures.add MapFixture(
     n: "temp marker", np: true, f: 0xff0000,
-    sh: mapObject.physics.shapes.high
+    sh: moph.shapes.high
   )
-  let fxi = mapObject.physics.fixtures.high
+  let fxi = moph.fixtures.high
   state.veb.fx.add fxi
   markerFxi = some fxi
   updateRenderer(true)
@@ -114,7 +114,7 @@ proc vertexEditor: VNode =
   buildHtml:
     block:
       updateRenderer(true)
-      updateRightBoxBody(-1)
+      updateRightBoxBody(moph.fixtures.find(state.vefx))
     tdiv(style = "flex: auto; overflow-y: auto;".toCss):
       template poV: untyped = state.vesh.poV
       for i, v in poV.mpairs:
