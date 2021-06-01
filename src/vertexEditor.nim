@@ -80,7 +80,7 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
     block:
       updateRenderer(true)
       updateRightBoxBody(moph.fixtures.find(fx))
-    tdiv(style = "flex: auto; overflow-y: auto;".toCss):
+    tdiv(style = "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px".toCss):
       template poV: untyped = sh.poV
       for i, v in poV.mpairs:
         vertex(i, v, poV)
@@ -115,26 +115,41 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
           result = s.parseInt
           if result notin 0..poV.high: raise newException(ValueError, "")
 
+        let stuh = proc =
+          removeVertexMarker()
+          saveToUndoHistory()
+          setVertexMarker vi
+
         bonkButton("Down", proc(): void =
           swap poV[vi], pov[vi + 1]
           inc vi
+          stuh()
         , vi == poV.high)
         bonkButton("Up", proc(): void =
           swap poV[vi], pov[vi - 1]
           dec vi
+          stuh()
         , vi == poV.low)
         bonkButton("Bottom", proc(): void =
           let v = poV[vi]
           poV.delete vi
           poV.insert v, poV.high + 1
           vi = poV.high
+          stuh()
         , vi == poV.high)
         bonkButton("Top", proc(): void =
           let v = poV[vi]
           poV.delete vi
           poV.insert v, poV.low
           vi = poV.low
+          stuh()
         , vi == poV.low)
 
         proc onMouseEnter = setVertexMarker vi
         proc onMouseLeave = removeVertexMarker()
+
+
+      bonkButton("Set no physics", proc =
+        fx.np = true
+        saveToUndoHistory()
+      )
