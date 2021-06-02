@@ -77,23 +77,38 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
       "mapeditor_rightbox_shapeaddcontainer").nextSibling
   )
 
+
+
+
 let chat = document.getElementById("newbonklobby_chatbox")
 
-document.getelementbyid("newbonklobby_editorbutton")
-  .addEventListener("click", proc(e: Event) =
-    document.getElementById("pagecontainer").insertBefore(
-      chat,
-      document.getElementById("bonkiocontainer").nextSibling
-    )
-    chat.setAttribute("style",
-      "position: absolute; scale: 1; left: 0px; top: 50px; width: 15%; height: 80%")
+proc moveChatToEditor(e: Event) =
+  document.getElementById("pagecontainer").insertBefore(
+    chat,
+    document.getElementById("bonkiocontainer").nextSibling
   )
+  chat.setAttribute("style",
+    "position: absolute; scale: 1; left: 0px; top: 50px; width: 15%; height: 80%")
 
+proc restoreChat(e: Event) =
+  document.getelementbyid("newbonklobby").insertbefore(
+    chat, document.getelementbyid("newbonklobby_settingsbox")
+  )
+  chat.setattribute("style", "")
 
+document.getelementbyid("newbonklobby_editorbutton")
+  .addEventListener("click", moveChatToEditor)
 document.getElementById("mapeditor_close")
+  .addEventListener("click", restoreChat)
+document.getElementById("hostleaveconfirmwindow_endbutton")
+  .addEventListener("click", restoreChat)
+document.getElementById("hostleaveconfirmwindow_okbutton")
+  .addEventListener("click", restoreChat)
+document.getElementById("mapeditor_midbox_testbutton")
   .addEventListener("click", proc(e: Event) =
-    document.getElementById("newbonklobby").insertBefore(
-      chat, document.getElementById("newbonklobby_settingsbox")
-    )
-    chat.setAttribute("style", "")
+    chat.style.visibility = "hidden"
+  )
+document.getElementById("pretty_top_exit")
+  .addEventListener("click", proc(e: Event) =
+    chat.style.visibility = ""
   )

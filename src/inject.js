@@ -98,7 +98,17 @@ ${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
     `window.kklee.saveToUndoHistory=${saveHistoryFunctionName};\
 ${saveHistoryFunction}`
   );
-  
+
+  /*
+    Prevent removal of event listener for activating chat with enter key when
+    lobby is hidden
+  */
+  src = src.replace(
+    new RegExp("(?<=this\\[.{10,20}\\]=function\\(\\)\\{.{20,40}\
+this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
+.{3,4}\\);"),
+    ""
+  );
 
   const script = document.createElement("script");
   script.text = src;
