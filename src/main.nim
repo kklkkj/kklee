@@ -88,7 +88,7 @@ proc moveChatToEditor(e: Event) =
     document.getElementById("bonkiocontainer").nextSibling
   )
   chat.setAttribute("style",
-    "position: absolute; scale: 1; left: 0px; top: 50px; width: 15%; height: 80%")
+    "position: absolute; scale: 1; left: 0px; top: 50px; width: 12%; height: 80%")
 
 proc restoreChat(e: Event) =
   document.getelementbyid("newbonklobby").insertbefore(

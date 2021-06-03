@@ -4,73 +4,80 @@ import kkleeApi, bonkElements
 
 type
   ShapeGeneratorKind = enum
-    sgsEllipse = "Ellipse/Spiral"
+    sgsEllipse = "Ellipse/Spiral", sgsSine = "Sine wave"
   ShapeGeneratorState = ref object
+    x*, y*, angle*: float
+    colour*: int
+    prec*: int
     case kind*: ShapeGeneratorKind
     of sgsEllipse:
-      ewr*, ehr*, eaStart*, eaEnd*, eAngle*, ex*, ey*, espiralStart*,
-        eheight*: float
+      ewr*, ehr*, eaStart*, eaEnd*, espiralStart*: float
       ehollow*: bool
-      eprec*: int
-      ecolour*: int
+    of sgsSine:
+      swidth*, sheight*, sosc*, sstart*: float
 
 var
   gs: ShapeGeneratorState = ShapeGeneratorState(kind: sgsEllipse)
   nShapes: int
+  selecting: bool = true
+
+
+proc dtr(f: float): float = f.degToRad
+
+proc genLinesShape(body: MapBody; getPos: float -> MapPosition) =
+  for n in 0..gs.prec-1:
+    let
+      p1 = getPos(n / gs.prec)
+      p2 = getPos((n + 1) / gs.prec)
+
+    let shape = MapShape(
+      stype: "bx",
+      c: [(p1.x + p2.x) / 2, (p1.y + p2.y) / 2].MapPosition,
+      bxH: 1,
+      bxW: sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2),
+      a: arctan((p1.y - p2.y) / (p1.x - p2.x))
+    )
+    moph.shapes.add shape
+
+    let fixture = MapFixture(n: &"rect{n}", de: NaN, re: NaN,
+      fr: NaN, f: gs.colour, sh: moph.shapes.high
+    )
+    moph.fixtures.add fixture
+    body.fx.add moph.fixtures.high
+
 
 proc generateEllipse(body: MapBody): int =
   if gs.ehollow:
-    proc getPos(a: float; s: float): MapPosition =
+    proc getPos(x: float): MapPosition =
+      let
+        a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) * x
+        s = gs.espiralStart + (1 - gs.espiralStart) * x
       var r = [gs.ewr * sin(a) * s, gs.ehr * cos(a) * s]
-      let sa = gs.eAngle
+      let sa = gs.angle.dtr
       result = [
-        r.x * cos(sa) - r.y * sin(sa) + gs.ex,
-        r.x * sin(sa) + r.y * cos(sa) + gs.ey
+        r.x * cos(sa) - r.y * sin(sa) + gs.x,
+        r.x * sin(sa) + r.y * cos(sa) + gs.y
       ]
 
-    let ad = (gs.eaEnd - gs.eaStart) / gs.eprec.float
+    genLinesShape(body, getPos)
 
-    for n in 0..gs.eprec-1:
-      let
-        a = gs.eaEnd - ad * n.float
-        spiralMul = gs.espiralStart + (1 - gs.espiralStart) * (n / gs.eprec)
-        spiralMul2 = gs.espiralStart + (1 - gs.espiralStart) *
-          ((n + 1) / gs.eprec)
-        p1 = getPos(a, spiralMul)
-        p2 = getPos(a - ad, spiralMul2)
-
-      let shape = MapShape(
-        stype: "bx",
-        c: [(p1.x + p2.x) / 2, (p1.y + p2.y) / 2].MapPosition,
-        bxH: gs.eheight,
-        bxW: sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2),
-        a: arctan((p1.y - p2.y) / (p1.x - p2.x))
-      )
-      moph.shapes.add shape
-
-      let fixture = MapFixture(n: &"hollowEllipse{n}", de: NaN, re: NaN,
-        fr: NaN, f: gs.ecolour, sh: moph.shapes.high
-      )
-      moph.fixtures.add fixture
-      body.fx.add moph.fixtures.high
-
-    result = gs.eprec
+    result = gs.prec
 
   else:
     let shape = MapShape(
-      stype: "po", poS: 1.0, a: gs.eAngle,
-      c: [gs.ex, gs.ey].MapPosition
+      stype: "po", poS: 1.0, a: gs.angle.dtr,
+      c: [gs.x, gs.y].MapPosition
     )
 
-    for n in 0..gs.eprec:
-      let a = gs.eaEnd - (gs.eaEnd - gs.eaStart) / gs.eprec.float * n.float
+    for n in 0..gs.prec:
+      let a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) / gs.prec.float * n.float
       shape.poV.add [
         sin(a) * gs.ewr, cos(a) * gs.ehr
       ].MapPosition
 
     moph.shapes.add shape
     let fixture = MapFixture(n: "ellipse", de: NaN, re: NaN, fr: NaN,
-        f: gs.ecolour, sh: moph.shapes.high
+        f: gs.colour, sh: moph.shapes.high
     )
     moph.fixtures.add fixture
     body.fx.add moph.fixtures.high
@@ -79,30 +86,52 @@ proc generateEllipse(body: MapBody): int =
   updateRenderer(true)
   updateRightBoxBody(-1)
 
+proc generateSine(body: MapBody): int =
+  proc getPos(x: float): MapPosition =
+    let
+      r = [gs.swidth * x, sin(x * 2 * PI * gs.sosc + gs.sstart) *
+        gs.sheight].MapPosition
+      sa = gs.angle.dtr
+    result = [
+      r.x * cos(sa) - r.y * sin(sa) + gs.x,
+      r.x * sin(sa) + r.y * cos(sa) + gs.y
+    ].MapPosition
+
+  genLinesShape(body, getPos)
+
+  result = gs.prec
+
 proc setGs(kind: ShapeGeneratorKind) =
   case kind
   of sgsEllipse:
     gs = ShapeGeneratorState(
       kind: sgsEllipse,
-      ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 2 * PI, eAngle: 0.0,
-      ex: 0.0, ey: 0.0, ehollow: false, eprec: 16, espiralStart: 1.0,
-      eheight: 1.0, ecolour: 0xffffff
+      ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 360, angle: 0.0,
+      x: 0.0, y: 0.0, ehollow: false, prec: 16, espiralStart: 1.0,
+      colour: 0xffffff
+    )
+  of sgsSine:
+    gs = ShapeGeneratorState(
+      kind: sgsSine,
+      swidth: 150, sheight: 75, sosc: 3, x: 0.0, y: 0.0, angle: 0.0,
+      sstart: 0.0, colour: 0xffffff, prec: 20
     )
 
-setGs sgsEllipse
+# >:(
 
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
-    select:
-      for s in ShapeGeneratorKind:
-        option: text $s
-      proc onInput(e: Event; n: VNode) =
-        setGs e.target.OptionElement.selectedIndex.ShapeGeneratorKind
+    # select(value = $gs.kind):
+    #   for s in ShapeGeneratorKind:
+    #     option(value = $s): text $s
+    #   proc onInput(e: Event; n: VNode) =
+    #     setGs e.target.OptionElement.selectedIndex.ShapeGeneratorKind
 
     let
       generateProc =
         case gs.kind
         of sgsEllipse: generateEllipse
+        of sgsSine: generateSine
       generate = proc =
         nShapes = generateProc(body)
         updateRenderer(true)
@@ -120,73 +149,88 @@ proc shapeGenerator*(body: MapBody): VNode =
 
     template pbi(va): untyped =
       bonkInput(va, prsFLimited, update, niceFormatFloat)
-    template pbiAngle(va): untyped =
-      var angle = (va * 180 / PI).round(3)
-      bonkInput(angle, prsFLimited, proc =
-        va = (angle * PI / 180)
-        update()
-      , niceFormatFloat)
 
     let fcss =
       "display:flex; flex-flow: row wrap; justify-content: space-between".toCss
 
-    case gs.kind:
-    of sgsEllipse:
+    if selecting:
+      template sb(s): untyped =
+        bonkButton($s, proc =
+          setGs s
+          selecting = false
+        )
+      sb sgsEllipse
+      sb sgsSine
+
+    else:
+      bonkButton("Back", proc =
+        selecting = true
+        remove()
+      )
+
       tdiv(style = fcss):
         text "x"
-        pbi gs.ex
+        pbi gs.x
       tdiv(style = fcss):
         text "y"
-        pbi gs.ey
+        pbi gs.y
       tdiv(style = fcss):
         text "Angle"
-        pbiAngle gs.eAngle
+        pbi gs.angle
       tdiv(style = fcss):
         text "Colour"
-        bonkInput(gs.ecolour, parseHexInt, update, i => i.toHex(6))
-
-      tdiv(style = fcss):
-        text "Width radius"
-        pbi gs.ewr
-      tdiv(style = fcss):
-        text "Height radius"
-        pbi gs.ehr
-      tdiv(style = fcss):
-        text "Angle start"
-        pbiAngle gs.eaStart
-      tdiv(style = fcss):
-        text "Angle end"
-        pbiAngle gs.eaEnd
-
-      tdiv(style = fcss):
-        text "Hollow"
-        input(`type` = "checkbox", checked = $gs.ehollow):
-          proc onChange(e: Event; n: VNode) =
-            gs.ehollow = e.target.Element.checked
-            update()
-      if gs.ehollow:
-        tdiv(style = fcss):
-          text "Rect height"
-          bonkInput(gs.eheight, prsFLimitedPositive, update, niceFormatFloat)
-        tdiv(style = fcss):
-          text "Spiral start"
-          pbi gs.espiralStart
-
-
+        bonkInput(gs.colour, parseHexInt, update, i => i.toHex(6))
       tdiv(style = fcss):
         text "Shapes/verticies"
-        bonkInput(gs.eprec, proc(s: string): int =
+        bonkInput(gs.prec, proc(s: string): int =
           result = s.parseInt
           if result notin 1..99: raise newException(ValueError, "")
         , update, i => $i)
 
-    bonkButton("Apply", proc =
-      update()
-      nShapes = 0
-      saveToUndoHistory()
-    )
+      case gs.kind:
+      of sgsEllipse:
+        tdiv(style = fcss):
+          text "Width radius"
+          pbi gs.ewr
+        tdiv(style = fcss):
+          text "Height radius"
+          pbi gs.ehr
+        tdiv(style = fcss):
+          text "Angle start"
+          pbi gs.eaStart
+        tdiv(style = fcss):
+          text "Angle end"
+          pbi gs.eaEnd
 
-    proc onMouseEnter = update()
-    proc onMouseLeave = remove()
+        tdiv(style = fcss):
+          text "Hollow"
+          input(`type` = "checkbox", checked = $gs.ehollow):
+            proc onChange(e: Event; n: VNode) =
+              gs.ehollow = e.target.Element.checked
+              update()
+        if gs.ehollow:
+          tdiv(style = fcss):
+            text "Spiral start"
+            pbi gs.espiralStart
+
+      of sgsSine:
+        tdiv(style = fcss):
+          text "Width"
+          pbi gs.swidth
+        tdiv(style = fcss):
+          text "Height"
+          pbi gs.sheight
+        tdiv(style = fcss):
+          text "Oscillations"
+          pbi gs.sosc
+
+      bonkButton(&"Save {$gs.kind}", proc =
+        update()
+        nShapes = 0
+        saveToUndoHistory()
+      )
+
+      proc onMouseEnter = update()
+      proc onMouseLeave = remove()
 
 
