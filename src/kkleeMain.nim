@@ -47,7 +47,7 @@ proc hide* =
 
 proc render: VNode =
   st.width = "200px"
-  midboxst.width = "calc(100% - 580px)"
+  midboxst.width = "calc(100% - 600px)"
 
   buildHtml(tdiv(style =
     "display: flex; flex-direction: column; height: 100%".toCss)):

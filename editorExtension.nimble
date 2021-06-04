@@ -3,6 +3,6 @@ author = "k"
 description = "Editor extension"
 license = "Proprietary"
 
-requires "nim >= 1.4.6"
+requires "nim >= 1.4.8"
 # requires "karax >= 1.2.1"
 requires "karax#72aeac0"
