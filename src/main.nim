@@ -83,12 +83,13 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
 let chat = document.getElementById("newbonklobby_chatbox")
 
 proc moveChatToEditor(e: Event) =
-  document.getElementById("pagecontainer").insertBefore(
+  document.getElementById("mapeditor").insertBefore(
     chat,
-    document.getElementById("bonkiocontainer").nextSibling
+    document.getElementById("mapeditor_leftbox")
   )
   chat.setAttribute("style",
-    "position: absolute; scale: 1; left: 0px; top: 50px; width: 12%; height: 80%")
+    "position: absolute; left: -150px; top: 0%; width: 150px; height: 100%; transform: scale(0.9);"
+  )
 
 proc restoreChat(e: Event) =
   document.getelementbyid("newbonklobby").insertbefore(

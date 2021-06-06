@@ -10,6 +10,7 @@
     "webpack-cli": "^4.7.0"
   },
   "scripts": {
-    "test": "web-ext run -s ./dist"
+    "test": "web-ext run -s ./dist",
+    "build": "webpack && web-ext build -s ./dist"
   }
 }
