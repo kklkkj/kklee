@@ -15,5 +15,8 @@
   },
   "web_accessible_resources": [
     "inject.js"
-  ]
+  ],
+  "icons": {
+    "64": "icons/icon.png"
+  }
 }
