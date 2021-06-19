@@ -89,8 +89,10 @@ proc generateEllipse(body: MapBody): int =
 proc generateSine(body: MapBody): int =
   proc getPos(x: float): MapPosition =
     let
-      r = [gs.swidth * x, sin(x * 2 * PI * gs.sosc + gs.sstart) *
-        gs.sheight].MapPosition
+      sx = x * 2 * PI * gs.sosc + gs.sstart
+      asx = sx + sin(2 * sx) / 2.7
+      r = [gs.swidth * (asx - gs.sstart) / gs.sosc / 2 / PI,
+        sin(asx) * gs.sheight].MapPosition
       sa = gs.angle.dtr
     result = [
       r.x * cos(sa) - r.y * sin(sa) + gs.x,
@@ -113,8 +115,8 @@ proc setGs(kind: ShapeGeneratorKind) =
   of sgsSine:
     gs = ShapeGeneratorState(
       kind: sgsSine,
-      swidth: 150, sheight: 75, sosc: 3, x: 0.0, y: 0.0, angle: 0.0,
-      sstart: 0.0, colour: 0xffffff, prec: 20
+      swidth: 300, sheight: 75, sosc: 2, x: 0.0, y: 0.0, angle: 0.0,
+      sstart: 0.0, colour: 0xffffff, prec: 30
     )
 
 # >:(
