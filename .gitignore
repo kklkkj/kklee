@@ -4,3 +4,4 @@ dist/*
 !dist/manifest.json
 !dist/icons
 web-ext-artifacts/
+mylist.txt

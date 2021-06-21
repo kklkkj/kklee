@@ -25,10 +25,19 @@ var
 proc dtr(f: float): float = f.degToRad
 
 proc genLinesShape(body: MapBody; getPos: float -> MapPosition) =
+  proc getPosAdj(x: float): MapPosition =
+    let
+      r = getPos(x)
+      sa = gs.angle.dtr
+    return [
+      r.x * cos(sa) - r.y * sin(sa) + gs.x,
+      r.x * sin(sa) + r.y * cos(sa) + gs.y
+    ]
+
   for n in 0..gs.prec-1:
     let
-      p1 = getPos(n / gs.prec)
-      p2 = getPos((n + 1) / gs.prec)
+      p1 = getPosAdj(n / gs.prec)
+      p2 = getPosAdj((n + 1) / gs.prec)
 
     let shape = MapShape(
       stype: "bx",
@@ -52,12 +61,7 @@ proc generateEllipse(body: MapBody): int =
       let
         a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) * x
         s = gs.espiralStart + (1 - gs.espiralStart) * x
-      var r = [gs.ewr * sin(a) * s, gs.ehr * cos(a) * s]
-      let sa = gs.angle.dtr
-      result = [
-        r.x * cos(sa) - r.y * sin(sa) + gs.x,
-        r.x * sin(sa) + r.y * cos(sa) + gs.y
-      ]
+      return [gs.ewr * sin(a) * s, gs.ehr * cos(a) * s]
 
     genLinesShape(body, getPos)
 
@@ -92,13 +96,8 @@ proc generateSine(body: MapBody): int =
     let
       sx = x * 2 * PI * gs.sosc + gs.sstart
       asx = sx + sin(2 * sx) / 2.7
-      r = [gs.swidth * (asx - gs.sstart) / gs.sosc / 2 / PI,
-        sin(asx) * gs.sheight].MapPosition
-      sa = gs.angle.dtr
-    result = [
-      r.x * cos(sa) - r.y * sin(sa) + gs.x,
-      r.x * sin(sa) + r.y * cos(sa) + gs.y
-    ].MapPosition
+    return [gs.swidth * (asx - gs.sstart) / gs.sosc / 2 / PI,
+      sin(asx) * gs.sheight]
 
   genLinesShape(body, getPos)
 
