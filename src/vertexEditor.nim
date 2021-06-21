@@ -1,4 +1,4 @@
-import strformat, dom, sugar, strutils, options, math
+import strformat, dom, sugar, strutils, options, math, algorithm, sequtils
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
 import kkleeApi, bonkElements
 
@@ -149,8 +149,39 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         proc onMouseEnter = setVertexMarker vi
         proc onMouseLeave = removeVertexMarker()
 
-
+      bonkButton("Reverse order", proc =
+        poV.reverse()
+        saveToUndoHistory()
+      )
       bonkButton("Set no physics", proc =
         fx.np = true
         saveToUndoHistory()
       )
+      if false: # I think this is broken . . .
+        bonkButton("Merge with polygons of same colour", proc =
+          var i = 0;
+          while i < b.fx.len:
+            let
+              fxid = b.fx[i]
+              cfx = fxid.getFx
+              csh = cfx.fxShape
+            if csh.shapeType != stypePo or cfx.f != fx.f or cfx == fx:
+              inc i
+              continue
+            var npoV = csh.poV
+            for c in npoV.mitems:
+              c = [
+                c.x * cos(csh.a) - c.y * sin(csh.a),
+                c.x * sin(csh.a) + c.y * cos(csh.a)
+              ]
+              c = [c.x + csh.c.x - sh.c.x, c.y + csh.c.y - sh.c.y]
+              c = [
+                c.x * cos(-sh.a) - c.y * sin(-sh.a),
+                c.x * sin(-sh.a) + c.y * cos(-sh.a)
+              ]
+
+            sh.poV.add(npoV & npoV[0] & sh.poV[^1])
+            deleteFx fxid
+
+          saveToUndoHistory()
+        )

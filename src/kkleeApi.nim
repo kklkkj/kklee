@@ -1,4 +1,4 @@
-import strutils
+import strutils, sequtils
 
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =
@@ -107,3 +107,18 @@ template y*(arr: MapPosition): untyped = arr[1]
 template `y=`*(arr: MapPosition; v): untyped = arr[1] = v
 
 template moph*: untyped = mapObject.physics
+
+proc deleteFx*(fxid: int) =
+  let shid = fxid.getFx.sh
+  moph.fixtures.delete fxid
+  moph.shapes.delete shid
+  for b in moph.bodies:
+    b.fx.keepItIf it != fxid
+    for f in b.fx.mitems:
+      if f > fxid: dec f
+  for c in mapObject.capzones.mitems:
+    if c.i == fxid: c.i = -1
+    if c.i > fxid: dec c.i
+  for f in moph.fixtures.mitems:
+    if f.sh > shid: dec f.sh
+

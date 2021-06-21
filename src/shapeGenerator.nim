@@ -70,7 +70,8 @@ proc generateEllipse(body: MapBody): int =
     )
 
     for n in 0..gs.prec:
-      let a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) / gs.prec.float * n.float
+      let a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) /
+        gs.prec.float * n.float
       shape.poV.add [
         sin(a) * gs.ewr, cos(a) * gs.ehr
       ].MapPosition
