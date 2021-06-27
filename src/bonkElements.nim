@@ -11,7 +11,7 @@ proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
       proc onClick = onClick()
 
 
-proc defaultFormat[T](v: T) = $v
+proc defaultFormat*[T](v: T) = $v
 proc niceFormatFloat*(f: float): string = f.formatFloat(precision = -1)
 
 proc bonkInput*[T](variable: var T; parser: string -> T;

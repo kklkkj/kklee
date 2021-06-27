@@ -52,8 +52,8 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
   sh = fx.fxShape
   proc vertex(i: int; v: var MapPosition; poV: var seq[MapPosition]): VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
-      span(style = "width: 40px".toCss):
-        text &"{i}."
+      span(style = "width: 27px; font-size: 12;".toCss):
+        text $i
       template cbi(va): untyped = bonkInput(va, prsFLimited, proc =
         if markerFxi.isSome:
           removeVertexMarker()
@@ -159,17 +159,31 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       )
 
       # BUGGY!!
-      bonkButton("(BUGGY!) Merge with polygons of same colour", proc =
+      bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", proc =
         var i = 0;
         while i < b.fx.len:
           let
             fxid = b.fx[i]
             cfx = fxid.getFx
             csh = cfx.fxShape
-          if csh.shapeType != stypePo or cfx.f != fx.f or cfx == fx:
+          if cfx.f != fx.f or cfx == fx or
+            not cfx.np:
             inc i
             continue
-          var npoV = csh.poV
+
+          var npoV: seq[MapPosition]
+          case csh.shapeType
+          of stypePo:
+            npoV = csh.poV
+          of stypeBx:
+            npoV = @[
+              [csh.bxW / -2, csh.bxH / -2], [csh.bxW / 2, csh.bxH / -2],
+              [csh.bxW / 2, csh.bxH / 2], [csh.bxW / -2, csh.bxH / 2]
+            ]
+          else:
+            inc i
+            continue
+
           for c in npoV.mitems:
             c = [
               c.x * cos(csh.a) - c.y * sin(csh.a),
@@ -180,7 +194,6 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
               c.x * cos(-sh.a) - c.y * sin(-sh.a),
               c.x * sin(-sh.a) + c.y * cos(-sh.a)
             ]
-
           sh.poV.add(npoV & npoV[0] & sh.poV[^1])
           deleteFx fxid
 
