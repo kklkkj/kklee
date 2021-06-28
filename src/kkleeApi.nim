@@ -23,6 +23,8 @@ importCurrentThing(Body)
 importCurrentThing(Spawn)
 importCurrentThing(CapZone)
 
+proc setColourPickerColour*(colour: int) {.importc: "window.kklee.$1".}
+
 type
   MapPosition* = array[2, float]
   MapData* = ref object

@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar
+import strformat, dom, algorithm, sugar, strutils
 import kkleeApi, kkleeMain
 
 
@@ -113,3 +113,15 @@ document.getElementById("pretty_top_exit")
   .addEventListener("click", proc(e: Event) =
     chat.style.visibility = ""
   )
+
+let colourPicker = document.getElementById("mapeditor_colorpicker")
+let colourInput = document.createElement("input")
+colourInput.setAttribute("type", "color")
+colourInput.id = "kkleeColourInput"
+colourPicker.appendChild(colourInput)
+colourInput.addEventListener("change", proc(e: Event) =
+  let s = $colourInput.value
+  setColourPickerColour(parseHexInt(s[1..^1]))
+  saveToUndoHistory()
+  document.getElementById("mapeditor_colorpicker_cancelbutton").click()
+)
