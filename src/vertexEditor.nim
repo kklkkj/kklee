@@ -46,6 +46,49 @@ proc setVertexMarker(vi: int) =
   markerFxi = some fxi
   updateRenderer(true)
 
+proc mergeShapes(b: MapBody) =
+  # This is buggy because the output verticies might be ordered in a way
+  # that causes it to be not rendered corrently...
+  var i = 0;
+  while i < b.fx.len:
+    let
+      fxid = b.fx[i]
+      cfx = fxid.getFx
+      csh = cfx.fxShape
+    if cfx.f != fx.f or cfx == fx or
+      not cfx.np:
+      inc i
+      continue
+
+    var npoV: seq[MapPosition]
+    case csh.shapeType
+    of stypePo:
+      npoV = csh.poV
+    of stypeBx:
+      npoV = @[
+        [csh.bxW / -2, csh.bxH / -2], [csh.bxW / 2, csh.bxH / -2],
+        [csh.bxW / 2, csh.bxH / 2], [csh.bxW / -2, csh.bxH / 2]
+      ]
+    else:
+      inc i
+      continue
+
+    for c in npoV.mitems:
+      c = [
+        c.x * cos(csh.a) - c.y * sin(csh.a),
+        c.x * sin(csh.a) + c.y * cos(csh.a)
+      ]
+      c = [c.x + csh.c.x - sh.c.x, c.y + csh.c.y - sh.c.y]
+      c = [
+        c.x * cos(-sh.a) - c.y * sin(-sh.a),
+        c.x * sin(-sh.a) + c.y * cos(-sh.a)
+      ]
+    sh.poV.add(npoV & npoV[0] & sh.poV[^1])
+    deleteFx fxid
+
+  saveToUndoHistory()
+
+
 proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
   b = veb
   fx = vefx
@@ -158,44 +201,5 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         saveToUndoHistory()
       )
 
-      # BUGGY!!
-      bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", proc =
-        var i = 0;
-        while i < b.fx.len:
-          let
-            fxid = b.fx[i]
-            cfx = fxid.getFx
-            csh = cfx.fxShape
-          if cfx.f != fx.f or cfx == fx or
-            not cfx.np:
-            inc i
-            continue
-
-          var npoV: seq[MapPosition]
-          case csh.shapeType
-          of stypePo:
-            npoV = csh.poV
-          of stypeBx:
-            npoV = @[
-              [csh.bxW / -2, csh.bxH / -2], [csh.bxW / 2, csh.bxH / -2],
-              [csh.bxW / 2, csh.bxH / 2], [csh.bxW / -2, csh.bxH / 2]
-            ]
-          else:
-            inc i
-            continue
-
-          for c in npoV.mitems:
-            c = [
-              c.x * cos(csh.a) - c.y * sin(csh.a),
-              c.x * sin(csh.a) + c.y * cos(csh.a)
-            ]
-            c = [c.x + csh.c.x - sh.c.x, c.y + csh.c.y - sh.c.y]
-            c = [
-              c.x * cos(-sh.a) - c.y * sin(-sh.a),
-              c.x * sin(-sh.a) + c.y * cos(-sh.a)
-            ]
-          sh.poV.add(npoV & npoV[0] & sh.poV[^1])
-          deleteFx fxid
-
-        saveToUndoHistory()
-      )
+      bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
+          mergeShapes(b))
