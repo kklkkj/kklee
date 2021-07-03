@@ -41,8 +41,8 @@ afterUpdateRightBoxBody = proc(fx: int) =
 
   for i, se in shapeElements.reversed:
     let
-      fxi = bi.getBody.fx[i]
-      fixture = getFx fxi
+      fxId = bi.getBody.fx[i]
+      fixture = getFx fxId
     capture fixture, body:
       se.appendChild shapeTableCell("", createBonkButton("Move to body", proc =
         state = StateObject(
@@ -120,8 +120,8 @@ colourInput.setAttribute("type", "color")
 colourInput.id = "kkleeColourInput"
 colourPicker.appendChild(colourInput)
 colourInput.addEventListener("change", proc(e: Event) =
-  let s = $colourInput.value
-  setColourPickerColour(parseHexInt(s[1..^1]))
+  let strVal = $colourInput.value
+  setColourPickerColour(parseHexInt(strVal[1..^1]))
   saveToUndoHistory()
   document.getElementById("mapeditor_colorpicker_cancelbutton").click()
 )

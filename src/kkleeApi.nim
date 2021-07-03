@@ -110,17 +110,17 @@ template `y=`*(arr: MapPosition; v): untyped = arr[1] = v
 
 template moph*: untyped = mapObject.physics
 
-proc deleteFx*(fxid: int) =
-  let shid = fxid.getFx.sh
-  moph.fixtures.delete fxid
-  moph.shapes.delete shid
+proc deleteFx*(fxId: int) =
+  let shId = fxid.getFx.sh
+  moph.fixtures.delete fxId
+  moph.shapes.delete shId
   for b in moph.bodies:
-    b.fx.keepItIf it != fxid
+    b.fx.keepItIf it != fxId
     for f in b.fx.mitems:
-      if f > fxid: dec f
+      if f > fxId: dec f
   for c in mapObject.capzones.mitems:
-    if c.i == fxid: c.i = -1
-    if c.i > fxid: dec c.i
+    if c.i == fxId: c.i = -1
+    if c.i > fxId: dec c.i
   for f in moph.fixtures.mitems:
-    if f.sh > shid: dec f.sh
+    if f.sh > shId: dec f.sh
 

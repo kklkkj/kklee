@@ -4,27 +4,27 @@ import kkleeApi, bonkElements
 
 
 var
-  markerFxi: Option[int]
+  markerFxId: Option[int]
   b: MapBody
   fx: MapFixture
   sh: MapShape
 
 proc removeVertexMarker =
-  if markerFxi.isNone: return
-  let mfxi = markerFxi.get
+  if markerFxId.isNone: return
+  let mfxId = markerFxId.get
   for i, j in b.fx:
-    if j == mfxi:
+    if j == mfxId:
       b.fx.delete i
       break
-  moph.shapes.delete mfxi.getFx.sh
-  moph.fixtures.delete mfxi
-  markerFxi = none int
+  moph.shapes.delete mfxId.getFx.sh
+  moph.fixtures.delete mfxId
+  markerFxId = none int
   updateRenderer(true)
 
-proc setVertexMarker(vi: int) =
+proc setVertexMarker(vId: int) =
   removeVertexMarker()
   let
-    v = sh.poV[vi]
+    v = sh.poV[vId]
     # Only scaled marker positions
     smp: MapPosition = [
       v.x * sh.poS,
@@ -41,9 +41,9 @@ proc setVertexMarker(vi: int) =
     n: "temp marker", np: true, f: 0xff0000,
     sh: moph.shapes.high
   )
-  let fxi = moph.fixtures.high
-  b.fx.add fxi
-  markerFxi = some fxi
+  let fxId = moph.fixtures.high
+  b.fx.add fxId
+  markerFxId = some fxId
   updateRenderer(true)
 
 proc mergeShapes(b: MapBody) =
@@ -52,8 +52,8 @@ proc mergeShapes(b: MapBody) =
   var i = 0;
   while i < b.fx.len:
     let
-      fxid = b.fx[i]
-      cfx = fxid.getFx
+      fxId = b.fx[i]
+      cfx = fxId.getFx
       csh = cfx.fxShape
     if cfx.f != fx.f or cfx == fx or
       not cfx.np:
@@ -84,7 +84,7 @@ proc mergeShapes(b: MapBody) =
         c.x * sin(-sh.a) + c.y * cos(-sh.a)
       ]
     sh.poV.add(npoV & npoV[0] & sh.poV[^1])
-    deleteFx fxid
+    deleteFx fxId
 
   saveToUndoHistory()
 
@@ -98,7 +98,7 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       span(style = "width: 27px; font-size: 12;".toCss):
         text $i
       template cbi(va): untyped = bonkInput(va, prsFLimited, proc =
-        if markerFxi.isSome:
+        if markerFxId.isSome:
           removeVertexMarker()
           saveToUndoHistory()
           setVertexMarker(i)
@@ -153,8 +153,8 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         "display: flex; flex-flow: row wrap; justify-content: space-between"
           .toCss):
         tdiv(style = "width: 100%".toCss): text "Move vertex:"
-        var vi {.global.}: int
-        bonkInput(vi, proc(s: string): int =
+        var vId {.global.}: int
+        bonkInput(vId, proc(s: string): int =
           result = s.parseInt
           if result notin 0..poV.high: raise newException(ValueError, "")
         , nil, v => $v)
@@ -162,34 +162,34 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         let stuh = proc =
           removeVertexMarker()
           saveToUndoHistory()
-          setVertexMarker vi
+          setVertexMarker vId
 
         bonkButton("Down", proc(): void =
-          swap poV[vi], pov[vi + 1]
-          inc vi
+          swap poV[vId], pov[vId + 1]
+          inc vId
           stuh()
-        , vi == poV.high)
+        , vId == poV.high)
         bonkButton("Up", proc(): void =
-          swap poV[vi], pov[vi - 1]
-          dec vi
+          swap poV[vId], pov[vId - 1]
+          dec vId
           stuh()
-        , vi == poV.low)
+        , vId == poV.low)
         bonkButton("Bottom", proc(): void =
-          let v = poV[vi]
-          poV.delete vi
+          let v = poV[vId]
+          poV.delete vId
           poV.insert v, poV.high + 1
-          vi = poV.high
+          vId = poV.high
           stuh()
-        , vi == poV.high)
+        , vId == poV.high)
         bonkButton("Top", proc(): void =
-          let v = poV[vi]
-          poV.delete vi
+          let v = poV[vId]
+          poV.delete vId
           poV.insert v, poV.low
-          vi = poV.low
+          vId = poV.low
           stuh()
-        , vi == poV.low)
+        , vId == poV.low)
 
-        proc onMouseEnter = setVertexMarker vi
+        proc onMouseEnter = setVertexMarker vId
         proc onMouseLeave = removeVertexMarker()
 
       bonkButton("Reverse order", proc =

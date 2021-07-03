@@ -17,14 +17,14 @@ proc moveShape*(msfx: var MapFixture; msb: var MapBody): VNode =
           mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
 
     bonkButton("Move", proc =
-      let fxi = mapObject.physics.fixtures.find(msfx)
-      if fxi == -1: return
+      let fxId = mapObject.physics.fixtures.find(msfx)
+      if fxId == -1: return
       for b in mapObject.physics.bodies:
-        b.fx.keepIf i => i != fxi
-      msb.fx.add fxi
+        b.fx.keepIf i => i != fxId
+      msb.fx.add fxId
       setCurrentBody(mapObject.physics.bodies.find msb)
       updateLeftBox()
-      updateRightBoxBody(fxi)
+      updateRightBoxBody(fxId)
       saveToUndoHistory()
 
     , msb.isNil)
