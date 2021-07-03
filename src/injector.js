@@ -1,11 +1,10 @@
 const kklee = {};
 window.kklee = kklee;
 
-(async ()=>{
+function injector(bonkCode) { 
   window.onbeforeunload = function () { return "Are you sure?"; };
 
-  const bonkScriptResponse = await fetch("https://bonk.io/js/alpha2s.js?real");
-  let src = await bonkScriptResponse.text();
+  let src = bonkCode;
 
   const mapObjectName =
     src.match(/rxid:[a-zA-Z0-9]{3}\[\d+\]/)[0].split(":")[1];
@@ -156,15 +155,22 @@ let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
 function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};
 `);
 
-  const script = document.createElement("script");
-  script.text = src;
-  document.head.appendChild(script);
   require("./nimBuild.js");
+  console.log("kklee injector run");
+  return src;
+}
 
-})().catch(err => {
-  console.error("kklee error: ", err);
-  alert(
-    "Whoops! KKLEE was unable to load. This may be due to an update to Bonk.io.\
-\n\nPlease report this error!"
-  );
+if(!window.bonkCodeInjectors)
+  window.bonkCodeInjectors = [];
+window.bonkCodeInjectors.push(bonkCode => {
+  try {
+    return injector(bonkCode);
+  } catch (error) {
+    alert(
+      "Whoops! KKLEE was unable to load. \
+This may be due to an update to Bonk.io.\n\nPlease report this error!"
+    );
+    throw error;
+  }
 });
+console.log("kklee injector loaded");

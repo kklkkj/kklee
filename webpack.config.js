@@ -9,7 +9,9 @@ module.exports = {
   mode: "production",
   entry: {
     background: "./src/background.js",
-    inject: "./src/inject.js"
+    injector: "./src/injector.js",
+    loadInjector: "./src/loadInjector.js",
+    runInjectors: "./src/runInjectors.js"
   },
   output: {
     filename: "[name].js",

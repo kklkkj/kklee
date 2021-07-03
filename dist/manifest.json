@@ -13,8 +13,20 @@
       "./background.js"
     ]
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://bonk.io/gameframe-release.html"
+      ],
+      "js": [
+        "loadInjector.js"
+      ],
+      "all_frames": true
+    }
+  ],
   "web_accessible_resources": [
-    "inject.js"
+    "injector.js",
+    "runInjectors.js"
   ],
   "icons": {
     "64": "icons/icon.png"
