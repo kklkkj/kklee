@@ -11,6 +11,7 @@
   },
   "scripts": {
     "test": "web-ext run -s ./dist",
-    "build": "webpack && web-ext build -s ./dist"
+    "build": "webpack",
+    "build-extension": "web-ext build -s ./dist --overwrite-dest"
   }
 }
