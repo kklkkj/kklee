@@ -20,7 +20,7 @@ proc moveShape*(msfx: var MapFixture; msb: var MapBody): VNode =
       let fxId = mapObject.physics.fixtures.find(msfx)
       if fxId == -1: return
       for b in mapObject.physics.bodies:
-        b.fx.keepIf i => i != fxId
+        b.fx.keepItIf it != fxId
       msb.fx.add fxId
       setCurrentBody(mapObject.physics.bodies.find msb)
       updateLeftBox()

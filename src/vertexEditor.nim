@@ -119,87 +119,88 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       proc onMouseEnter = setVertexMarker(i)
       proc onMouseLeave =
         removeVertexMarker()
-  buildHtml:
-    block:
-      updateRenderer(true)
-      updateRightBoxBody(moph.fixtures.find(fx))
-    tdiv(style = "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px".toCss):
-      template poV: untyped = sh.poV
-      for i, v in poV.mpairs:
-        vertex(i, v, poV)
-      tdiv(style = "margin: 3px".toCss):
-        bonkButton("Add vertex", proc =
-          poV.add([0.0, 0.0])
-          removeVertexMarker()
-          saveToUndoHistory()
-        )
-
-      tdiv(style = "display: flex; flex-flow: row wrap".toCss):
-        tdiv(style = "width: 100%".toCss): text "Scale verticies:"
-        var scale {.global.}: MapPosition = [1.0, 1.0]
-        text "x:"
-        bonkInput scale.x, prsFLimitedPositive, nil, niceFormatFloat
-        text "y:"
-        bonkInput scale.y, prsFLimitedPositive, nil, niceFormatFloat
-
-        bonkButton "Apply", proc(): void =
-          for v in poV.mitems:
-            v.x = (v.x * scale.x).clamp(-1e6, 1e6)
-            v.y = (v.y * scale.y).clamp(-1e6, 1e6)
-          removeVertexMarker()
-          saveToUndoHistory()
-
-      tdiv(style =
-        "display: flex; flex-flow: row wrap; justify-content: space-between"
-          .toCss):
-        tdiv(style = "width: 100%".toCss): text "Move vertex:"
-        var vId {.global.}: int
-        bonkInput(vId, proc(s: string): int =
-          result = s.parseInt
-          if result notin 0..poV.high: raise newException(ValueError, "")
-        , nil, v => $v)
-
-        let stuh = proc =
-          removeVertexMarker()
-          saveToUndoHistory()
-          setVertexMarker vId
-
-        bonkButton("Down", proc(): void =
-          swap poV[vId], pov[vId + 1]
-          inc vId
-          stuh()
-        , vId == poV.high)
-        bonkButton("Up", proc(): void =
-          swap poV[vId], pov[vId - 1]
-          dec vId
-          stuh()
-        , vId == poV.low)
-        bonkButton("Bottom", proc(): void =
-          let v = poV[vId]
-          poV.delete vId
-          poV.insert v, poV.high + 1
-          vId = poV.high
-          stuh()
-        , vId == poV.high)
-        bonkButton("Top", proc(): void =
-          let v = poV[vId]
-          poV.delete vId
-          poV.insert v, poV.low
-          vId = poV.low
-          stuh()
-        , vId == poV.low)
-
-        proc onMouseEnter = setVertexMarker vId
-        proc onMouseLeave = removeVertexMarker()
-
-      bonkButton("Reverse order", proc =
-        poV.reverse()
-        saveToUndoHistory()
-      )
-      bonkButton("Set no physics", proc =
-        fx.np = true
+  updateRenderer(true)
+  updateRightBoxBody(moph.fixtures.find(fx))
+  return buildHtml tdiv(style =
+    "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px"
+      .toCss
+    ):
+    template poV: untyped = sh.poV
+    for i, v in poV.mpairs:
+      vertex(i, v, poV)
+    tdiv(style = "margin: 3px".toCss):
+      bonkButton("Add vertex", proc =
+        poV.add([0.0, 0.0])
+        removeVertexMarker()
         saveToUndoHistory()
       )
 
-      bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
-          mergeShapes(b))
+    tdiv(style = "display: flex; flex-flow: row wrap".toCss):
+      tdiv(style = "width: 100%".toCss): text "Scale verticies:"
+      var scale {.global.}: MapPosition = [1.0, 1.0]
+      text "x:"
+      bonkInput scale.x, prsFLimitedPositive, nil, niceFormatFloat
+      text "y:"
+      bonkInput scale.y, prsFLimitedPositive, nil, niceFormatFloat
+
+      bonkButton "Apply", proc(): void =
+        for v in poV.mitems:
+          v.x = (v.x * scale.x).clamp(-1e6, 1e6)
+          v.y = (v.y * scale.y).clamp(-1e6, 1e6)
+        removeVertexMarker()
+        saveToUndoHistory()
+
+    tdiv(style =
+      "display: flex; flex-flow: row wrap; justify-content: space-between"
+        .toCss):
+      tdiv(style = "width: 100%".toCss): text "Move vertex:"
+      var vId {.global.}: int
+      bonkInput(vId, proc(s: string): int =
+        result = s.parseInt
+        if result notin 0..poV.high: raise newException(ValueError, "")
+      , nil, v => $v)
+
+      let stuh = proc =
+        removeVertexMarker()
+        saveToUndoHistory()
+        setVertexMarker vId
+
+      bonkButton("Down", proc(): void =
+        swap poV[vId], pov[vId + 1]
+        inc vId
+        stuh()
+      , vId == poV.high)
+      bonkButton("Up", proc(): void =
+        swap poV[vId], pov[vId - 1]
+        dec vId
+        stuh()
+      , vId == poV.low)
+      bonkButton("Bottom", proc(): void =
+        let v = poV[vId]
+        poV.delete vId
+        poV.insert v, poV.high + 1
+        vId = poV.high
+        stuh()
+      , vId == poV.high)
+      bonkButton("Top", proc(): void =
+        let v = poV[vId]
+        poV.delete vId
+        poV.insert v, poV.low
+        vId = poV.low
+        stuh()
+      , vId == poV.low)
+
+      proc onMouseEnter = setVertexMarker vId
+      proc onMouseLeave = removeVertexMarker()
+
+    bonkButton("Reverse order", proc =
+      poV.reverse()
+      saveToUndoHistory()
+    )
+    bonkButton("Set no physics", proc =
+      fx.np = true
+      saveToUndoHistory()
+    )
+
+    bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
+      mergeShapes(b))

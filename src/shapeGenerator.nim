@@ -119,16 +119,8 @@ proc setGs(kind: ShapeGeneratorKind) =
       sstart: 0.0, colour: 0xffffff, prec: 30
     )
 
-# >:(
-
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
-    # select(value = $gs.kind):
-    #   for s in ShapeGeneratorKind:
-    #     option(value = $s): text $s
-    #   proc onInput(e: Event; n: VNode) =
-    #     setGs e.target.OptionElement.selectedIndex.ShapeGeneratorKind
-
     let
       generateProc =
         case gs.kind
@@ -151,9 +143,12 @@ proc shapeGenerator*(body: MapBody): VNode =
 
     template pbi(va): untyped =
       bonkInput(va, prsFLimited, update, niceFormatFloat)
-
-    let fcss =
-      "display:flex; flex-flow: row wrap; justify-content: space-between".toCss
+    template prop(name: string; field: untyped): untyped =
+      buildHtml: tdiv(style =
+        "display:flex; flex-flow: row wrap; justify-content: space-between"
+        .toCss):
+        text name
+        field
 
     if selecting:
       template sb(s): untyped =
@@ -170,61 +165,41 @@ proc shapeGenerator*(body: MapBody): VNode =
         remove()
       )
 
-      tdiv(style = fcss):
-        text "x"
-        pbi gs.x
-      tdiv(style = fcss):
-        text "y"
-        pbi gs.y
-      tdiv(style = fcss):
-        text "Angle"
-        pbi gs.angle
-      tdiv(style = fcss):
-        text "Colour"
+      prop("x", pbi gs.x)
+      prop("y", pbi gs.y)
+      prop("Angle", pbi gs.angle)
+      prop("Colour",
         bonkInput(gs.colour, parseHexInt, update, i => i.toHex(6))
-      tdiv(style = fcss):
-        text "Shapes/verticies"
+      )
+      let precInput =
         bonkInput(gs.prec, proc(s: string): int =
           result = s.parseInt
           if result notin 1..99: raise newException(ValueError, "")
         , update, i => $i)
+      prop("Shapes/verticies", precInput)
 
       case gs.kind:
       of sgsEllipse:
-        tdiv(style = fcss):
-          text "Width radius"
-          pbi gs.ewr
-        tdiv(style = fcss):
-          text "Height radius"
-          pbi gs.ehr
-        tdiv(style = fcss):
-          text "Angle start"
-          pbi gs.eaStart
-        tdiv(style = fcss):
-          text "Angle end"
-          pbi gs.eaEnd
+        prop("Width radius", pbi gs.ewr)
+        prop("Height radius", pbi gs.ehr)
+        prop("Angle start", pbi gs.eaStart)
+        prop("Angle end", pbi gs.eaEnd)
 
-        tdiv(style = fcss):
-          text "Hollow"
-          input(`type` = "checkbox", checked = $gs.ehollow):
-            proc onChange(e: Event; n: VNode) =
-              gs.ehollow = e.target.Element.checked
-              update()
+        template hollowCheckbox: untyped =
+          buildHtml:
+            input(`type` = "checkbox", checked = $gs.ehollow):
+              proc onChange(e: Event; n: VNode) =
+                gs.ehollow = e.target.Element.checked
+                update()
+        prop("Hollow", hollowCheckbox())
+
         if gs.ehollow:
-          tdiv(style = fcss):
-            text "Spiral start"
-            pbi gs.espiralStart
+          prop("Spiral start", pbi gs.espiralStart)
 
       of sgsSine:
-        tdiv(style = fcss):
-          text "Width"
-          pbi gs.swidth
-        tdiv(style = fcss):
-          text "Height"
-          pbi gs.sheight
-        tdiv(style = fcss):
-          text "Oscillations"
-          pbi gs.sosc
+        prop("Width", pbi gs.swidth)
+        prop("Height", pbi gs.sheight)
+        prop("Oscillations", pbi gs.sosc)
 
       bonkButton(&"Save {$gs.kind}", proc =
         update()
@@ -234,5 +209,3 @@ proc shapeGenerator*(body: MapBody): VNode =
 
       proc onMouseEnter = update()
       proc onMouseLeave = remove()
-
-
