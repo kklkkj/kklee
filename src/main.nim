@@ -1,5 +1,5 @@
 import strformat, dom, algorithm, sugar, strutils
-import kkleeApi, kkleeMain
+import kkleeApi, kkleeMain, bonkElements
 
 
 
@@ -124,4 +124,26 @@ colourInput.addEventListener("change", proc(e: Event) =
   setColourPickerColour(parseHexInt(strVal[1..^1]))
   saveToUndoHistory()
   document.getElementById("mapeditor_colorpicker_cancelbutton").click()
+)
+
+import mathexpr
+let myEvaluator = newEvaluator()
+
+document.getElementById("mapeditor").addEventListener("keydown", proc(
+    e: KeyboardEvent) =
+  if not (e.shiftKey and e.keyCode == 13):
+    return
+  let el = document.activeElement
+  if not el.classList.contains("mapeditor_field"):
+    return
+
+  try:
+    let evalRes = myEvaluator.eval($el.value)
+    if evalRes.isNaN or evalRes > 1e6 or evalRes < -1e6:
+      raise ValueError.newException("Number is NaN or is too big")
+    el.value = evalRes.niceFormatFloat()
+    el.dispatchEvent(newEvent("input"))
+    saveToUndoHistory()
+  except CatchableError as err:
+    discard
 )
