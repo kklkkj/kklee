@@ -60,6 +60,8 @@ afterUpdateRightBoxBody = proc(fx: int) =
           rerender()
         ))
 
+# Generate shape button
+
 let shapeGeneratorButton = createBonkButton("Generate shape", proc =
   state = StateObject(
     kind: seShapeGenerator,
@@ -77,8 +79,7 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
       "mapeditor_rightbox_shapeaddcontainer").nextSibling
   )
 
-
-
+# See chat in editor
 
 let chat = document.getElementById("newbonklobby_chatbox")
 
@@ -114,6 +115,8 @@ document.getElementById("pretty_top_exit")
     chat.style.visibility = ""
   )
 
+# Colour picker
+
 let colourPicker = document.getElementById("mapeditor_colorpicker")
 let colourInput = document.createElement("input")
 colourInput.setAttribute("type", "color")
@@ -125,6 +128,8 @@ colourInput.addEventListener("change", proc(e: Event) =
   saveToUndoHistory()
   document.getElementById("mapeditor_colorpicker_cancelbutton").click()
 )
+
+# Arithmetic in fields
 
 import mathexpr
 let myEvaluator = newEvaluator()
@@ -147,6 +152,8 @@ document.getElementById("mapeditor").addEventListener("keydown", proc(
   except CatchableError as err:
     discard
 )
+
+# Editor test speed slider
 
 let timeSlider = document.createElement("input").InputElement
 timeSlider.`type` = "range"
