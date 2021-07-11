@@ -11,6 +11,7 @@ A browser extension that extends the functionality of the map editor in
 - Ability to use your browser's colour picker for changing colours
 - Evaluate arithmetic in number fields by pressing Shift+Enter
   (example: type `100*2+50` into X position field and press Shift+Enter)
+- Change the speed of map testing in the editor
 
 ## Installing
 Because this extension isn't hosted on the Chrome or Firefox extension stores,

@@ -124,3 +124,4 @@ proc deleteFx*(fxId: int) =
   for f in moph.fixtures.mitems:
     if f.sh > shId: dec f.sh
 
+var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float

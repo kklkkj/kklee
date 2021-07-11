@@ -1,4 +1,4 @@
-import strformat, dom, algorithm, sugar, strutils
+import strformat, dom, algorithm, sugar, strutils, math
 import kkleeApi, kkleeMain, bonkElements
 
 
@@ -146,4 +146,20 @@ document.getElementById("mapeditor").addEventListener("keydown", proc(
     saveToUndoHistory()
   except CatchableError as err:
     discard
+)
+
+let timeSlider = document.createElement("input").InputElement
+timeSlider.`type` = "range"
+timeSlider.min = "1"
+timeSlider.max = "8"
+timeSlider.step = "1"
+timeSlider.value = "3"
+timeSlider.class = "compactSlider compactSlider_classic"
+timeSlider.style.width = "100px"
+timeSlider.addEventListener("input", proc(e: Event) =
+  editorPreviewTimeMs = parseFloat($timeSlider.value) ^ 3 + 3
+)
+document.getElementById("mapeditor_midbox_rightbuttoncontainer").insertBefore(
+  timeSlider,
+  document.getElementById("mapeditor_midbox_playbutton")
 )

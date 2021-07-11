@@ -154,6 +154,13 @@ document.getElementById("kkleeColourInput").value="#"+arguments[0]\
 let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
 function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};
 `);
+  // Map editor test TimeMS
+  window.kklee.editorPreviewTimeMs = 30;
+  src = src.replace(
+    new RegExp("(?<=(?<!Infinity.{0,300});.{3,4}\\[.{1,20}\\]\\=)30\
+(?=;.{0,30}while.{10,150}Date.{0,5000})","g"),
+    "window.kklee.editorPreviewTimeMs"
+  );
 
   require("./nimBuild.js");
   console.log("kklee injector run");
