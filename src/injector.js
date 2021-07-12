@@ -174,7 +174,7 @@ window.bonkCodeInjectors.push(bonkCode => {
     return injector(bonkCode);
   } catch (error) {
     alert(
-      "Whoops! KKLEE was unable to load. \
+      "Whoops! kklee was unable to load. \
 This may be due to an update to Bonk.io.\n\nPlease report this error!"
     );
     throw error;
