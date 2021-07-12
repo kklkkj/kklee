@@ -13,14 +13,18 @@ A browser extension that extends the functionality of the map editor in
   (example: type `100*2+50` into X position field and press Shift+Enter)
 - Change the speed of map testing in the editor
 
-## Installing
-Because this extension isn't hosted on the Chrome or Firefox extension stores,
-you will have to manually install it from a local file.
+---
 
-**Warning:** Before installing any extension this way, you should verify the
-`permissions` in `manifest.json`, as the browser won't immediately warn you
+## Installing
+This extension isn't hosted on the any extension stores, so you will have to
+install it manually from a local file. This also means that you will have to
+update the extension manually when new versions are released.
+
+***Warning:*** Before installing any extension this way, you should check the
+`permissions` in `manifest.json` for anything suspicious, as the browser won't immediately warn you
 about them.
 
+***
 First, download the latest `kklee-[version].zip` file from
 [Releases](https://github.com/kklkkj/kklee/releases).
 Then, you will have to add the extension to your browser.
