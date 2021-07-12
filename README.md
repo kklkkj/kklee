@@ -21,8 +21,9 @@ you will have to manually install it from a local file.
 `permissions` in `manifest.json`, as the browser won't immediately warn you
 about them.
 
-First, download the zip file. Then, you will have to add the extension to your
-browser.
+First, download the latest `kklee-[version].zip` file from
+[Releases](https://github.com/kklkkj/kklee/releases).
+Then, you will have to add the extension to your browser.
 
 ### In Firefox
 **Note:** You will have to do this after every time you restart the browser.
