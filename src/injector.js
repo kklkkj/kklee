@@ -174,9 +174,16 @@ window.bonkCodeInjectors.push(bonkCode => {
     return injector(bonkCode);
   } catch (error) {
     alert(
-      "Whoops! kklee was unable to load. \
-This may be due to an update to Bonk.io.\n\nPlease report this error!"
-    );
+      `Whoops! kklee was unable to load.
+
+
+This may be due to an update to Bonk.io. If so, please report this error!
+
+
+This could also be because you have an extension that is incompatible with \
+kklee, such as the Bonk Leagues Client. You would have to disable it to use \
+kklee.
+    `);
     throw error;
   }
 });
