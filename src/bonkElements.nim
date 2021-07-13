@@ -29,6 +29,25 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
         except CatchableError:
           e.target.style.color = "rgb(204, 68, 68)"
 
+proc colourInput*(variable: var int; afterInput: proc(): void = nil): VNode =
+  buildHtml:
+    input(`type` = "color"):
+      proc onInput(e: Event; n: VNode) =
+        let v = $n.value
+        variable = v[1..^1].parseHexInt
+        if not afterInput.isNil:
+          afterInput()
+
+proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
+  let colour =
+    if variable: "#59b0d6"
+    else: "#586e77"
+  buildHtml:
+    tdiv(style =
+      "width: 10px; height: 10px; margin: 3px; border: 2px solid #111111; background-color: {colour}"
+      .fmt.toCss):
+      proc onClick = variable = not variable
+
 proc prsFLimited*(s: string): float =
   result = s.parseFloat
   if result notin -1e6..1e6: raise newException(ValueError, "prsFLimited")
