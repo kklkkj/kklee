@@ -6,7 +6,7 @@ A browser extension that extends the functionality of the map editor in
 - The chat is visible in the map editor
 - Vertex editor
 - (Buggy) Merge multiple polygons into one
-- Easily generate ellipses, spirals and sine waves
+- Easily generate ellipses, spirals, sine waves and gradients
 - Move shapes to other platforms
 - Ability to use your browser's colour picker for changing colours
 - Evaluate arithmetic in number fields by pressing Shift+Enter
