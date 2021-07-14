@@ -5,7 +5,7 @@
   manually)
 - Added generators for linear and radial gradients
 - Fixed bug in checkboxes
-- Added changelog
+- Added changelog.md
 
 ## v0.1
 First release
