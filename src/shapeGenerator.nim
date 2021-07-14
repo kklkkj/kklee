@@ -264,13 +264,6 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("Height radius", pbi gs.ehr)
         prop("Angle start", pbi gs.eaStart)
         prop("Angle end", pbi gs.eaEnd)
-
-        template hollowCheckbox: untyped =
-          buildHtml:
-            input(`type` = "checkbox", checked = $gs.ehollow):
-              proc onChange(e: Event; n: VNode) =
-                gs.ehollow = e.target.Element.checked
-                update()
         prop("Hollow", checkbox(gs.ehollow))
 
         if gs.ehollow:

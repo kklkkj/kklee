@@ -188,3 +188,39 @@ kklee.
   }
 });
 console.log("kklee injector loaded");
+
+const currentVersion = Number(require("../dist/manifest.json").version);
+
+(async () => {
+  const req = await fetch("https://api.github.com/repos/kklkkj/kklee/releases");
+  const releases = await req.json();
+  let outdated = false;
+  for (const r of releases) {
+    const version = Number(r.tag_name.substr(1));
+    if (version > currentVersion) {
+      outdated = true;
+      break;
+    }
+  }
+  if (!outdated)
+    return;
+
+  try {
+    const el = document.createElement("span");
+    el.textContent = "A new version of kklee is available! Click this";
+    el.style = "position: absolute; background: linear-gradient(#33a, #d53);\
+line-height: normal;";
+    el.onclick = () => window.open("https://github.com/kklkkj/kklee");
+    parent.document.getElementById("bonkioheader").appendChild(el);
+  } catch(error) {
+    console.error(error);
+    alert("A new version of kklee is available!");
+  }
+
+})().catch(err => {
+  console.error(err);
+  alert("Something went wrong with checking if the current version of kklee is \
+outdated");
+});
+
+
