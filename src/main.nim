@@ -83,8 +83,11 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
 
 let chat = document.getElementById("newbonklobby_chatbox")
 let parentDocument {.importc: "parent.document".}: Document
+var isChatInEditor = false
 
 proc moveChatToEditor(e: Event) =
+  if isChatInEditor: return
+  isChatInEditor = true;
   document.getElementById("mapeditor").insertBefore(
     chat,
     document.getElementById("mapeditor_leftbox")
@@ -95,6 +98,8 @@ proc moveChatToEditor(e: Event) =
   parentDocument.getElementById("adboxverticalleftCurse").style.display = "none"
 
 proc restoreChat(e: Event) =
+  if not isChatInEditor: return
+  isChatInEditor = false
   document.getElementById("newbonklobby").insertbefore(
     chat, document.getElementById("newbonklobby_settingsbox")
   )

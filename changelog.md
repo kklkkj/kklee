@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.4
+- Fix annoying bug where chat would scroll up when you click it
+
 ## v0.3
 - Moved the chat box to a better place
 - Fixed the bug where the chat box disappears if you get disconnected from
