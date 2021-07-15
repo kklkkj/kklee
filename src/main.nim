@@ -89,12 +89,12 @@ proc moveChatToEditor(e: Event) =
     document.getElementById("mapeditor_leftbox")
   )
   chat.setAttribute("style",
-    "position: absolute; left: -150px; top: 0%; width: 150px; height: 100%; transform: scale(0.9);"
+    "position: fixed; left: 0%; top: 0%; width: calc(20% - 100px); height: 90%; transform: scale(0.9);"
   )
 
 proc restoreChat(e: Event) =
-  document.getelementbyid("newbonklobby").insertbefore(
-    chat, document.getelementbyid("newbonklobby_settingsbox")
+  document.getElementById("newbonklobby").insertbefore(
+    chat, document.getElementById("newbonklobby_settingsbox")
   )
   chat.setattribute("style", "")
 
@@ -106,6 +106,8 @@ document.getElementById("hostleaveconfirmwindow_endbutton")
   .addEventListener("click", restoreChat)
 document.getElementById("hostleaveconfirmwindow_okbutton")
   .addEventListener("click", restoreChat)
+document.getElementById("newbonklobby")
+  .addEventListener("mouseover", restoreChat)
 document.getElementById("mapeditor_midbox_testbutton")
   .addEventListener("click", proc(e: Event) =
     chat.style.visibility = "hidden"
