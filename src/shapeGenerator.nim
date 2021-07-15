@@ -7,6 +7,9 @@ type
     sgsEllipse = "Ellipse/Spiral", sgsSine = "Sine wave",
     sgsLinearGradient = "Linear gradient",
     sgsRadialGradient = "Radial gradient"
+  EasingType = enum
+    easeNone = "None", easeInSine = "Sine in", easeOutSine = "Sine out",
+    easeInOutSine = "Sine in out"
   ShapeGeneratorState = ref object
     x*, y*, angle*: float
     colour*: int
@@ -26,6 +29,7 @@ type
 
     gwidth*, gheight*: float
     grad1*, grad2*: float
+    gease*: EasingType
 
 
 
@@ -122,6 +126,12 @@ proc getGradientColourAt(colour1, colour2: int; pos: float): int =
   let
     colour1 = getRGB(colour1)
     colour2 = getRGB(colour2)
+    pos =
+      case gs.gease
+      of easeNone: pos
+      of easeInSine: 1 - cos(pos * PI / 2)
+      of easeOutSine: sin(pos * PI / 2)
+      of easeInOutSine: -0.5 * (cos(pos * PI) - 1)
   var rc: array[3, int]
   for i in 0..2:
     rc[i] =
@@ -278,24 +288,29 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("Width", pbi gs.swidth)
         prop("Height", pbi gs.sheight)
         prop("Oscillations", pbi gs.sosc)
-      of sgsLinearGradient:
+      of sgsLinearGradient, sgsRadialGradient:
         prop("x", pbi gs.x)
         prop("y", pbi gs.y)
         prop("Colour 1", colourInput(gs.colour))
         prop("Colour 2", colourInput(gs.colour2))
         prop("Shapes", precInput)
-        prop("Angle", pbi gs.angle)
-        prop("Width", pbi gs.gwidth)
-        prop("Height", pbi gs.gheight)
-      of sgsRadialGradient:
-        prop("x", pbi gs.x)
-        prop("y", pbi gs.y)
-        prop("Colour 1", colourInput(gs.colour))
-        prop("Colour 2", colourInput(gs.colour2))
-        prop("Shapes", precInput)
-        prop("Inner circle radius", pbi gs.grad1)
-        prop("Outer circle radius", pbi gs.grad2)
+        case gs.kind
+        of sgsLinearGradient:
+          prop("Angle", pbi gs.angle)
+          prop("Width", pbi gs.gwidth)
+          prop("Height", pbi gs.gheight)
+        of sgsRadialGradient:
+          prop("Inner circle radius", pbi gs.grad1)
+          prop("Outer circle radius", pbi gs.grad2)
+        else: discard
 
+        template easingTypeSelection: untyped = buildHtml:
+          select:
+            for e in EasingType:
+              option: text $e
+            proc onInput(e: Event; n: VNode) =
+              gs.gease = e.target.OptionElement.selectedIndex.EasingType
+        prop("Easing", easingTypeSelection())
 
 
       bonkButton(&"Save {$gs.kind}", proc =
