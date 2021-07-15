@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3
+- Moved the chat box to a better place
+- Fixed the bug where the chat box disappears if you get disconnected from
+  the server while editing a map
+- Added option for easing gradients
+
 ## v0.2
 - Added automatic checking of updates (you'll still have to install them
   manually)
