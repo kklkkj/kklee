@@ -189,15 +189,20 @@ kklee.
 });
 console.log("kklee injector loaded");
 
-const currentVersion = Number(require("../dist/manifest.json").version);
+const currentVersion = require("../dist/manifest.json").version
+  .split(".").map(Number); // "0.10" --> [0,10]
 
 (async () => {
   const req = await fetch("https://api.github.com/repos/kklkkj/kklee/releases");
   const releases = await req.json();
   let outdated = false;
   for (const r of releases) {
-    const version = Number(r.tag_name.substr(1));
-    if (version > currentVersion) {
+    // "v0.10" --> [0,10]
+    const version = r.tag_name.substr(1).split(".").map(Number); 
+    if (version.length != 2 || isNaN(version[0]) || isNaN(version[1]))
+      continue;
+    if (version[0] > currentVersion[0] ||
+        version[0] == currentVersion[0] && version[1] > currentVersion[1]) {
       outdated = true;
       break;
     }
