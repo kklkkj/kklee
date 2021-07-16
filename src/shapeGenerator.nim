@@ -208,6 +208,8 @@ proc setGs(kind: ShapeGeneratorKind) =
 
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
+    tdiv(style = "font-size:12px".toCss):
+      text "Note that platforms can't have more than 100 shapes!"
     let
       generateProc =
         case gs.kind
