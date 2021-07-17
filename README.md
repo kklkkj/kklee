@@ -2,10 +2,9 @@
 A browser extension that extends the functionality of the map editor in
 [Bonk.io](https://bonk.io).
 
-## Features
+### Features
 - The chat is visible in the map editor
-- Vertex editor
-- (Buggy) Merge multiple polygons into one
+- Vertex editor with (buggy) ability to merge multiple polygons into one
 - Easily generate ellipses, spirals, sine waves and gradients
 - Move shapes to other platforms
 - Ability to use your browser's colour picker for changing colours
@@ -13,21 +12,14 @@ A browser extension that extends the functionality of the map editor in
   (example: type `100*2+50` into X position field and press Shift+Enter)
 - Change the speed of map testing in the editor
 
----
-
 ## Installing
-This extension isn't hosted on the any extension stores, so you will have to
-install it manually from a local file. This also means that you will have to
-update the extension manually when new versions are released.
 
-***Warning:*** Before installing any extension this way, you should check the
-`permissions` in `manifest.json` for anything suspicious, as the browser won't immediately warn you
-about them.
+**Warning:** Before installing any extension this way, you should check the
+`permissions` in `manifest.json` for anything suspicious, as the browser won't
+immediately warn you about them.
 
-***
-First, download the latest `kklee-[version].zip` file from
-[Releases](https://github.com/kklkkj/kklee/releases).
-Then, you will have to add the extension to your browser.
+[Download the latest `kklee-[version].zip` file from Releases.](
+  https://github.com/kklkkj/kklee/releases)
 
 ### In Firefox
 **Note:** You will have to do this after every time you restart the browser.
@@ -39,9 +31,13 @@ Then, you will have to add the extension to your browser.
 3. Drag and drop the zip file into the page.
 4. Open the `details` of the extension and disable `Allow access to file URLs`.
 
+Newer versions will have to be installed manually like this too.
+
 ---
 
+##### Ignore this if you just want to install the extension.
 ## Building
+
 1. Install the following:
     * [Node.js](https://nodejs.org/) (v16.3.0)
     * [Nim](https://nim-lang.org/) (v1.4.8)
