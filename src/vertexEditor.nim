@@ -49,7 +49,10 @@ proc setVertexMarker(vId: int) =
 proc mergeShapes(b: MapBody) =
   # This is buggy because the output verticies might be ordered in a way
   # that causes it to be not rendered corrently...
-  var i = 0;
+  sh.poV.applyIt [it.x * sh.poS, it.y * sh.poS].MapPosition
+  sh.poS = 1.0
+
+  var i = 0
   while i < b.fx.len:
     let
       fxId = b.fx[i]
@@ -63,7 +66,7 @@ proc mergeShapes(b: MapBody) =
     var npoV: seq[MapPosition]
     case csh.shapeType
     of stypePo:
-      npoV = csh.poV
+      npoV = csh.poV.mapIt [it.x * csh.poS, it.y * csh.poS].MapPosition
     of stypeBx:
       npoV = @[
         [csh.bxW / -2, csh.bxH / -2], [csh.bxW / 2, csh.bxH / -2],
