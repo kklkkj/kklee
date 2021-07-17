@@ -96,6 +96,8 @@ proc moveChatToEditor(e: Event) =
     "position: fixed; left: 0%; top: 0%; width: calc(20% - 100px); height: 90%; transform: scale(0.9);"
   )
   parentDocument.getElementById("adboxverticalleftCurse").style.display = "none"
+  discard setTimeout(proc = document.getElementById(
+    "newbonklobby_chat_content").scrollTop = 1e7.int, 0)
 
 proc restoreChat(e: Event) =
   if not isChatInEditor: return
