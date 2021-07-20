@@ -1,8 +1,8 @@
-const kklee = {};
-window.kklee = kklee;
-
 function injector(bonkCode) { 
   window.onbeforeunload = function () { return "Are you sure?"; };
+
+  const kklee = {};
+  window.kklee = kklee;
 
   let src = bonkCode;
 

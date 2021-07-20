@@ -1,5 +1,5 @@
-import strformat, dom, algorithm, sugar, strutils, math
-import kkleeApi, kkleeMain, bonkElements
+import strformat, dom, algorithm, sugar, strutils, math, sequtils
+import kkleeApi, kkleeMain, bonkElements, multiSelect
 
 
 
@@ -59,6 +59,8 @@ afterUpdateRightBoxBody = proc(fx: int) =
           )
           rerender()
         ))
+  if state.kind == seShapeMultiSelect:
+    hide()
 
 # Generate shape button
 
@@ -77,6 +79,46 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
     shapeGeneratorButton,
     document.getElementById(
       "mapeditor_rightbox_shapeaddcontainer").nextSibling
+  )
+
+# Multiselect shapes button
+
+let shapeMultiSelectButton = createBonkButton("Multiselect shapes", proc =
+  state = StateObject(kind: seShapeMultiSelect)
+  rerender()
+)
+
+shapeMultiSelectButton.setAttr "style",
+  "float: left; margin-bottom: 10px; margin-left: 10px; width: 190px"
+
+document.getElementById("mapeditor_rightbox_shapetablecontainer")
+  .insertBefore(
+    shapeMultiSelectButton,
+    document.getElementById(
+      "mapeditor_rightbox_shapeaddcontainer").nextSibling
+  )
+
+document.getElementById("mapeditor_rightbox_shapetablecontainer")
+  .addEventListener("click", proc(e: MouseEvent) =
+    if state.kind != seShapeMultiSelect: return
+    if not e.shiftKey: return
+    let
+      shapeElements = document
+        .getElementById("mapeditor_rightbox_shapetablecontainer")
+        .getElementsByClassName("mapeditor_rightbox_table_shape_headerfield")
+        .reversed
+      bi = getCurrentBody()
+      body = bi.getBody
+      index = shapeElements.find e.target.Element
+    if index == -1: return
+    let
+      fx = moph.fixtures[body.fx[index]]
+    if not selectedFixtures.contains(fx):
+      shapeElements[index].style.border = "4px solid blue"
+      selectedFixtures.add fx
+    else:
+      shapeElements[index].style.border = ""
+      selectedFixtures.delete(selectedFixtures.find fx)
   )
 
 # See chat in editor

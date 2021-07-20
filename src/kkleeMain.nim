@@ -1,6 +1,7 @@
 import strformat, dom, algorithm, sugar
 import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator
+import kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator,
+  multiSelect
 
 let root* = document.createElement("div")
 let karaxRoot* = document.createElement("div")
@@ -23,7 +24,7 @@ midboxst.transition = "width 0.5s"
 
 type
   StateKindEnum* = enum
-    seHidden, seVertexEditor, seMoveShape, seShapeGenerator
+    seHidden, seVertexEditor, seMoveShape, seShapeGenerator, seShapeMultiSelect
   StateObject* = ref object
     case kind*: StateKindEnum
     of seHidden: discard
@@ -35,12 +36,17 @@ type
       msb*: MapBody
     of seShapeGenerator:
       sgb*: MapBody
+    of seShapeMultiSelect:
+      discard
 
 
 
 var state* = StateObject(kind: seHidden)
 
-proc rerender* = kxi.redraw()
+proc rerender* =
+  kxi.redraw()
+  if state.kind != seShapeMultiSelect:
+    selectedFixtures = @[]
 proc hide* =
   state = StateObject(kind: seHidden)
   rerender()
@@ -70,6 +76,9 @@ proc render: VNode =
       of seShapeGenerator:
         text "Generate a shape"
         shapeGenerator(state.sgb)
+      of seShapeMultiSelect:
+        text "Shape multiselect"
+        shapeMultiSelect()
 
       tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))

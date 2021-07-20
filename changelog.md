@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5
+- Make polygon merger work with scaled polygons
+- Fix bug where chat scrolls to the top when you enter the map editor
+- Added multi-select for shapes
+
 ## v0.4
 - Fix annoying bug where chat would scroll up when you click it
 
