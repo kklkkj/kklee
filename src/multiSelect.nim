@@ -40,6 +40,7 @@ proc shapeMultiSelect*: VNode =
       li text """Variables: x is current value, i is index in list of
  selected shapes (the first shape you selected will have i=0, the next one
  i=1, i=2, etc)"""
+      li text "Arithmetic, such as x*2+50, will be evaluated"
 
     var appliers: seq[(int, var MapFixture) -> void]
 
