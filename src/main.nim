@@ -232,3 +232,11 @@ speedSliderLabel.setAttr("style",
 width: 32px;"""
 )
 rightButtonContainer.insertBefore(speedSliderLabel, speedSlider)
+
+# Arithmetic evaluation tip
+let arithmeticTip = document.createElement("div")
+arithmeticTip.innerText =
+  "You can enter arithmetic into fields, such as 100*2+50, and evaluate it with Shift+Enter"
+arithmeticTip.setAttr("style", "font-size: 11px;padding: 0px 10px;")
+document.getElementById("mapeditor_rightbox_platformparams")
+  .appendChild(arithmeticTip)
