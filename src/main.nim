@@ -209,18 +209,26 @@ document.getElementById("mapeditor").addEventListener("keydown", proc(
 
 # Editor test speed slider
 
-let timeSlider = document.createElement("input").InputElement
-timeSlider.`type` = "range"
-timeSlider.min = "1"
-timeSlider.max = "8"
-timeSlider.step = "1"
-timeSlider.value = "3"
-timeSlider.class = "compactSlider compactSlider_classic"
-timeSlider.style.width = "100px"
-timeSlider.addEventListener("input", proc(e: Event) =
-  editorPreviewTimeMs = parseFloat($timeSlider.value) ^ 3 + 3
+let speedSlider = document.createElement("input").InputElement
+speedSlider.`type` = "range"
+speedSlider.min = "1"
+speedSlider.max = "8"
+speedSlider.step = "1"
+speedSlider.value = "3"
+speedSlider.class = "compactSlider compactSlider_classic"
+speedSlider.style.width = "100px"
+speedSlider.addEventListener("input", proc(e: Event) =
+  editorPreviewTimeMs = parseFloat($speedSlider.value) ^ 3 + 3
 )
-document.getElementById("mapeditor_midbox_rightbuttoncontainer").insertBefore(
-  timeSlider,
+let rightButtonContainer = document.getElementById("mapeditor_midbox_rightbuttoncontainer")
+rightButtonContainer.insertBefore(
+  speedSlider,
   document.getElementById("mapeditor_midbox_playbutton")
 )
+let speedSliderLabel = document.createElement("span")
+speedSliderLabel.innerText = "Preview speed:"
+speedSliderLabel.setAttr("style",
+  """font-size: 11px; position: relative; top: -2px; display: inline-block;
+width: 32px;"""
+)
+rightButtonContainer.insertBefore(speedSliderLabel, speedSlider)
