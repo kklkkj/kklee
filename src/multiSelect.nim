@@ -33,10 +33,14 @@ proc prop(name: string; field: VNode): VNode =
 
 proc shapeMultiSelect*: VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
-    tdiv(style = "font-size:12px".toCss):
-      text "Shift+click shape name fields to select shapes"
-    tdiv(style = "font-size:12px".toCss):
-      text "Variables: x is current value, i is index in list of selected shapes"
+    ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
+      li text "Shift+click shape name fields to select shapes"
+      li text """Note: you will have to reselect the platform to see changes
+ made by multiselect"""
+      li text """Variables: x is current value, i is index in list of
+ selected shapes (the first shape you selected will have i=0, the next one
+ i=1, i=2, etc)"""
+
     var appliers: seq[(int, var MapFixture) -> void]
 
     template floatProp(name: string; mapFxProp: untyped): untyped =
