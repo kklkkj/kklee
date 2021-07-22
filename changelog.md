@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6
+- Improved description for the shape multi-selection panel
+- Added a label for the preview speed slider
+- Added a tip about arithmetic evaluation
+- Added ability to delete selected shapes in multi-select
+
 ## v0.5
 - Make polygon merger work with scaled polygons
 - Fix bug where chat scrolls to the top when you enter the map editor
