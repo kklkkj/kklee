@@ -84,7 +84,16 @@ proc shapeMultiSelect*: VNode =
     boolProp("Death", fx.d)
 
     bonkButton "Apply", proc =
-      for i, b in selectedFixtures.mpairs:
-        for a in appliers: a(i, b)
+      for i, f in selectedFixtures.mpairs:
+        for a in appliers: a(i, f)
       saveToUndoHistory()
       updateRenderer(true)
+    bonkButton "Delete shapes", proc =
+      for f in selectedFixtures:
+        let fxid = moph.fixtures.find f
+        if fxid == -1: continue
+        deleteFx(fxid)
+      saveToUndoHistory()
+      selectedFixtures = @[]
+      updateRenderer(true)
+      updateRightBoxBody(-1)
