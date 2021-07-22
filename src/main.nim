@@ -72,7 +72,7 @@ let shapeGeneratorButton = createBonkButton("Generate shape", proc =
   rerender()
 )
 shapeGeneratorButton.setAttr "style",
-  "float: left; margin-bottom: 10px; margin-left: 10px; width: 190px"
+  "float: left; margin-bottom: 5px; margin-left: 10px; width: 190px"
 
 document.getElementById("mapeditor_rightbox_shapetablecontainer")
   .insertBefore(
@@ -89,7 +89,7 @@ let shapeMultiSelectButton = createBonkButton("Multiselect shapes", proc =
 )
 
 shapeMultiSelectButton.setAttr "style",
-  "float: left; margin-bottom: 10px; margin-left: 10px; width: 190px"
+  "float: left; margin-bottom: 5px; margin-left: 10px; width: 190px"
 
 document.getElementById("mapeditor_rightbox_shapetablecontainer")
   .insertBefore(
