@@ -217,6 +217,7 @@ speedSlider.step = "1"
 speedSlider.value = "3"
 speedSlider.class = "compactSlider compactSlider_classic"
 speedSlider.style.width = "100px"
+speedSlider.setAttr("title", "Preview speed")
 speedSlider.addEventListener("input", proc(e: Event) =
   editorPreviewTimeMs = parseFloat($speedSlider.value) ^ 3 + 3
 )
@@ -225,13 +226,6 @@ rightButtonContainer.insertBefore(
   speedSlider,
   document.getElementById("mapeditor_midbox_playbutton")
 )
-let speedSliderLabel = document.createElement("span")
-speedSliderLabel.innerText = "Preview speed:"
-speedSliderLabel.setAttr("style",
-  """font-size: 11px; position: relative; top: -2px; display: inline-block;
-width: 32px;"""
-)
-rightButtonContainer.insertBefore(speedSliderLabel, speedSlider)
 
 # Arithmetic evaluation tip
 let arithmeticTip = document.createElement("div")
