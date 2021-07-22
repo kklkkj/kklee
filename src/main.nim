@@ -1,8 +1,6 @@
 import strformat, dom, algorithm, sugar, strutils, math, sequtils
 import kkleeApi, kkleeMain, bonkElements, multiSelect
 
-
-
 proc shapeTableCell(label: string; cell: Element): Element =
   result = document.createElement("tr")
 
@@ -32,10 +30,10 @@ var
 afterUpdateRightBoxBody = proc(fx: int) =
   if getCurrentBody() notin 0..moph.bodies.high:
     return
-  let
-    shapeElements = document
-      .getElementById("mapeditor_rightbox_shapetablecontainer")
-      .getElementsByClassName("mapeditor_rightbox_table_shape")
+  let shapeElements = document
+    .getElementById("mapeditor_rightbox_shapetablecontainer")
+    .getElementsByClassName("mapeditor_rightbox_table_shape")
+
   bi = getCurrentBody()
   body = bi.getBody
 
@@ -44,21 +42,26 @@ afterUpdateRightBoxBody = proc(fx: int) =
       fxId = bi.getBody.fx[i]
       fixture = getFx fxId
     capture fixture, body:
-      se.appendChild shapeTableCell("", createBonkButton("Move to body", proc =
+      proc moveToBody =
         state = StateObject(
           kind: seMoveShape,
           msfx: fixture
         )
         rerender()
-      ))
+      se.appendChild shapeTableCell("",
+          createBonkButton("Move to body", moveToBody)
+        )
       if fixture.fxShape.shapeType == stypePo:
-        se.appendChild shapeTableCell("", createBonkButton("Edit verticies", proc =
+        proc editVerticies =
           state = StateObject(
             kind: seVertexEditor,
             veb: body, vefx: fixture
           )
           rerender()
-        ))
+        se.appendChild shapeTableCell("",
+            createBonkButton("Edit verticies", editVerticies)
+          )
+
   if state.kind == seShapeMultiSelect:
     hide()
 
@@ -71,8 +74,8 @@ let shapeGeneratorButton = createBonkButton("Generate shape", proc =
   )
   rerender()
 )
-shapeGeneratorButton.setAttr "style",
-  "float: left; margin-bottom: 5px; margin-left: 10px; width: 190px"
+shapeGeneratorButton.setAttr("style",
+  "float: left; margin-bottom: 5px; margin-left: 10px; width: 190px")
 
 document.getElementById("mapeditor_rightbox_shapetablecontainer")
   .insertBefore(
@@ -102,6 +105,7 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
   .addEventListener("click", proc(e: MouseEvent) =
     if state.kind != seShapeMultiSelect: return
     if not e.shiftKey: return
+
     let
       shapeElements = document
         .getElementById("mapeditor_rightbox_shapetablecontainer")
@@ -110,9 +114,10 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
       bi = getCurrentBody()
       body = bi.getBody
       index = shapeElements.find e.target.Element
+
     if index == -1: return
-    let
-      fx = moph.fixtures[body.fx[index]]
+    let fx = moph.fixtures[body.fx[index]]
+
     if not selectedFixtures.contains(fx):
       shapeElements[index].style.border = "4px solid blue"
       selectedFixtures.add fx
@@ -138,6 +143,7 @@ proc moveChatToEditor(e: Event) =
     "position: fixed; left: 0%; top: 0%; width: calc(20% - 100px); height: 90%; transform: scale(0.9);"
   )
   parentDocument.getElementById("adboxverticalleftCurse").style.display = "none"
+  # Modifying scrollTop immediately won't work, so I used setTimeout 0ms
   discard setTimeout(proc = document.getElementById(
     "newbonklobby_chat_content").scrollTop = 1e7.int, 0)
 
@@ -150,7 +156,7 @@ proc restoreChat(e: Event) =
   chat.setattribute("style", "")
   parentDocument.getElementById("adboxverticalleftCurse").style.display = ""
 
-document.getelementbyid("newbonklobby_editorbutton")
+document.getElementById("newbonklobby_editorbutton")
   .addEventListener("click", moveChatToEditor)
 document.getElementById("mapeditor_close")
   .addEventListener("click", restoreChat)
