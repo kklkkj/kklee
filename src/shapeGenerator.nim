@@ -19,6 +19,7 @@ type
     colour: int
     prec: int
     noPhysics: bool
+    rectHeight: float
 
     # Ellipse
     ewr, ehr, eaStart, eaEnd, espiralStart: float
@@ -43,6 +44,7 @@ var
     colour: 0xffffff,
     prec: 16,
     noPhysics: false,
+    rectHeight: 1.0,
 
     ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 360.0, ehollow: false,
     espiralStart: 1.0,
@@ -94,7 +96,7 @@ proc genLinesShape(getPos: float -> MapPosition) =
     let shape = MapShape(
       stype: "bx",
       c: [(p1.x + p2.x) / 2, (p1.y + p2.y) / 2].MapPosition,
-      bxH: 1,
+      bxH: gs.rectHeight,
       bxW: sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2),
       a: arctan((p1.y - p2.y) / (p1.x - p2.x))
     )
@@ -284,6 +286,7 @@ proc shapeGenerator*(body: MapBody): VNode =
 
         if gs.ehollow:
           prop("Spiral start", pbi gs.espiralStart)
+          prop("Rect height", pbi gs.rectHeight)
 
       of sgsSine:
         generateProc = generateSine
@@ -295,6 +298,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("Width", pbi gs.swidth)
         prop("Height", pbi gs.sheight)
         prop("Oscillations", pbi gs.sosc)
+        prop("Rect height", pbi gs.rectHeight)
       of sgsLinearGradient, sgsRadialGradient:
         generateProc = generateGradient
         prop("x", pbi gs.x)
