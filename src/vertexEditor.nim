@@ -97,6 +97,7 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
   b = veb
   fx = vefx
   sh = fx.fxShape
+
   proc vertex(i: int; v: var MapPosition; poV: var seq[MapPosition]): VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
       span(style = "width: 27px; font-size: 12;".toCss):
@@ -123,8 +124,10 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       proc onMouseEnter = setVertexMarker(i)
       proc onMouseLeave =
         removeVertexMarker()
+
   updateRenderer(true)
   updateRightBoxBody(moph.fixtures.find(fx))
+
   return buildHtml tdiv(style =
     "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px"
       .toCss

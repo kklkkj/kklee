@@ -20,7 +20,7 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
         string): VNode =
   buildHtml:
     input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-    value = variable.stringify, style = "width: 50px".toCss):
+        value = variable.stringify, style = "width: 50px".toCss):
       proc onInput(e: Event; n: VNode) =
         try:
           variable = parser $n.value
