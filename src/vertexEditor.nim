@@ -1,6 +1,7 @@
-import strformat, dom, sugar, strutils, options, math, algorithm, sequtils
-import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import kkleeApi, bonkElements
+import
+  std/[dom, sugar, strutils, options, math, algorithm, sequtils],
+  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  kkleeApi, bonkElements
 
 
 var

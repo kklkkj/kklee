@@ -1,4 +1,4 @@
-import strutils, sequtils
+import std/[strutils, sequtils]
 
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =

@@ -1,7 +1,8 @@
-import sugar, strutils, algorithm, sequtils, strformat
-import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import mathexpr
-import kkleeApi, bonkElements
+import
+  std/[sugar, strutils, algorithm, sequtils, strformat],
+  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  pkg/mathexpr,
+  kkleeApi, bonkElements
 
 let theEvaluator = newEvaluator()
 

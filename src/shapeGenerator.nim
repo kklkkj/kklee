@@ -1,6 +1,7 @@
-import dom, strutils, math, sugar, strformat
-import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import kkleeApi, bonkElements
+import
+  std/[dom, strutils, math, sugar, strformat],
+  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  kkleeApi, bonkElements
 
 type
   ShapeGeneratorKind = enum

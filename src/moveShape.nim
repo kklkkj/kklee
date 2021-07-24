@@ -1,6 +1,7 @@
-import strformat, dom, sugar, sequtils
-import karax / [kbase, karax, karaxdsl, vdom, vstyles]
-import kkleeApi, bonkElements
+import
+  std/[strformat, dom, sequtils],
+  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  kkleeApi, bonkElements
 
 proc moveShape*(msfx: var MapFixture; msb: var MapBody): VNode =
   buildHtml(tdiv):

@@ -1,5 +1,6 @@
-import strformat, dom, algorithm, sugar, strutils, math, sequtils
-import kkleeApi, kkleeMain, bonkElements, multiSelect
+import
+  std/[dom, algorithm, sugar, strutils, math],
+  kkleeApi, kkleeMain, bonkElements, multiSelect
 
 proc shapeTableCell(label: string; cell: Element): Element =
   result = document.createElement("tr")
