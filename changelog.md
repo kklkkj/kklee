@@ -1,9 +1,9 @@
 # Changelog
 
 ## v0.7
-- Add shape colour option to multi-select
-- Add rect height option to ellipse and sine wave generators
-- Add parametric equation generator
+- Added shape colour option to multi-select
+- Added rect height option to ellipse and sine wave generators
+- Added parametric equation generator
 
 ## v0.6
 - Improved description for the shape multi-selection panel
