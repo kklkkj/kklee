@@ -70,6 +70,20 @@ proc shapeMultiSelect*: VNode =
       buildHtml:
         prop name, tfsCheckbox(inp)
 
+    template colourChanger: untyped =
+      var
+        canChange {.global.} = false
+        inp {.global.}: int = 0
+      appliers.add proc(i: int; fx: var MapFixture) =
+        if canChange:
+          fx.f = inp
+      buildHtml tdiv(style =
+        "display:flex; flex-flow: row wrap; justify-content: space-between"
+        .toCss
+        ):
+        checkbox(canChange)
+        colourInput(inp)
+
     floatProp("x", fx.fxShape.c.x)
     floatProp("y", fx.fxShape.c.y)
     floatProp("Angle (radians)", fx.fxShape.a)
@@ -83,6 +97,8 @@ proc shapeMultiSelect*: VNode =
     boolProp("No physics", fx.np)
     boolProp("No grapple", fx.ng)
     boolProp("Death", fx.d)
+
+    prop("Colour", colourChanger())
 
     bonkButton "Apply", proc =
       for i, f in selectedFixtures.mpairs:
