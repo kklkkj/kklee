@@ -1,13 +1,14 @@
 import
   std/[dom, strutils, math, sugar, strformat],
   pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  pkg/mathexpr,
   kkleeApi, bonkElements
 
 type
   ShapeGeneratorKind = enum
     sgsEllipse = "Ellipse/Spiral", sgsSine = "Sine wave",
     sgsLinearGradient = "Linear gradient",
-    sgsRadialGradient = "Radial gradient"
+    sgsRadialGradient = "Radial gradient", sgsEquation = "Parametric equation"
   EasingType = enum
     easeNone = "None", easeInSine = "Sine in", easeOutSine = "Sine out",
     easeInOutSine = "Sine in out"
@@ -35,7 +36,8 @@ type
     grad1, grad2: float
     gease: EasingType
 
-
+    # Parametric equation
+    eqInpX, eqInpY: string
 
 var
   gs = ShapeGeneratorState(
@@ -52,7 +54,9 @@ var
     swidth: 300.0, sheight: 75.0, sosc: 2, sstart: 0.0,
 
     gwidth: 200.0, gheight: 150.0, grad1: 30.0, grad2: 150.0, colour2: 0x0000ff,
-    gease: easeNone
+    gease: easeNone,
+
+    eqInpX: "(t-0.5)*100", eqInpY: "-((t*2-1)^2)*100"
   )
   nShapes: int
   selecting: bool = true
@@ -75,8 +79,20 @@ proc setGs(kind: ShapeGeneratorKind) =
     gs.kind = sgsRadialGradient
     gs.noPhysics = true
     gs.prec = 12
+  of sgsEquation:
+    gs.kind = sgsEquation
+    gs.noPhysics = false
+    gs.prec = 20
 
 proc dtr(f: float): float = f.degToRad
+
+proc safeFloat(n: float): float =
+  if n.isNaN:
+    0.0
+  else:
+    n.clamp(-1e6, 1e6)
+proc safePos(p: MapPosition): MapPosition =
+  [p.x.safeFloat, p.y.safeFloat].MapPosition
 
 proc genLinesShape(getPos: float -> MapPosition) =
   proc getPosAdj(x: float): MapPosition =
@@ -90,15 +106,15 @@ proc genLinesShape(getPos: float -> MapPosition) =
 
   for n in 0..gs.prec-1:
     let
-      p1 = getPosAdj(n / gs.prec)
-      p2 = getPosAdj((n + 1) / gs.prec)
+      p1 = getPosAdj(n / gs.prec).safePos
+      p2 = getPosAdj((n + 1) / gs.prec).safePos
 
     let shape = MapShape(
       stype: "bx",
       c: [(p1.x + p2.x) / 2, (p1.y + p2.y) / 2].MapPosition,
       bxH: gs.rectHeight,
       bxW: sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2),
-      a: arctan((p1.y - p2.y) / (p1.x - p2.x))
+      a: arctan((p1.y - p2.y) / (p1.x - p2.x)).safeFloat
     )
     moph.shapes.add shape
 
@@ -152,6 +168,16 @@ proc generateSine: int =
       asx = sx + sin(2 * sx) / 2.7
     return [gs.swidth * (asx - gs.sstart) / gs.sosc / 2 / PI,
       sin(asx) * gs.sheight]
+
+  genLinesShape(getPos)
+
+  result = gs.prec
+
+proc generateEquation: int =
+  proc getPos(x: float): MapPosition =
+    let ev = newEvaluator()
+    ev.addVar("t", x)
+    return [ev.eval gs.eqInpX, ev.eval gs.eqInpY]
 
   genLinesShape(getPos)
 
@@ -255,6 +281,7 @@ proc shapeGenerator*(body: MapBody): VNode =
       sb sgsSine
       sb sgsLinearGradient
       sb sgsRadialGradient
+      sb sgsEquation
 
     else:
       bonkButton("Back", proc =
@@ -323,6 +350,44 @@ proc shapeGenerator*(body: MapBody): VNode =
             proc onInput(e: Event; n: VNode) =
               gs.gease = e.target.OptionElement.selectedIndex.EasingType
         prop("Easing", easingTypeSelection())
+      of sgsEquation:
+        generateProc = generateEquation
+        prop("x", pbi gs.x)
+        prop("y", pbi gs.y)
+        prop("Colour", colourInput(gs.colour))
+        prop("Angle", pbi gs.angle)
+        prop("Shapes", precInput)
+        prop("Rect height", pbi gs.rectHeight)
+
+        # bonkInput but with a width of 150px
+        proc bonkInputWide[T](variable: var T; parser: string -> T;
+            afterInput: proc(): void = nil; stringify: T ->
+                string): VNode =
+          buildHtml:
+            input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
+                value = variable.stringify, style = "width: 150px".toCss):
+              proc onInput(e: Event; n: VNode) =
+                try:
+                  variable = parser $n.value
+                  e.target.style.color = ""
+                  if not afterInput.isNil:
+                    afterInput()
+                except CatchableError:
+                  e.target.style.color = "rgb(204, 68, 68)"
+        template eqInp(va): untyped =
+          bonkInputWide(va, proc(s: string): string =
+            # Check for error
+            let ev = newEvaluator()
+            ev.addVar("t", 0.0)
+            discard ev.eval s
+            return s
+          , update, s=>s)
+        prop("X", eqInp(gs.eqInpX))
+        prop("Y", eqInp(gs.eqInpY))
+
+        ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
+          li text """It is recommended that you experiment with equations on
+ something like Desmos before adding them here"""
 
 
       bonkButton(&"Save {$gs.kind}", proc =

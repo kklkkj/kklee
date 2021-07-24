@@ -15,6 +15,7 @@ proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
 proc defaultFormat*[T](v: T) = $v
 proc niceFormatFloat*(f: float): string = f.formatFloat(precision = -1)
 
+# Note: there is bonkInputWide in shapeGenerator...
 proc bonkInput*[T](variable: var T; parser: string -> T;
     afterInput: proc(): void = nil; stringify: T ->
         string): VNode =
