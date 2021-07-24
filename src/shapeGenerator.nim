@@ -12,37 +12,71 @@ type
     easeNone = "None", easeInSine = "Sine in", easeOutSine = "Sine out",
     easeInOutSine = "Sine in out"
   ShapeGeneratorState = ref object
-    x*, y*, angle*: float
-    colour*: int
-    prec*: int
-    kind*: ShapeGeneratorKind
-    noPhysics*: bool
+    kind: ShapeGeneratorKind
+    body: MapBody
+
+    x, y, angle: float
+    colour: int
+    prec: int
+    noPhysics: bool
 
     # Ellipse
-    ewr*, ehr*, eaStart*, eaEnd*, espiralStart*: float
-    ehollow*: bool
+    ewr, ehr, eaStart, eaEnd, espiralStart: float
+    ehollow: bool
 
     # Sine wave
-    swidth*, sheight*, sosc*, sstart*: float
+    swidth, sheight, sosc, sstart: float
 
     # Gradients
-    colour2*: int
+    colour2: int
 
-    gwidth*, gheight*: float
-    grad1*, grad2*: float
-    gease*: EasingType
+    gwidth, gheight: float
+    grad1, grad2: float
+    gease: EasingType
 
 
 
 var
-  gs: ShapeGeneratorState = ShapeGeneratorState(kind: sgsEllipse)
+  gs = ShapeGeneratorState(
+    kind: sgsEllipse,
+    x: 0.0, y: 0.0, angle: 0.0,
+    colour: 0xffffff,
+    prec: 16,
+    noPhysics: false,
+
+    ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 360.0, ehollow: false,
+    espiralStart: 1.0,
+
+    swidth: 300.0, sheight: 75.0, sosc: 2, sstart: 0.0,
+
+    gwidth: 200.0, gheight: 150.0, grad1: 30.0, grad2: 150.0, colour2: 0x0000ff,
+    gease: easeNone
+  )
   nShapes: int
   selecting: bool = true
 
+proc setGs(kind: ShapeGeneratorKind) =
+  case kind
+  of sgsEllipse:
+    gs.kind = sgsEllipse
+    gs.noPhysics = false
+    gs.prec = 16
+  of sgsSine:
+    gs.kind = sgsSine
+    gs.noPhysics = false
+    gs.prec = 30
+  of sgsLinearGradient:
+    gs.kind = sgsLinearGradient
+    gs.noPhysics = true
+    gs.prec = 12
+  of sgsRadialGradient:
+    gs.kind = sgsRadialGradient
+    gs.noPhysics = true
+    gs.prec = 12
 
 proc dtr(f: float): float = f.degToRad
 
-proc genLinesShape(body: MapBody; getPos: float -> MapPosition) =
+proc genLinesShape(getPos: float -> MapPosition) =
   proc getPosAdj(x: float): MapPosition =
     let
       r = getPos(x)
@@ -70,10 +104,10 @@ proc genLinesShape(body: MapBody; getPos: float -> MapPosition) =
       fr: NaN, f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
     )
     moph.fixtures.add fixture
-    body.fx.add moph.fixtures.high
+    gs.body.fx.add moph.fixtures.high
 
 
-proc generateEllipse(body: MapBody): int =
+proc generateEllipse: int =
   if gs.ehollow:
     proc getPos(x: float): MapPosition =
       let
@@ -81,7 +115,7 @@ proc generateEllipse(body: MapBody): int =
         s = gs.espiralStart + (1 - gs.espiralStart) * x
       return [gs.ewr * sin(a) * s, gs.ehr * cos(a) * s]
 
-    genLinesShape(body, getPos)
+    genLinesShape(getPos)
 
     result = gs.prec
 
@@ -103,13 +137,13 @@ proc generateEllipse(body: MapBody): int =
         f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
     )
     moph.fixtures.add fixture
-    body.fx.add moph.fixtures.high
+    gs.body.fx.add moph.fixtures.high
     result = 1
 
   updateRenderer(true)
   updateRightBoxBody(-1)
 
-proc generateSine(body: MapBody): int =
+proc generateSine: int =
   proc getPos(x: float): MapPosition =
     let
       sx = x * 2 * PI * gs.sosc + gs.sstart
@@ -117,7 +151,7 @@ proc generateSine(body: MapBody): int =
     return [gs.swidth * (asx - gs.sstart) / gs.sosc / 2 / PI,
       sin(asx) * gs.sheight]
 
-  genLinesShape(body, getPos)
+  genLinesShape(getPos)
 
   result = gs.prec
 
@@ -141,7 +175,7 @@ proc getGradientColourAt(colour1, colour2: int; pos: float): int =
   return rc[0] shl 16 or rc[1] shl 8 or rc[2]
 
 
-proc generateGradient(body: MapBody): int =
+proc generateGradient: int =
   for i in 0..gs.prec-1:
     var shape: MapShape
 
@@ -175,50 +209,18 @@ proc generateGradient(body: MapBody): int =
       fixture = MapFixture(n: &"gradient{i}", de: NaN, re: NaN,
         fr: NaN, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
     moph.fixtures.add fixture
-    body.fx.add moph.fixtures.high
+    gs.body.fx.add moph.fixtures.high
   return gs.prec
-
-
-proc setGs(kind: ShapeGeneratorKind) =
-  case kind
-  of sgsEllipse:
-    gs = ShapeGeneratorState(
-      kind: sgsEllipse,
-      ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 360, angle: 0.0,
-      x: 0.0, y: 0.0, ehollow: false, prec: 16, espiralStart: 1.0,
-      colour: 0xffffff
-    )
-  of sgsSine:
-    gs = ShapeGeneratorState(
-      kind: sgsSine,
-      swidth: 300, sheight: 75, sosc: 2, x: 0.0, y: 0.0, angle: 0.0,
-      sstart: 0.0, colour: 0xffffff, prec: 30
-    )
-  of sgsLinearGradient:
-    gs = ShapeGeneratorState(
-      kind: sgsLinearGradient, x: 0.0, y: 0.0, angle: 0.0, prec: 12,
-      gwidth: 200.0, gheight: 150.0, colour: 0xff0000, colour2: 0x0000ff,
-      noPhysics: true
-    )
-  of sgsRadialGradient:
-    gs = ShapeGeneratorState(
-      kind: sgsRadialGradient, x: 0.0, y: 0.0, angle: 0.0, prec: 12,
-      grad1: 30.0, grad2: 150.0, colour: 0xff0000, colour2: 0x0000ff,
-      noPhysics: true
-    )
 
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
     tdiv(style = "font-size:12px".toCss):
       text "Note that platforms can't have more than 100 shapes!"
+    var generateProc: void -> int
+    gs.body = body
     let
-      generateProc =
-        case gs.kind
-        of sgsEllipse: generateEllipse
-        of sgsSine: generateSine
-        of sgsLinearGradient, sgsRadialGradient: generateGradient
       generate = proc =
-        nShapes = generateProc(body)
+        nShapes = generateProc()
         updateRenderer(true)
         updateRightBoxBody(-1)
       remove = proc =
@@ -268,6 +270,7 @@ proc shapeGenerator*(body: MapBody): VNode =
 
       case gs.kind
       of sgsEllipse:
+        generateProc = generateEllipse
         prop("x", pbi gs.x)
         prop("y", pbi gs.y)
         prop("Colour", colourInput(gs.colour))
@@ -283,6 +286,7 @@ proc shapeGenerator*(body: MapBody): VNode =
           prop("Spiral start", pbi gs.espiralStart)
 
       of sgsSine:
+        generateProc = generateSine
         prop("x", pbi gs.x)
         prop("y", pbi gs.y)
         prop("Colour", colourInput(gs.colour))
@@ -292,6 +296,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("Height", pbi gs.sheight)
         prop("Oscillations", pbi gs.sosc)
       of sgsLinearGradient, sgsRadialGradient:
+        generateProc = generateGradient
         prop("x", pbi gs.x)
         prop("y", pbi gs.y)
         prop("Colour 1", colourInput(gs.colour))
