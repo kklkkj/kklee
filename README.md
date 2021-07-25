@@ -2,6 +2,8 @@
 A browser extension that extends the functionality of the map editor in
 [Bonk.io](https://bonk.io).
 
+[Discord server](https://discord.gg/kW389FqMz2)
+
 ### Features
 - The chat is visible in the map editor
 - Vertex editor with (buggy) ability to merge multiple polygons into one
