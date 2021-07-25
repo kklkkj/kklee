@@ -28,16 +28,17 @@ proc setColourPickerColour*(colour: int) {.importc: "window.kklee.$1".}
 type
   MapPosition* = array[2, float]
   MapData* = ref object
-    v*: int
+    v*: int # Version
     m*: MapMetaData
     spawns*: seq[MapSpawn]
     capZones*: seq[MapCapZone]
     physics*: MapPhysics
   MapMetaData* = ref object
-    n*, a*, rxn*, rxa*, date*, mo*: cstring
+    n*, a*, date*, mo*: cstring # Name, author, date, mode
+    rxn*, rxa*: cstring         # Original name and author
     dbid*, dbv*, authid*, rxdb*, rxid*: int
     pub*: bool
-    cr*: seq[cstring]
+    cr*: seq[cstring]           # Credits
 
   MapSpawn* = ref object
     n*: cstring
@@ -46,34 +47,37 @@ type
     x*, y*, xv*, yv*: float
   MapCapZone* = ref object
     n*: cstring
-    ty*, i*: int
-    l*: float
+    ty*, i*: int # Type, fixture ID
+    l*: float    # Time
 
   MapPhysics* = ref object
-    ppm*: float
+    ppm*: float    # Player radius = ppm
     fixtures*: seq[MapFixture]
     shapes*: seq[MapShape]
     bodies*: seq[MapBody]
-    bro*: seq[int]
+    bro*: seq[int] # Array of body IDs
 
   MapBody* = ref object
     n*: cstring
     btype* {.extern: "type".}: cstring # Type is a keyword in Nim
-    a*, ad*, av*, de*, fric*, ld*, re*: float
-    f_1*, f_2*, f_3*, f_4*, f_p*, fr*, fricp*: bool
-    f_c*: int
-    p*, lv*: MapPosition
-    fx*: seq[int]
+    a*, ad*, av*: float                # Angle, drag, velocity
+    de*, fric*, ld*, re*: float        # Density, friction, linear drag,
+                                       # bounciness
+    f_1*, f_2*, f_3*, f_4*, f_p*: bool # Collision groups enabled
+    f_c*: int                          # Collision group
+    fr*, fricp*: bool                  # Fric, fric players
+    p*, lv*: MapPosition               # Position, linear velocity
+    fx*: seq[int]                      # Fixture IDs
     cf*: MapBodyCf
-  MapBodyCf* = ref object
-    x*, y*, ct*: float
-    w*: bool
+  MapBodyCf* = ref object # Constant force
+    x*, y*, ct*: float    # x, y, torque
+    w*: bool              # Force diretion - true: absolute, false: relative
 
   MapFixture* = ref object
     n*: cstring
-    d*, ng*, np*, fp*: bool
-    de*, re*, fr*: float # Set to Nan for no value
-    f*: int              # Colour
+    d*, ng*, np*, fp*: bool # Death, no grapple, no physics, fric players
+    de*, re*, fr*: float    # Set to Nan for no value
+    f*: int                 # Colour
     sh*: int
 
   MapShapeType* = enum
@@ -85,12 +89,12 @@ type
 
     bxW* {.exportc: "w".}: float
     bxH* {.exportc: "h".}: float
-    bxSk* {.exportc: "sk".}: bool
+    bxSk* {.exportc: "sk".}: bool # Shrink
 
     ciR* {.exportc: "r".}: float
-    ciSk* {.exportc: "sk".}: bool
+    ciSk* {.exportc: "sk".}: bool # Shrink
 
-    poS* {.exportc: "s".}: float
+    poS* {.exportc: "s".}: float  # Scale
     poV* {.exportc: "v".}: seq[MapPosition]
 
 
