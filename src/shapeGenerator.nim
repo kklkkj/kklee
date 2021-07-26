@@ -245,6 +245,8 @@ proc shapeGenerator*(body: MapBody): VNode =
     tdiv(style = "font-size:12px".toCss):
       text "Note that platforms can't have more than 100 shapes!"
     var generateProc: void -> int
+    if body != gs.body:
+      selecting = true
     gs.body = body
     let
       generate = proc =
