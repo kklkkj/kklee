@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.8
+- Fixed bug in the shape generator that caused the editor to break
+
 ## v0.7
 - Added shape colour option to multi-select
 - Added rect height option to ellipse and sine wave generators
