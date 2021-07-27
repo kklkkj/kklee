@@ -1,6 +1,6 @@
 import
   std/[dom, sugar],
-  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator, multiSelect
 
 let root* = document.createElement("div")

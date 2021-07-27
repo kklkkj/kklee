@@ -1,6 +1,6 @@
 import
   std/[strformat, dom, sequtils],
-  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
 proc moveShape*(msfx: var MapFixture; msb: var MapBody): VNode =

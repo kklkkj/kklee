@@ -1,6 +1,6 @@
 import
-  std/[sugar, strutils, algorithm, sequtils, strformat, dom],
-  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
+  std/[sugar, algorithm, strformat, dom],
+  pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
 

@@ -208,7 +208,7 @@ document.getElementById("mapeditor").addEventListener("keydown", proc(
     el.value = evalRes.niceFormatFloat()
     el.dispatchEvent(newEvent("input"))
     saveToUndoHistory()
-  except CatchableError as err:
+  except CatchableError:
     discard
 )
 

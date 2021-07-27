@@ -1,6 +1,6 @@
 import
   std/[strformat, dom, sugar, options, strutils],
-  pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles]
+  pkg/karax/[karax, karaxdsl, vdom, vstyles]
 
 proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
   let disabledClass = if disabled: "brownButtonDisabled" else: ""
