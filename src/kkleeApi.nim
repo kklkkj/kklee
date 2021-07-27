@@ -129,3 +129,8 @@ proc deleteFx*(fxId: int) =
     if f.sh > shId: dec f.sh
 
 var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float
+
+proc copyObject*[T: ref](x: T): T =
+  proc stringify(_: T): cstring {.importc: "window.JSON.stringify".}
+  proc parse(_: cstring): T {.importc: "window.JSON.parse".}
+  x.stringify.parse

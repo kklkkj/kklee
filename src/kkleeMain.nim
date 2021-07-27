@@ -24,7 +24,8 @@ midboxst.transition = "width 0.5s"
 
 type
   StateKindEnum* = enum
-    seHidden, seVertexEditor, seMoveShape, seShapeGenerator, seShapeMultiSelect
+    seHidden, seVertexEditor, seMoveShape, seShapeGenerator, seShapeMultiSelect,
+    seShapeMultiDuplicate
   StateObject* = ref object
     case kind*: StateKindEnum
     of seHidden: discard
@@ -38,6 +39,9 @@ type
       sgb*: MapBody
     of seShapeMultiSelect:
       discard
+    of seShapeMultiDuplicate:
+      sdupfx*: MapFixture
+      sdupb*: MapBody
 
 
 
@@ -77,6 +81,9 @@ proc render: VNode =
       of seShapeMultiSelect:
         text "Shape multiselect"
         shapeMultiSelect()
+      of seShapeMultiDuplicate:
+        text "Shape multi duplicate and select"
+        shapeMultiDuplicate(state.sdupfx, state.sdupb)
 
       tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))

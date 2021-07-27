@@ -1,5 +1,5 @@
 import
-  std/[sugar, algorithm, strformat, dom],
+  std/[sugar, strutils, algorithm, strformat, dom],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
@@ -133,5 +133,28 @@ proc shapeMultiSelect*: VNode =
         deleteFx(fxid)
       saveToUndoHistory()
       selectedFixtures = @[]
+      updateRenderer(true)
+      updateRightBoxBody(-1)
+
+var
+  duplicateFixture: MapFixture
+  duplicateBody: MapBody
+proc shapeMultiDuplicate*(fx: MapFixture; b: MapBody): VNode =
+  duplicateFixture = fx
+  duplicateBody = b
+  buildHtml tdiv(style = "display: flex; flex-flow: column".toCss):
+    var amount {.global.}: int = 1
+    bonkInput(amount, parseInt, nil, i => $i)
+    bonkButton "Duplicate", proc =
+      selectedFixtures = @[duplicateFixture]
+      fixturesBody = duplicateBody
+      for _ in 0..amount:
+        moph.shapes.add(copyObject duplicateFixture.fxShape)
+        moph.fixtures.add(copyObject duplicateFixture)
+        moph.fixtures[^1].sh = moph.shapes.high
+        selectedFixtures.add moph.fixtures[^1]
+        duplicateBody.fx.add moph.fixtures.high
+
+      saveToUndoHistory()
       updateRenderer(true)
       updateRightBoxBody(-1)

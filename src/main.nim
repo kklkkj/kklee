@@ -52,6 +52,15 @@ afterUpdateRightBoxBody = proc(fx: int) =
       se.appendChild shapeTableCell("",
           createBonkButton("Move", moveToBody)
         )
+      proc multiDuplicate =
+        state = StateObject(
+          kind: seShapeMultiDuplicate,
+          sdupfx: fixture, sdupb: body
+        )
+        rerender()
+      se.appendChild shapeTableCell("",
+          createBonkButton("Multi dup.", multiDuplicate)
+        )
       if fixture.fxShape.shapeType == stypePo:
         proc editVerticies =
           state = StateObject(
