@@ -63,8 +63,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
             createBonkButton("Edit verticies", editVerticies)
           )
 
-  if state.kind == seShapeMultiSelect:
-    hide()
+  multiSelectElementBorders()
 
 # Generate shape button
 
@@ -104,7 +103,8 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
 
 document.getElementById("mapeditor_rightbox_shapetablecontainer")
   .addEventListener("click", proc(e: MouseEvent) =
-    if state.kind != seShapeMultiSelect: return
+    if state.kind != seShapeMultiSelect or
+      fixturesBody != getCurrentBody().getBody: return
     if not e.shiftKey: return
 
     let
@@ -112,19 +112,17 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
         .getElementById("mapeditor_rightbox_shapetablecontainer")
         .getElementsByClassName("mapeditor_rightbox_table_shape_headerfield")
         .reversed
-      bi = getCurrentBody()
-      body = bi.getBody
+      body = getCurrentBody().getBody
       index = shapeElements.find e.target.Element
 
     if index == -1: return
     let fx = moph.fixtures[body.fx[index]]
 
     if not selectedFixtures.contains(fx):
-      shapeElements[index].style.border = "4px solid blue"
       selectedFixtures.add fx
     else:
-      shapeElements[index].style.border = ""
       selectedFixtures.delete(selectedFixtures.find fx)
+    multiSelectElementBorders()
   )
 
 # See chat in editor

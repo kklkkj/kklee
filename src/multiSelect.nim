@@ -1,15 +1,30 @@
 import
-  std/[sugar, strutils, algorithm, sequtils, strformat],
+  std/[sugar, strutils, algorithm, sequtils, strformat, dom],
   pkg/karax/[kbase, karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
 
 let theEvaluator = newEvaluator()
 
-var selectedFixtures*: seq[MapFixture]
+var
+  selectedFixtures*: seq[MapFixture]
+  fixturesBody*: MapBody
 
 type boolPropValue = enum
   bpSame, bpTrue, bpFalse
+
+proc multiSelectElementBorders* =
+  let
+    shapeElements = document
+      .getElementById("mapeditor_rightbox_shapetablecontainer")
+      .getElementsByClassName("mapeditor_rightbox_table_shape_headerfield")
+      .reversed
+    body = getCurrentBody().getBody
+  for i, se in shapeElements:
+    if selectedFixtures.find(body.fx[i].getFx) == -1:
+      se.style.border = ""
+    else:
+      se.style.border = "4px solid blue"
 
 proc tfsCheckbox(inp: var boolPropValue): VNode =
   let colour = case inp
@@ -33,6 +48,11 @@ proc prop(name: string; field: VNode): VNode =
     field
 
 proc shapeMultiSelect*: VNode =
+  if getCurrentBody().getBody != fixturesBody:
+    selectedFixtures = @[]
+    multiSelectElementBorders()
+  fixturesBody = getCurrentBody().getBody
+
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
     ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
       li text "Shift+click shape name fields to select shapes"
@@ -105,6 +125,7 @@ proc shapeMultiSelect*: VNode =
         for a in appliers: a(i, f)
       saveToUndoHistory()
       updateRenderer(true)
+      updateRightBoxBody(-1)
     bonkButton "Delete shapes", proc =
       for f in selectedFixtures:
         let fxid = moph.fixtures.find f

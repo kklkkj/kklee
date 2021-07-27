@@ -45,8 +45,6 @@ var state* = StateObject(kind: seHidden)
 
 proc rerender* =
   kxi.redraw()
-  if state.kind != seShapeMultiSelect:
-    selectedFixtures = @[]
 proc hide* =
   state = StateObject(kind: seHidden)
   rerender()
