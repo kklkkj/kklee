@@ -54,7 +54,7 @@ proc render: VNode =
   midboxst.width = "calc(100% - 600px)"
 
   buildHtml(tdiv(style =
-    "display: flex; flex-direction: column; height: 100%".toCss)):
+    "display: flex; flex-direction: column; height: 100%; overflow-y: auto".toCss)):
     tdiv(class = "windowTopBar windowTopBar_classic",
         style = "position: static".toCss):
       text "kklee"
