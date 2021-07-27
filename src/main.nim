@@ -50,7 +50,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
         )
         rerender()
       se.appendChild shapeTableCell("",
-          createBonkButton("Move to platform", moveToBody)
+          createBonkButton("Move", moveToBody)
         )
       if fixture.fxShape.shapeType == stypePo:
         proc editVerticies =
