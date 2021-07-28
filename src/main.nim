@@ -51,7 +51,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
       proc moveToBody =
         state = StateObject(
           kind: seMoveShape,
-          msfx: fixture
+          fx: fixture
         )
         rerender()
       se.appendChild shapeTableCell("",
@@ -60,7 +60,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
       proc multiDuplicate =
         state = StateObject(
           kind: seShapeMultiDuplicate,
-          sdupfx: fixture, sdupb: body
+          fx: fixture, b: body
         )
         rerender()
       se.appendChild shapeTableCell("",
@@ -70,7 +70,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
         proc editVerticies =
           state = StateObject(
             kind: seVertexEditor,
-            veb: body, vefx: fixture
+            b: body, fx: fixture
           )
           rerender()
         se.appendChild shapeTableCell("",
@@ -84,7 +84,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
 let shapeGeneratorButton = createBonkButton("Generate shape", proc =
   state = StateObject(
     kind: seShapeGenerator,
-    sgb: body
+    b: body
   )
   rerender()
 )

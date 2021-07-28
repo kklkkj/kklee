@@ -27,21 +27,9 @@ type
     seHidden, seVertexEditor, seMoveShape, seShapeGenerator, seShapeMultiSelect,
     seShapeMultiDuplicate
   StateObject* = ref object
-    case kind*: StateKindEnum
-    of seHidden: discard
-    of seVertexEditor:
-      vefx*: MapFixture
-      veb*: MapBody
-    of seMoveShape:
-      msfx*: MapFixture
-      msb*: MapBody
-    of seShapeGenerator:
-      sgb*: MapBody
-    of seShapeMultiSelect:
-      discard
-    of seShapeMultiDuplicate:
-      sdupfx*: MapFixture
-      sdupb*: MapBody
+    kind*: StateKindEnum
+    fx*: MapFixture
+    b*: MapBody
 
 
 
@@ -71,19 +59,19 @@ proc render: VNode =
         midboxst.width = "calc(100% - 415px)"
       of seVertexEditor:
         text "Vertex Editor"
-        vertexEditor(state.veb, state.vefx)
+        vertexEditor(state.b, state.fx)
       of seMoveShape:
         text "Move shape to another body"
-        moveShape(state.msfx, state.msb)
+        moveShape(state.fx, state.b)
       of seShapeGenerator:
         text "Generate a shape"
-        shapeGenerator(state.sgb)
+        shapeGenerator(state.b)
       of seShapeMultiSelect:
         text "Shape multiselect"
         shapeMultiSelect()
       of seShapeMultiDuplicate:
         text "Shape multi duplicate and select"
-        shapeMultiDuplicate(state.sdupfx, state.sdupb)
+        shapeMultiDuplicate(state.fx, state.b)
 
       tdiv(style = "width: 100%; margin-top: 10px".toCss):
         bonkButton("Close", () => (state.kind = seHidden))
