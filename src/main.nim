@@ -208,7 +208,7 @@ let myEvaluator = newEvaluator()
 
 mapEditorDiv.addEventListener("keydown", proc(
     e: KeyboardEvent) =
-  if not (e.shiftKey and e.keyCode == 13):
+  if not (e.shiftKey and e.key == "Enter"):
     return
   let el = document.activeElement
   if not el.classList.contains("mapeditor_field"):
@@ -247,8 +247,26 @@ rightButtonContainer.insertBefore(
 )
 
 # Arithmetic evaluation tip
+
 let arithmeticTip = document.createElement("div")
 arithmeticTip.innerText =
   "You can enter arithmetic into fields, such as 100*2+50, and evaluate it with Shift+Enter"
 arithmeticTip.setAttr("style", "font-size: 11px;padding: 0px 10px;")
 docElemById("mapeditor_rightbox_platformparams").appendChild(arithmeticTip)
+
+# Keyboard shortcuts
+
+mapEditorDiv.setAttr("tabindex", "0")
+mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
+  if ev.target != mapEditorDiv:
+    return
+  ev.preventDefault()
+  if ev.ctrlKey and ev.key == "s":
+    docElemById("mapeditor_midbox_savebutton").click()
+    docElemById("mapeditor_save_window_save").click()
+  elif ev.shiftKey and ev.key == " ":
+    docElemById("mapeditor_midbox_testbutton").click()
+    mapEditorDiv.blur()
+  elif ev.key == " ":
+    docElemById("mapeditor_midbox_playbutton").click()
+)
