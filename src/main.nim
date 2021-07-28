@@ -246,13 +246,22 @@ rightButtonContainer.insertBefore(
   docElemById("mapeditor_midbox_playbutton")
 )
 
-# Arithmetic evaluation tip
+# Tips
 
-let arithmeticTip = document.createElement("div")
+let
+  tipsList = document.createElement("ul")
+  arithmeticTip = document.createElement("li")
+  shortcutsTip = document.createElement("li")
+
 arithmeticTip.innerText =
   "You can enter arithmetic into fields, such as 100*2+50, and evaluate it with Shift+Enter"
-arithmeticTip.setAttr("style", "font-size: 11px;padding: 0px 10px;")
-docElemById("mapeditor_rightbox_platformparams").appendChild(arithmeticTip)
+shortcutsTip.innerText =
+  "Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space"
+
+tipsList.appendChild(arithmeticTip)
+tipsList.appendChild(shortcutsTip)
+tipsList.setAttr("style", "font-size: 11px;padding: 10px 15px;")
+docElemById("mapeditor_rightbox_platformparams").appendChild(tipsList)
 
 # Keyboard shortcuts
 
