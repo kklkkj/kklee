@@ -1,7 +1,7 @@
 import
   std/[dom, sugar],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  kkleeApi, bonkElements, moveShape, vertexEditor, shapeGenerator, multiSelect
+  kkleeApi, bonkElements, vertexEditor, shapeGenerator, multiSelect
 
 let root* = document.createElement("div")
 let karaxRoot* = document.createElement("div")
@@ -24,7 +24,7 @@ midboxst.transition = "width 0.5s"
 
 type
   StateKindEnum* = enum
-    seHidden, seVertexEditor, seMoveShape, seShapeGenerator, seShapeMultiSelect,
+    seHidden, seVertexEditor, seShapeGenerator, seShapeMultiSelect,
     seShapeMultiDuplicate
   StateObject* = ref object
     kind*: StateKindEnum
@@ -60,9 +60,6 @@ proc render: VNode =
       of seVertexEditor:
         text "Vertex Editor"
         vertexEditor(state.b, state.fx)
-      of seMoveShape:
-        text "Move shape to another body"
-        moveShape(state.fx, state.b)
       of seShapeGenerator:
         text "Generate a shape"
         shapeGenerator(state.b)

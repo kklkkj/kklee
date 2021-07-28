@@ -48,15 +48,6 @@ afterUpdateRightBoxBody = proc(fx: int) =
       fxId = bi.getBody.fx[i]
       fixture = getFx fxId
     capture fixture, body:
-      proc moveToBody =
-        state = StateObject(
-          kind: seMoveShape,
-          fx: fixture
-        )
-        rerender()
-      se.appendChild shapeTableCell("",
-          createBonkButton("Move", moveToBody)
-        )
       proc multiDuplicate =
         state = StateObject(
           kind: seShapeMultiDuplicate,
