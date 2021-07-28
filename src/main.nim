@@ -24,6 +24,12 @@ proc createBonkButton(label: string; onclick: proc: void): Element =
 afterNewMapObject = hide
 afterUpdateLeftBox = rerender
 
+let
+  rightBoxShapeTableContainer =
+    docElemById("mapeditor_rightbox_shapetablecontainer")
+  mapEditorDiv =
+    docElemById("mapeditor")
+
 var
   bi: int
   body: MapBody
@@ -31,8 +37,7 @@ var
 afterUpdateRightBoxBody = proc(fx: int) =
   if getCurrentBody() notin 0..moph.bodies.high:
     return
-  let shapeElements = document
-    .getElementById("mapeditor_rightbox_shapetablecontainer")
+  let shapeElements = rightBoxShapeTableContainer
     .getElementsByClassName("mapeditor_rightbox_table_shape")
 
   bi = getCurrentBody()
@@ -86,11 +91,10 @@ let shapeGeneratorButton = createBonkButton("Generate shape", proc =
 shapeGeneratorButton.setAttr("style",
   "float: left; margin-bottom: 5px; margin-left: 10px; width: 190px")
 
-document.getElementById("mapeditor_rightbox_shapetablecontainer")
+rightBoxShapeTableContainer
   .insertBefore(
     shapeGeneratorButton,
-    document.getElementById(
-      "mapeditor_rightbox_shapeaddcontainer").nextSibling
+    docElemById("mapeditor_rightbox_shapeaddcontainer").nextSibling
   )
 
 # Multiselect shapes button
@@ -103,24 +107,22 @@ let shapeMultiSelectButton = createBonkButton("Multiselect shapes", proc =
 shapeMultiSelectButton.setAttr "style",
   "float: left; margin-bottom: 5px; margin-left: 10px; width: 190px"
 
-document.getElementById("mapeditor_rightbox_shapetablecontainer")
+rightBoxShapeTableContainer
   .insertBefore(
     shapeMultiSelectButton,
-    document.getElementById(
-      "mapeditor_rightbox_shapeaddcontainer").nextSibling
+    docElemById("mapeditor_rightbox_shapeaddcontainer").nextSibling
   )
 
-document.getElementById("mapeditor_rightbox_shapetablecontainer")
+rightBoxShapeTableContainer
   .addEventListener("click", proc(e: MouseEvent) =
     if state.kind != seShapeMultiSelect or
       fixturesBody != getCurrentBody().getBody: return
     if not e.shiftKey: return
 
     let
-      shapeElements = document
-        .getElementById("mapeditor_rightbox_shapetablecontainer")
+      shapeElements = rightBoxShapeTableContainer
         .getElementsByClassName("mapeditor_rightbox_table_shape_headerfield")
-        .reversed
+        .reversed()
       body = getCurrentBody().getBody
       index = shapeElements.find e.target.Element
 
@@ -136,56 +138,58 @@ document.getElementById("mapeditor_rightbox_shapetablecontainer")
 
 # See chat in editor
 
-let chat = document.getElementById("newbonklobby_chatbox")
+let chat = docElemById("newbonklobby_chatbox")
 let parentDocument {.importc: "parent.document".}: Document
 var isChatInEditor = false
 
 proc moveChatToEditor(e: Event) =
   if isChatInEditor: return
   isChatInEditor = true;
-  document.getElementById("mapeditor").insertBefore(
+  mapEditorDiv.insertBefore(
     chat,
-    document.getElementById("mapeditor_leftbox")
+    docElemById("mapeditor_leftbox")
   )
   chat.setAttribute("style",
     "position: fixed; left: 0%; top: 0%; width: calc(20% - 100px); height: 90%; transform: scale(0.9);"
   )
   parentDocument.getElementById("adboxverticalleftCurse").style.display = "none"
   # Modifying scrollTop immediately won't work, so I used setTimeout 0ms
-  discard setTimeout(proc = document.getElementById(
+  discard setTimeout(proc = docElemById(
     "newbonklobby_chat_content").scrollTop = 1e7.int, 0)
 
 proc restoreChat(e: Event) =
   if not isChatInEditor: return
   isChatInEditor = false
-  document.getElementById("newbonklobby").insertbefore(
-    chat, document.getElementById("newbonklobby_settingsbox")
+  docElemById("newbonklobby").insertbefore(
+    chat, docElemById("newbonklobby_settingsbox")
   )
   chat.setattribute("style", "")
   parentDocument.getElementById("adboxverticalleftCurse").style.display = ""
 
-document.getElementById("newbonklobby_editorbutton")
+docElemById("newbonklobby_editorbutton")
   .addEventListener("click", moveChatToEditor)
-document.getElementById("mapeditor_close")
+
+docElemById("mapeditor_close")
   .addEventListener("click", restoreChat)
-document.getElementById("hostleaveconfirmwindow_endbutton")
+docElemById("hostleaveconfirmwindow_endbutton")
   .addEventListener("click", restoreChat)
-document.getElementById("hostleaveconfirmwindow_okbutton")
+docElemById("hostleaveconfirmwindow_okbutton")
   .addEventListener("click", restoreChat)
-document.getElementById("newbonklobby")
+
+docElemById("newbonklobby")
   .addEventListener("mouseover", restoreChat)
-document.getElementById("mapeditor_midbox_testbutton")
+
+docElemById("mapeditor_midbox_testbutton")
   .addEventListener("click", proc(e: Event) =
     chat.style.visibility = "hidden"
   )
-document.getElementById("pretty_top_exit")
-  .addEventListener("click", proc(e: Event) =
-    chat.style.visibility = ""
-  )
+docElemById("pretty_top_exit").addEventListener("click", proc(e: Event) =
+  chat.style.visibility = ""
+)
 
 # Colour picker
 
-let colourPicker = document.getElementById("mapeditor_colorpicker")
+let colourPicker = docElemById("mapeditor_colorpicker")
 let colourInput = document.createElement("input")
 colourInput.setAttribute("type", "color")
 colourInput.id = "kkleeColourInput"
@@ -194,7 +198,7 @@ colourInput.addEventListener("change", proc(e: Event) =
   let strVal = $colourInput.value
   setColourPickerColour(parseHexInt(strVal[1..^1]))
   saveToUndoHistory()
-  document.getElementById("mapeditor_colorpicker_cancelbutton").click()
+  docElemById("mapeditor_colorpicker_cancelbutton").click()
 )
 
 # Arithmetic in fields
@@ -202,7 +206,7 @@ colourInput.addEventListener("change", proc(e: Event) =
 import mathexpr
 let myEvaluator = newEvaluator()
 
-document.getElementById("mapeditor").addEventListener("keydown", proc(
+mapEditorDiv.addEventListener("keydown", proc(
     e: KeyboardEvent) =
   if not (e.shiftKey and e.keyCode == 13):
     return
@@ -235,10 +239,11 @@ speedSlider.setAttr("title", "Preview speed")
 speedSlider.addEventListener("input", proc(e: Event) =
   editorPreviewTimeMs = parseFloat($speedSlider.value) ^ 3 + 3
 )
-let rightButtonContainer = document.getElementById("mapeditor_midbox_rightbuttoncontainer")
+let rightButtonContainer =
+  docElemById("mapeditor_midbox_rightbuttoncontainer")
 rightButtonContainer.insertBefore(
   speedSlider,
-  document.getElementById("mapeditor_midbox_playbutton")
+  docElemById("mapeditor_midbox_playbutton")
 )
 
 # Arithmetic evaluation tip
@@ -246,5 +251,4 @@ let arithmeticTip = document.createElement("div")
 arithmeticTip.innerText =
   "You can enter arithmetic into fields, such as 100*2+50, and evaluate it with Shift+Enter"
 arithmeticTip.setAttr("style", "font-size: 11px;padding: 0px 10px;")
-document.getElementById("mapeditor_rightbox_platformparams")
-  .appendChild(arithmeticTip)
+docElemById("mapeditor_rightbox_platformparams").appendChild(arithmeticTip)

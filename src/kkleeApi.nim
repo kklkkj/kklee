@@ -1,4 +1,4 @@
-import std/[strutils, sequtils]
+import std/[strutils, sequtils, dom]
 
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =
@@ -134,3 +134,6 @@ proc copyObject*[T: ref](x: T): T =
   proc stringify(_: T): cstring {.importc: "window.JSON.stringify".}
   proc parse(_: cstring): T {.importc: "window.JSON.parse".}
   x.stringify.parse
+
+proc docElemById*(s: cstring): Element =
+  document.getElementById(s)
