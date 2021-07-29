@@ -127,7 +127,7 @@ proc shapeMultiSelectMove: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
 
   var moveBody {.global.}: MapBody
-  select(style = "margin-top: 10px".toCss):
+  select:
     for bi in mapObject.physics.bro:
       option:
         text bi.getBody.n
@@ -165,7 +165,8 @@ proc shapeMultiSelect*: VNode =
     multiSelectElementBorders()
   fixturesBody = getCurrentBody().getBody
 
-  buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
+  buildHtml(tdiv(
+      style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
     shapeMultiSelectEdit()
 
     bonkButton "Delete shapes", proc =
