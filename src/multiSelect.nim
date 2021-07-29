@@ -159,6 +159,26 @@ proc shapeMultiSelectMove: VNode = buildHtml tdiv(
 
   , moveBody.isNil)
 
+var copyShapes: seq[tuple[fx: MapFixture; sh: MapShape]]
+
+proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
+    style = "display: flex; flex-flow: column".toCss):
+  bonkButton "Copy shapes", proc =
+    copyShapes = @[]
+    for fx in selectedFixtures:
+      copyShapes.add (fx: fx.copyObject(), sh: fx.fxShape.copyObject())
+  bonkButton "Paste shapes", proc =
+    for (fx, sh) in copyShapes.mitems:
+      moph.shapes.add sh.copyObject()
+      let newFx = fx.copyObject()
+      moph.fixtures.add newFx
+      newFx.sh = moph.shapes.high
+      selectedFixtures.add newFx
+      fixturesBody.fx.add moph.fixtures.high
+    saveToUndoHistory()
+    updateRenderer(true)
+    updateRightBoxBody(-1)
+
 proc shapeMultiSelect*: VNode =
   if getCurrentBody().getBody != fixturesBody:
     selectedFixtures = @[]
@@ -180,6 +200,7 @@ proc shapeMultiSelect*: VNode =
       updateRightBoxBody(-1)
 
     shapeMultiSelectMove()
+    shapeMultiSelectCopy()
 
 
 
