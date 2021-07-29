@@ -72,7 +72,7 @@ proc render: VNode =
         text "Shape multi duplicate and select"
         shapeMultiDuplicate(state.fx, state.b)
 
-    tdiv(style = "width: 100%; margin-top: 10px".toCss):
+    tdiv(style = "margin: 3px".toCss):
       bonkButton("Close", () => (state.kind = seHidden))
 
 setRenderer(render, karaxRoot.id)
