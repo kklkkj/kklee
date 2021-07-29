@@ -6,7 +6,7 @@
   number of times and the duplicates will be automatically multi-selected
 - Added keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space
 - Moving shapes to other platforms is now an option in multi-select
-- Add ability to copy and paste shapes in multi-select
+- Added ability to copy and paste shapes in multi-select
 
 ## v0.8
 - Fixed bug in the shape generator that caused the editor to break
