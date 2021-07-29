@@ -46,12 +46,14 @@ proc render: VNode =
   midboxst.width = "calc(100% - 600px)"
 
   buildHtml(tdiv(style =
-    "display: flex; flex-direction: column; height: 100%; overflow-y: auto".toCss)):
+    "display: flex; flex-direction: column; height: 100%".toCss)):
     tdiv(class = "windowTopBar windowTopBar_classic",
         style = "position: static".toCss):
       text "kklee"
 
-    tdiv(style = "margin: 3px; flex: auto; display: flex; flex-direction: column; min-height: 0px".toCss):
+    tdiv(style =
+      """margin: 3px; flex: auto; display: flex; flex-direction: column;
+        min-height: 0px; overflow-y: auto""".toCss):
 
       case state.kind
       of seHidden:
@@ -70,8 +72,8 @@ proc render: VNode =
         text "Shape multi duplicate and select"
         shapeMultiDuplicate(state.fx, state.b)
 
-      tdiv(style = "width: 100%; margin-top: 10px".toCss):
-        bonkButton("Close", () => (state.kind = seHidden))
+    tdiv(style = "width: 100%; margin-top: 10px".toCss):
+      bonkButton("Close", () => (state.kind = seHidden))
 
 setRenderer(render, karaxRoot.id)
 
