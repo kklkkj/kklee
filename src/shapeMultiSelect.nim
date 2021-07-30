@@ -11,7 +11,7 @@ var
 type boolPropValue = enum
   bpSame, bpTrue, bpFalse
 
-proc multiSelectElementBorders* =
+proc shapeMultiSelectElementBorders* =
   let
     shapeElements = document
       .getElementById("mapeditor_rightbox_shapetablecontainer")
@@ -48,7 +48,7 @@ proc prop(name: string; field: VNode): VNode =
 proc shapeMultiSelectSwitchPlatform* =
   if getCurrentBody().getBody != fixturesBody:
     selectedFixtures = @[]
-    multiSelectElementBorders()
+    shapeMultiSelectElementBorders()
   fixturesBody = getCurrentBody().getBody
 
 proc floatNop(f: float): float = f
@@ -180,10 +180,10 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
     shapeMultiSelectSwitchPlatform()
     selectedFixtures = collect(newSeq):
       for fxid in fixturesBody.fx: fxid.getFx
-    multiSelectElementBorders()
+    shapeMultiSelectElementBorders()
   bonkButton "Deselect all", proc =
     selectedFixtures = @[]
-    multiSelectElementBorders()
+    shapeMultiSelectElementBorders()
 
 proc shapeMultiSelectDelete: VNode =
   buildHtml bonkButton "Delete shapes", proc =

@@ -401,7 +401,7 @@ proc shapeGenerator*(body: MapBody): VNode =
           shapeMultiSelectSwitchPlatform()
           for fxid in moph.fixtures.len-nShapes..moph.fixtures.high:
             selectedFixtures.add fxid.getFx
-          multiSelectElementBorders()
+          shapeMultiSelectElementBorders()
         nShapes = 0
         saveToUndoHistory()
       )

@@ -59,7 +59,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
             createBonkButton("Edit verticies", editVerticies)
           )
 
-  multiSelectElementBorders()
+  shapeMultiSelectElementBorders()
 
 # Generate shape button
 
@@ -115,7 +115,7 @@ rightBoxShapeTableContainer
       selectedFixtures.add fx
     else:
       selectedFixtures.delete(selectedFixtures.find fx)
-    multiSelectElementBorders()
+    shapeMultiSelectElementBorders()
   )
 
 # See chat in editor
