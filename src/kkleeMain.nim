@@ -1,7 +1,7 @@
 import
   std/[dom, sugar],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  kkleeApi, bonkElements, vertexEditor, shapeGenerator, multiSelect
+  kkleeApi, bonkElements, vertexEditor, shapeGenerator, shapeMultiSelect
 
 let root* = document.createElement("div")
 let karaxRoot* = document.createElement("div")
