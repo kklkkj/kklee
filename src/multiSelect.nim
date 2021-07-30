@@ -47,6 +47,12 @@ proc prop(name: string; field: VNode): VNode =
     text name
     field
 
+proc shapeMultiSelectSwitchPlatform =
+  if getCurrentBody().getBody != fixturesBody:
+    selectedFixtures = @[]
+    multiSelectElementBorders()
+  fixturesBody = getCurrentBody().getBody
+
 proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
 
@@ -132,6 +138,7 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     for fx in selectedFixtures:
       copyShapes.add (fx: fx.copyObject(), sh: fx.fxShape.copyObject())
   bonkButton "Paste shapes", proc =
+    shapeMultiSelectSwitchPlatform()
     for (fx, sh) in copyShapes.mitems:
       moph.shapes.add sh.copyObject()
       let newFx = fx.copyObject()
@@ -144,11 +151,7 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     updateRightBoxBody(-1)
 
 proc shapeMultiSelect*: VNode =
-  if getCurrentBody().getBody != fixturesBody:
-    selectedFixtures = @[]
-    multiSelectElementBorders()
-  fixturesBody = getCurrentBody().getBody
-
+  shapeMultiSelectSwitchPlatform()
   buildHtml(tdiv(
       style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
     shapeMultiSelectEdit()
