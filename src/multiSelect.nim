@@ -173,10 +173,22 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     updateRenderer(true)
     updateRightBoxBody(-1)
 
+proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
+  bonkButton "Select all", proc =
+    shapeMultiSelectSwitchPlatform()
+    selectedFixtures = collect(newSeq):
+      for fxid in fixturesBody.fx: fxid.getFx
+    multiSelectElementBorders()
+  bonkButton "Deselect all", proc =
+    selectedFixtures = @[]
+    multiSelectElementBorders()
+
+
 proc shapeMultiSelect*: VNode =
   shapeMultiSelectSwitchPlatform()
   buildHtml(tdiv(
       style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
+    shapeMultiSelectSelectAll()
     shapeMultiSelectEdit()
 
     bonkButton "Delete shapes", proc =
