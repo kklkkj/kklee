@@ -183,6 +183,16 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
     selectedFixtures = @[]
     multiSelectElementBorders()
 
+proc shapeMultiSelectDelete: VNode =
+  buildHtml bonkButton "Delete shapes", proc =
+    for f in selectedFixtures:
+      let fxid = moph.fixtures.find f
+      if fxid == -1: continue
+      deleteFx(fxid)
+    saveToUndoHistory()
+    selectedFixtures = @[]
+    updateRenderer(true)
+    updateRightBoxBody(-1)
 
 proc shapeMultiSelect*: VNode =
   shapeMultiSelectSwitchPlatform()
@@ -190,15 +200,5 @@ proc shapeMultiSelect*: VNode =
       style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
     shapeMultiSelectSelectAll()
     shapeMultiSelectEdit()
-
-    bonkButton "Delete shapes", proc =
-      for f in selectedFixtures:
-        let fxid = moph.fixtures.find f
-        if fxid == -1: continue
-        deleteFx(fxid)
-      saveToUndoHistory()
-      selectedFixtures = @[]
-      updateRenderer(true)
-      updateRightBoxBody(-1)
-
+    shapeMultiSelectDelete()
     shapeMultiSelectCopy()
