@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.10
+- Removed the "move to platform" feature in multi-select
+- Removed multi-duplicate and added option to specify how many times copied
+  shapes should be pasted
+- Changed multi-select angle unit from radians to degrees
+- Added buttons to select or deselect all shapes
+- Added option to automatically multi-select generated shapes
+- Fixed a bug in multi-select that caused kklee to crash
+
 ## v0.9
 - After applying in multi-select, shape properties will be updated immediately
 - Added shape multi-duplicate. This lets you duplicate a shape a specified

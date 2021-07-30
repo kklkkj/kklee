@@ -5,9 +5,8 @@ A browser extension that extends the functionality of the map editor in
 [Discord server](https://discord.gg/kW389FqMz2)
 
 ### Features
-- Multi-select with ability to set shape properties, copy shapes, delete shapes
-  and move shapes to other platforms
-- Duplicate shapes multiple times and automatically select duplicates
+- Multi-select with ability to set shape properties, copy shapes and delete
+  shapes
 - Vertex editor with (buggy) ability to merge multiple polygons into one
 - Easily generate ellipses, spirals, sine waves, gradients and custom equations
 - Ability to use your browser's colour picker for changing colours
@@ -15,7 +14,7 @@ A browser extension that extends the functionality of the map editor in
   (example: type `100*2+50` into X position field and press Shift+Enter)
 - Change the speed of map testing in the editor
 - The chat is visible in the map editor
-- Keyboard shortcuts
+- Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space
 
 ## Installing
 
