@@ -2,7 +2,7 @@ import
   std/[dom, strutils, math, sugar, strformat],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
-  kkleeApi, bonkElements
+  kkleeApi, bonkElements, shapeMultiSelect
 
 type
   ShapeGeneratorKind = enum
@@ -15,6 +15,7 @@ type
   ShapeGeneratorState = ref object
     kind: ShapeGeneratorKind
     body: MapBody
+    multiSelect: bool
 
     x, y, angle: float
     colour: int
@@ -42,6 +43,7 @@ type
 var
   gs = ShapeGeneratorState(
     kind: sgsEllipse,
+    multiSelect: false,
     x: 0.0, y: 0.0, angle: 0.0,
     colour: 0xffffff,
     prec: 16,
@@ -298,6 +300,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         , update, i => $i)
 
       prop("No physics", checkbox(gs.noPhysics))
+      prop("Multi-select", checkbox(gs.multiSelect))
 
       case gs.kind
       of sgsEllipse:
@@ -394,6 +397,11 @@ proc shapeGenerator*(body: MapBody): VNode =
 
       bonkButton(&"Save {$gs.kind}", proc =
         update()
+        if gs.multiSelect:
+          shapeMultiSelectSwitchPlatform()
+          for fxid in moph.fixtures.len-nShapes..moph.fixtures.high:
+            selectedFixtures.add fxid.getFx
+          multiSelectElementBorders()
         nShapes = 0
         saveToUndoHistory()
       )

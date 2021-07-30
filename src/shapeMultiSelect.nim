@@ -45,7 +45,7 @@ proc prop(name: string; field: VNode): VNode =
     text name
     field
 
-proc shapeMultiSelectSwitchPlatform =
+proc shapeMultiSelectSwitchPlatform* =
   if getCurrentBody().getBody != fixturesBody:
     selectedFixtures = @[]
     multiSelectElementBorders()
