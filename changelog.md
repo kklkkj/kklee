@@ -8,6 +8,7 @@
 - Added buttons to select or deselect all shapes
 - Added option to automatically multi-select generated shapes
 - Fixed a bug in multi-select that caused kklee to crash
+- Made Shift+Space also return you back to the editor
 
 ## v0.9
 - After applying in multi-select, shape properties will be updated immediately
