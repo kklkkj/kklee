@@ -129,23 +129,28 @@ i=1, i=2, etc)"""
     updateRenderer(true)
     updateRightBoxBody(-1)
 
-var copyShapes: seq[tuple[fx: MapFixture; sh: MapShape]]
 
 proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
+  var
+    copyShapes {.global.}: seq[tuple[fx: MapFixture; sh: MapShape]]
+    pasteAmount {.global.} = 1
   bonkButton "Copy shapes", proc =
     copyShapes = @[]
     for fx in selectedFixtures:
       copyShapes.add (fx: fx.copyObject(), sh: fx.fxShape.copyObject())
+
+  prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
   bonkButton "Paste shapes", proc =
     shapeMultiSelectSwitchPlatform()
-    for (fx, sh) in copyShapes.mitems:
-      moph.shapes.add sh.copyObject()
-      let newFx = fx.copyObject()
-      moph.fixtures.add newFx
-      newFx.sh = moph.shapes.high
-      selectedFixtures.add newFx
-      fixturesBody.fx.add moph.fixtures.high
+    for _ in 1..pasteAmount:
+      for (fx, sh) in copyShapes.mitems:
+        moph.shapes.add sh.copyObject()
+        let newFx = fx.copyObject()
+        moph.fixtures.add newFx
+        newFx.sh = moph.shapes.high
+        selectedFixtures.add newFx
+        fixturesBody.fx.add moph.fixtures.high
     saveToUndoHistory()
     updateRenderer(true)
     updateRightBoxBody(-1)
@@ -167,28 +172,3 @@ proc shapeMultiSelect*: VNode =
       updateRightBoxBody(-1)
 
     shapeMultiSelectCopy()
-
-
-
-var
-  duplicateFixture: MapFixture
-  duplicateBody: MapBody
-proc shapeMultiDuplicate*(fx: MapFixture; b: MapBody): VNode =
-  duplicateFixture = fx
-  duplicateBody = b
-  buildHtml tdiv(style = "display: flex; flex-flow: column".toCss):
-    var amount {.global.}: int = 1
-    bonkInput(amount, parseInt, nil, i => $i)
-    bonkButton "Duplicate", proc =
-      selectedFixtures = @[duplicateFixture]
-      fixturesBody = duplicateBody
-      for _ in 0..amount:
-        moph.shapes.add(copyObject duplicateFixture.fxShape)
-        moph.fixtures.add(copyObject duplicateFixture)
-        moph.fixtures[^1].sh = moph.shapes.high
-        selectedFixtures.add moph.fixtures[^1]
-        duplicateBody.fx.add moph.fixtures.high
-
-      saveToUndoHistory()
-      updateRenderer(true)
-      updateRightBoxBody(-1)

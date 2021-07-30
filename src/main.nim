@@ -48,15 +48,6 @@ afterUpdateRightBoxBody = proc(fx: int) =
       fxId = bi.getBody.fx[i]
       fixture = getFx fxId
     capture fixture, body:
-      proc multiDuplicate =
-        state = StateObject(
-          kind: seShapeMultiDuplicate,
-          fx: fixture, b: body
-        )
-        rerender()
-      se.appendChild shapeTableCell("",
-          createBonkButton("Multi dup.", multiDuplicate)
-        )
       if fixture.fxShape.shapeType == stypePo:
         proc editVerticies =
           state = StateObject(
