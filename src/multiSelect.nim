@@ -123,42 +123,6 @@ i=1, i=2, etc)"""
     updateRenderer(true)
     updateRightBoxBody(-1)
 
-proc shapeMultiSelectMove: VNode = buildHtml tdiv(
-    style = "display: flex; flex-flow: column".toCss):
-
-  var moveBody {.global.}: MapBody
-  select:
-    for bi in mapObject.physics.bro:
-      option:
-        text bi.getBody.n
-
-    proc onInput(e: Event; n: VNode) =
-      moveBody =
-        mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
-    proc onMouseEnter(e: Event; n: VNode) =
-      moveBody =
-        mapObject.physics.bro[e.target.OptionElement.selectedIndex].getBody
-
-  bonkButton("Move to platform", proc =
-    block:
-      var i = 0
-      while i < fixturesBody.fx.len:
-        let fxid = fixturesBody.fx[i]
-        if fxid.getFx in selectedFixtures:
-          moveBody.fx.add fxid
-          fixturesBody.fx.delete i
-        else:
-          inc i
-
-    setCurrentBody(mapObject.physics.bodies.find moveBody)
-    fixturesBody = moveBody
-    updateLeftBox()
-    updateRenderer(true)
-    updateRightBoxBody(-1)
-    saveToUndoHistory()
-
-  , moveBody.isNil)
-
 var copyShapes: seq[tuple[fx: MapFixture; sh: MapShape]]
 
 proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
@@ -199,7 +163,6 @@ proc shapeMultiSelect*: VNode =
       updateRenderer(true)
       updateRightBoxBody(-1)
 
-    shapeMultiSelectMove()
     shapeMultiSelectCopy()
 
 
