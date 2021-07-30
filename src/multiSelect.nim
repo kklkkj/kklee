@@ -143,14 +143,19 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
   prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
   bonkButton "Paste shapes", proc =
     shapeMultiSelectSwitchPlatform()
-    for _ in 1..pasteAmount:
-      for (fx, sh) in copyShapes.mitems:
-        moph.shapes.add sh.copyObject()
-        let newFx = fx.copyObject()
-        moph.fixtures.add newFx
-        newFx.sh = moph.shapes.high
-        selectedFixtures.add newFx
-        fixturesBody.fx.add moph.fixtures.high
+    proc copyFxSh(fx: MapFixture; sh: MapShape) =
+      moph.shapes.add sh.copyObject()
+      let newFx = fx.copyObject()
+      moph.fixtures.add newFx
+      newFx.sh = moph.shapes.high
+      selectedFixtures.add newFx
+      fixturesBody.fx.add moph.fixtures.high
+    block outer:
+      for _ in 1..pasteAmount:
+        for (fx, sh) in copyShapes.mitems:
+          if fixturesBody.fx.len > 100:
+            break outer
+          copyFxSh(fx, sh)
     saveToUndoHistory()
     updateRenderer(true)
     updateRightBoxBody(-1)
