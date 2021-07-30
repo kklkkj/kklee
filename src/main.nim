@@ -61,6 +61,18 @@ afterUpdateRightBoxBody = proc(fx: int) =
 
   shapeMultiSelectElementBorders()
 
+afterUpdateLeftBox = proc =
+  # This fixes the bug where shapeMultiSelectElementBorders would throw an
+  # error when the right box was not updated to show the currently selected
+  # platform. This would occur when the user creates a new platform while
+  # shape multi-select is open.
+  if docElemById("mapeditor_rightbox_platformparams").style.visibility !=
+      "none" and
+      getCurrentBody() in 0..moph.bodies.high and
+      body != getCurrentBody().getBody:
+    updateRightBoxBody(-1)
+
+
 # Generate shape button
 
 let shapeGeneratorButton = createBonkButton("Generate shape", proc =
