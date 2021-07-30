@@ -4,8 +4,6 @@ import
   pkg/mathexpr,
   kkleeApi, bonkElements
 
-let theEvaluator = newEvaluator()
-
 var
   selectedFixtures*: seq[MapFixture]
   fixturesBody*: MapBody
@@ -78,16 +76,20 @@ i=1, i=2, etc)"""
       inpToPropF = inpToProp
       propToInpF = propToInp
     var inp {.global.}: string = "x"
+
     appliers.add proc (i: int; fx {.inject.}: var MapFixture) =
-      theEvaluator.addVars {"x": propToInpF(mapFxProp), "i": i.float}
-      var res = inpToPropF(theEvaluator.eval inp)
+      let evtor = newEvaluator()
+      evtor.addVars {"x": propToInpF(mapFxProp), "i": i.float}
+      var res = inpToPropF(evtor.eval inp)
       res = res.clamp(-1e6, 1e6)
       if res == NaN: res = 0
       mapFxProp = res
+
     buildHtml:
       prop name, bonkInput(inp, proc(parserInput: string): string =
-        theEvaluator.addVars {"x": 0.0, "i": 0.0}
-        discard theEvaluator.eval parserInput
+        let evtor = newEvaluator()
+        evtor.addVars {"x": 0.0, "i": 0.0}
+        discard evtor.eval parserInput
         return parserInput
       , nil, s=>s)
 
