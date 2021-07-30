@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, algorithm, strformat, dom],
+  std/[sugar, strutils, algorithm, strformat, dom, math],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
@@ -53,6 +53,8 @@ proc shapeMultiSelectSwitchPlatform =
     multiSelectElementBorders()
   fixturesBody = getCurrentBody().getBody
 
+proc floatNop(f: float): float = f
+
 proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
 
@@ -67,11 +69,18 @@ i=1, i=2, etc)"""
 
   var appliers: seq[(int, var MapFixture) -> void]
 
-  template floatProp(name: string; mapFxProp: untyped): untyped =
+  template floatProp(
+    name: string; mapFxProp: untyped;
+    inpToProp = floatNop;
+    propToInp = floatNop;
+  ): untyped =
+    let
+      inpToPropF = inpToProp
+      propToInpF = propToInp
     var inp {.global.}: string = "x"
     appliers.add proc (i: int; fx {.inject.}: var MapFixture) =
-      theEvaluator.addVars {"x": mapFxProp, "i": i.float}
-      var res = theEvaluator.eval inp
+      theEvaluator.addVars {"x": propToInpF(mapFxProp), "i": i.float}
+      var res = inpToPropF(theEvaluator.eval inp)
       res = res.clamp(-1e6, 1e6)
       if res == NaN: res = 0
       mapFxProp = res
@@ -108,7 +117,11 @@ i=1, i=2, etc)"""
 
   floatProp("x", fx.fxShape.c.x)
   floatProp("y", fx.fxShape.c.y)
-  floatProp("Angle (radians)", fx.fxShape.a)
+  block:
+    let
+      d2r = proc(f: float): float = degToRad(f)
+      r2d = proc(f: float): float = radToDeg(f)
+    floatProp("Angle", fx.fxShape.a, d2r, r2d)
   floatProp("Rect width", fx.fxShape.bxW)
   floatProp("Rect height", fx.fxShape.bxH)
   floatProp("Circle radius", fx.fxShape.ciR)
