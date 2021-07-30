@@ -273,3 +273,12 @@ mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
   elif ev.key == " ":
     docElemById("mapeditor_midbox_playbutton").click()
 )
+
+# Return to map editor after clicking play
+document.addEventListener("keydown", proc(ev: KeyboardEvent) =
+  if docElemById("mapeditorcontainer").style.display == "block" and
+      docElemById("gamerenderer").style.visibility == "inherit" and
+      ev.shiftKey and ev.key == " ":
+    docElemById("pretty_top_exit").click()
+    mapEditorDiv.focus()
+)
