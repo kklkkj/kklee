@@ -162,6 +162,11 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};
     "window.kklee.editorPreviewTimeMs"
   );
 
+  // By default, JSON.stringify produces an object instead of an array...
+  Float64Array.prototype.toJSON = function(){
+    return [...this.values()];
+  };
+
   require("./nimBuild.js");
   console.log("kklee injector run");
   return src;
