@@ -24,6 +24,8 @@ proc removeVertexMarker =
 
 proc setVertexMarker(vId: int) =
   removeVertexMarker()
+  if vId notin 0..sh.poV.high:
+    return
   let
     v = sh.poV[vId]
     # Only scaled marker positions
@@ -128,11 +130,14 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
   updateRenderer(true)
   updateRightBoxBody(moph.fixtures.find(fx))
 
+  template poV: untyped = sh.poV
+  if poV.len == 0:
+    poV.add [0.0, 0.0].MapPosition
+
   return buildHtml tdiv(style =
     "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px"
       .toCss
-    ):
-    template poV: untyped = sh.poV
+  ):
     for i, v in poV.mpairs:
       vertex(i, v, poV)
     tdiv(style = "margin: 3px".toCss):
@@ -162,6 +167,8 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         .toCss):
       tdiv(style = "width: 100%".toCss): text "Move vertex:"
       var vId {.global.}: int
+      if vId notin 0..poV.high:
+        vId = 0
       bonkInput(vId, proc(s: string): int =
         result = s.parseInt
         if result notin 0..poV.high: raise newException(ValueError, "")
