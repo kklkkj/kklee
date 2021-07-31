@@ -47,7 +47,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
     let
       fxId = bi.getBody.fx[i]
       fixture = getFx fxId
-    capture fixture, body:
+    capture fixture, body, fxId:
       if fixture.fxShape.shapeType == stypePo:
         proc editVerticies =
           state = StateObject(
@@ -56,8 +56,23 @@ afterUpdateRightBoxBody = proc(fx: int) =
           )
           rerender()
         se.appendChild shapeTableCell("",
-            createBonkButton("Edit verticies", editVerticies)
-          )
+            createBonkButton("Edit verticies", editVerticies))
+      proc editCapZone =
+        var shapeCzId = -1
+        for i, cz in mapObject.capZones:
+          if cz.i == fxId:
+            shapeCzId = i
+            break
+        if shapeCzId == -1:
+          mapObject.capZones.add MapCapZone(n: "Cap Zone", ty: 0, l: 10, i: fxID)
+          shapeCzId = mapObject.capZones.high
+          updateLeftBox()
+          updateRenderer(true)
+        document.getElementsByClassName("mapeditor_listtable")[^1]
+          .children[0].children[shapeCzId].Element.click()
+      se.appendChild shapeTableCell("",
+        createBonkButton("Capzone", editCapZone))
+
 
   shapeMultiSelectElementBorders()
 
