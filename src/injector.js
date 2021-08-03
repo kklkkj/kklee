@@ -108,9 +108,23 @@ ${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
 
   src = src.replace(
     saveHistoryFunction,
-    `window.kklee.saveToUndoHistory=${saveHistoryFunctionName};\
+    `window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
 ${saveHistoryFunction}`
   );
+
+  // Replace Float64Array instances with normal arrays
+  window.kklee.saveToUndoHistory = () => {
+    function fix(obj) {
+      for (const k of Object.keys(obj)) {
+        if (obj[k] instanceof Float64Array)
+          obj[k] = [...obj[k]];
+        else if (obj[k] instanceof Object)
+          fix(obj[k]);
+      }
+    }
+    fix(kklee.mapObject);
+    window.kklee.saveToUndoHistoryOLD();
+  };
 
   /*
     Prevent removal of event listener for activating chat with enter key when
@@ -161,11 +175,6 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};
 (?=;.{0,30}while.{10,150}Date.{0,5000})","g"),
     "window.kklee.editorPreviewTimeMs"
   );
-
-  // Add length to JSON.stringified object
-  Float64Array.prototype.toJSON = function(){
-    return Object.assign({length: this.length}, this);
-  };
 
   require("./nimBuild.js");
   console.log("kklee injector run");
