@@ -138,6 +138,8 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
     "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px"
       .toCss
   ):
+    ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
+      li text "Note: the list of verticies must be in a clockwise direction"
     for i, v in poV.mpairs:
       vertex(i, v, poV)
     tdiv(style = "margin: 3px".toCss):
