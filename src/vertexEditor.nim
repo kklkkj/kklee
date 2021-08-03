@@ -151,9 +151,9 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       tdiv(style = "width: 100%".toCss): text "Scale verticies:"
       var scale {.global.}: MapPosition = [1.0, 1.0]
       text "x:"
-      bonkInput scale.x, prsFLimitedPositive, nil, niceFormatFloat
+      bonkInput scale.x, prsFLimited, nil, niceFormatFloat
       text "y:"
-      bonkInput scale.y, prsFLimitedPositive, nil, niceFormatFloat
+      bonkInput scale.y, prsFLimited, nil, niceFormatFloat
 
       bonkButton "Apply", proc(): void =
         for v in poV.mitems:
