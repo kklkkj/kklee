@@ -265,7 +265,8 @@ let
 arithmeticTip.innerText =
   "You can enter arithmetic into fields, such as 100*2+50, and evaluate it with Shift+Enter"
 shortcutsTip.innerText =
-  "Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space"
+  """Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space,
+Return to editor after play - Shift+Esc"""
 
 tipsList.appendChild(arithmeticTip)
 tipsList.appendChild(shortcutsTip)
@@ -293,7 +294,7 @@ mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
 document.addEventListener("keydown", proc(ev: KeyboardEvent) =
   if docElemById("mapeditorcontainer").style.display == "block" and
       docElemById("gamerenderer").style.visibility == "inherit" and
-      ev.shiftKey and ev.key == " ":
+      ev.shiftKey and ev.key == "Escape":
     docElemById("pretty_top_exit").click()
     mapEditorDiv.focus()
 )
