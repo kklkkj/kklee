@@ -68,6 +68,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
           shapeCzId = mapObject.capZones.high
           updateLeftBox()
           updateRenderer(true)
+          saveToUndoHistory()
         document.getElementsByClassName("mapeditor_listtable")[^1]
           .children[0].children[shapeCzId].Element.click()
       se.appendChild shapeTableCell("",
