@@ -2,10 +2,10 @@
 
 ## v0.11
 - Fixed bugs in the vertex editor
-- Added a button in shape properties that adds a new, or views an existing,
+- Added a button in shape properties that adds a new or views an existing
   capture zone for that shape
 - Negative numbers can now be used in vertex scaling
-- Changed shortcut of returning to editor after pressing play to Shift+Esc
+- Changed shortcut for returning to editor after pressing play to Shift+Esc
 
 ## v0.10
 - Removed the "move to platform" feature in multi-select
