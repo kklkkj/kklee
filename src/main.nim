@@ -299,3 +299,11 @@ document.addEventListener("keydown", proc(ev: KeyboardEvent) =
     docElemById("pretty_top_exit").click()
     mapEditorDiv.focus()
 )
+
+# Transfer map ownership button
+proc openTransferOwnership =
+  state = StateObject(kind: seTransferOwnership)
+  rerender()
+docElemById("mapeditor_rightbox_mapparams").appendChild(
+  shapeTableCell("", createBonkButton("Transfer ownership",
+      openTransferOwnership)))
