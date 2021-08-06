@@ -97,9 +97,7 @@ type
     poS* {.exportc: "s".}: float  # Scale
     poV* {.exportc: "v".}: seq[MapPosition]
 
-
-
-proc shapeType*(s: MapShape): MapShapeType = parseEnum[MapShapeType]($s.stype)
+func shapeType*(s: MapShape): MapShapeType = parseEnum[MapShapeType]($s.stype)
 
 var mapObject* {.importc: "window.kklee.mapObject".}: MapData
 
@@ -130,7 +128,7 @@ proc deleteFx*(fxId: int) =
 
 var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float
 
-proc copyObject*[T: ref](x: T): T =
+func copyObject*[T: ref](x: T): T =
   proc stringify(_: T): cstring {.importc: "window.JSON.stringify".}
   proc parse(_: cstring): T {.importc: "window.JSON.parse".}
   x.stringify.parse

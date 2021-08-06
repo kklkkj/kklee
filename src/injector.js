@@ -241,5 +241,3 @@ line-height: normal;";
   alert("Something went wrong with checking if the current version of kklee is \
 outdated");
 });
-
-

@@ -12,8 +12,8 @@ proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
       proc onClick = onClick()
 
 
-proc defaultFormat*[T](v: T) = $v
-proc niceFormatFloat*(f: float): string = f.formatFloat(precision = -1)
+func defaultFormat*[T](v: T) = $v
+func niceFormatFloat*(f: float): string = f.formatFloat(precision = -1)
 
 # Note: there is bonkInputWide in shapeGenerator...
 proc bonkInput*[T](variable: var T; parser: string -> T;
@@ -50,10 +50,10 @@ proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
       .fmt.toCss):
       proc onClick = variable = not variable
 
-proc prsFLimited*(s: string): float =
+func prsFLimited*(s: string): float =
   result = s.parseFloat
   if result notin -1e6..1e6: raise newException(ValueError, "prsFLimited")
 
-proc prsFLimitedPositive*(s: string): float =
+func prsFLimitedPositive*(s: string): float =
   result = s.prsFLimited
   if result < 0.0: raise newException(ValueError, "prsFLimitedPostive")

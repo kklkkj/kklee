@@ -86,14 +86,14 @@ proc setGs(kind: ShapeGeneratorKind) =
     gs.noPhysics = false
     gs.prec = 20
 
-proc dtr(f: float): float = f.degToRad
+func dtr(f: float): float = f.degToRad
 
-proc safeFloat(n: float): float =
+func safeFloat(n: float): float =
   if n.isNaN:
     0.0
   else:
     n.clamp(-1e6, 1e6)
-proc safePos(p: MapPosition): MapPosition =
+func safePos(p: MapPosition): MapPosition =
   [p.x.safeFloat, p.y.safeFloat].MapPosition
 
 proc genLinesShape(getPos: float -> MapPosition) =
