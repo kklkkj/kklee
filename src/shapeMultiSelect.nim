@@ -116,7 +116,18 @@ i=1, i=2, etc)"""
       ):
       checkbox(canChange)
       colourInput(inp)
+  template nameChanger: untyped =
+    var
+      canChange {.global.} = false
+      inp {.global.}: string = "Shape %i%"
+    appliers.add proc(i: int; fx: var MapFixture) =
+      if canChange:
+        fx.n = inp.replace("%i%", $i).cstring
+    buildHtml tdiv(style = "display: flex".toCss):
+      checkbox(canChange)
+      bonkInput(inp, s => s, nil, s => s)
 
+  prop("Name", nameChanger())
   floatProp("x", fx.fxShape.c.x)
   floatProp("y", fx.fxShape.c.y)
   block:
