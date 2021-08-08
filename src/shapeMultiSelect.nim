@@ -110,10 +110,7 @@ i=1, i=2, etc)"""
     appliers.add proc(i: int; fx: var MapFixture) =
       if canChange:
         fx.f = inp
-    buildHtml tdiv(style =
-      "display:flex; flex-flow: row wrap; justify-content: space-between"
-      .toCss
-      ):
+    buildHtml tdiv(style = "display: flex".toCss):
       checkbox(canChange)
       colourInput(inp)
   template nameChanger: untyped =
