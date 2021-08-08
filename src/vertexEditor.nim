@@ -94,6 +94,53 @@ proc mergeShapes(b: MapBody) =
 
   saveToUndoHistory()
 
+proc roundCorners(poV: seq[MapPosition]; r: float; prec: float): seq[MapPosition] =
+  for i, p in poV:
+    let
+      p1 = poV[floorMod(i - 1, poV.len)]
+      p2 = poV[floorMod(i + 1, poV.len)]
+      dp1 = [p.x - p1.x, p.y - p1.y].MapPosition
+      dp2 = [p.x - p2.x, p.y - p2.y].MapPosition
+      pp1 = hypot(dp1.x, dp1.y)
+      pp2 = hypot(dp2.x, dp2.y)
+      angle = arctan2(dp1.y, dp1.x) -
+              arctan2(dp2.y, dp2.x)
+    var
+      radius = r
+      segment = radius / abs(tan(angle / 2))
+      segmentMax = min(pp1, pp2) / 2
+    if segment > segmentMax:
+      segment = segmentMax
+      radius = segment * abs(tan(angle / 2))
+    let
+      po = hypot(radius, segment)
+      c1 = [p.x - dp1.x * segment / pp1,
+            p.y - dp1.y * segment / pp1].MapPosition
+      c2 = [p.x - dp2.x * segment / pp2,
+            p.y - dp2.y * segment / pp2].MapPosition
+      d = [p.x * 2 - c1.x - c2.x,
+           p.y * 2 - c1.y - c2.y].MapPosition
+      pc = hypot(d.x, d.y)
+      o = [p.x - d.x * po / pc,
+           p.y - d.y * po / pc].MapPosition
+    var
+      startAngle = arctan2(c1.y - o.y, c1.x - o.x)
+      endAngle = arctan2(c2.y - o.y, c2.x - o.x)
+      sweepAngle = endAngle - startAngle
+    if sweepAngle > PI:
+      sweepAngle -= 2 * PI
+    elif sweepAngle < -PI:
+      sweepAngle += 2 * PI
+
+    result.add c1
+    let pointsCount = abs(sweepAngle * prec.float / (2 * PI)).ceil.int
+    for pointI in 1..pointsCount:
+      let
+        t = pointI / (pointsCount + 1)
+        a = startAngle + sweepAngle * t
+      result.add [o.x + radius * cos(a),
+                  o.y + radius * sin(a)].MapPosition
+    result.add c2
 
 proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
   b = veb
@@ -217,6 +264,20 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       fx.np = true
       saveToUndoHistory()
     )
-
     bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
       mergeShapes(b))
+
+    tdiv(style = "padding: 5px 0px".toCss):
+      var
+        prec {.global.}: float = 20.0
+        radius {.global.}: float = 20.0
+      text "Radius"
+      bonkInput(radius, prsFLimitedPositive, nil, niceFormatFloat)
+      br()
+      text "Precision"
+      bonkInput(prec, prsFLimitedPositive, nil, niceFormatFloat)
+      bonkButton("Round corners", proc =
+        poV = roundCorners(poV, radius, prec)
+        saveToUndoHistory()
+        updateRenderer(true)
+      )
