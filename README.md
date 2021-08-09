@@ -7,13 +7,15 @@ A browser extension that extends the functionality of the map editor in
 ### Features
 - Multi-select with ability to set shape properties, copy shapes and delete
   shapes
-- Vertex editor with (buggy) ability to merge multiple polygons into one
+- Vertex editor with ability to round corners and (buggy) ability to merge
+  multiple polygons into one
 - Easily generate ellipses, spirals, sine waves, gradients and custom equations
 - Ability to use your browser's colour picker for changing colours
 - Evaluate arithmetic in number fields by pressing Shift+Enter
   (example: type `100*2+50` into X position field and press Shift+Enter)
 - Change the speed of map testing in the editor
 - The chat is visible in the map editor
+- Ability to transfer map ownership
 - Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space
 
 ## Installing
