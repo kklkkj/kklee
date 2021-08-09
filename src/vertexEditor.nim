@@ -97,8 +97,8 @@ proc mergeShapes(b: MapBody) =
 proc roundCorners(poV: seq[MapPosition]; r: float; prec: float): seq[MapPosition] =
   for i, p in poV:
     let
-      p1 = poV[floorMod(i - 1, poV.len)]
-      p2 = poV[floorMod(i + 1, poV.len)]
+      p1 = poV[if i == 0: poV.high else: i - 1]
+      p2 = poV[if i == poV.high: 0 else: i + 1]
       dp1 = [p.x - p1.x, p.y - p1.y].MapPosition
       dp2 = [p.x - p2.x, p.y - p2.y].MapPosition
       pp1 = hypot(dp1.x, dp1.y)
