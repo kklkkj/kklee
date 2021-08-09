@@ -3,7 +3,7 @@
 ## v0.12
 - Added ability to transfer map ownership to a contributor of a map if you are
   the original author
-- Added ability to round the corners of a polgon in the vertex editor
+- Added ability to round the corners of a polygon in the vertex editor
 - Added the shape name property to the shape multi-select editor
 
 ## v0.11
