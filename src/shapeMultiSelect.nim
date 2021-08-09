@@ -11,6 +11,15 @@ var
 type boolPropValue = enum
   bpSame, bpTrue, bpFalse
 
+proc removeDeletedFixtures =
+  var i = 0
+  while i < selectedFixtures.len:
+    let fx = selectedFixtures[i]
+    if moph.fixtures.find(fx) == -1:
+      selectedFixtures.delete i
+    else:
+      inc i
+
 proc shapeMultiSelectElementBorders* =
   let
     shapeElements = document
@@ -146,6 +155,7 @@ i=1, i=2, etc)"""
   prop("Colour", colourChanger())
 
   bonkButton "Apply", proc =
+    removeDeletedFixtures()
     for i, f in selectedFixtures.mpairs:
       for a in appliers: a(i, f)
     saveToUndoHistory()
@@ -159,6 +169,7 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     copyShapes {.global.}: seq[tuple[fx: MapFixture; sh: MapShape]]
     pasteAmount {.global.} = 1
   bonkButton "Copy shapes", proc =
+    removeDeletedFixtures()
     copyShapes = @[]
     for fx in selectedFixtures:
       copyShapes.add (fx: fx.copyObject(), sh: fx.fxShape.copyObject())
