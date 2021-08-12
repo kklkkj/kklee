@@ -49,7 +49,7 @@ proc setVertexMarker(vId: int) =
   markerFxId = some fxId
   updateRenderer(true)
 
-proc mergeShapes(b: MapBody) =
+proc mergeShapes =
   # This is buggy because the output verticies might be ordered in a way
   # that causes it to be not rendered corrently...
   sh.poV.applyIt [it.x * sh.poS, it.y * sh.poS].MapPosition
@@ -89,7 +89,8 @@ proc mergeShapes(b: MapBody) =
         c.x * cos(-sh.a) - c.y * sin(-sh.a),
         c.x * sin(-sh.a) + c.y * cos(-sh.a)
       ]
-    sh.poV.add(npoV & npoV[0] & sh.poV[^1])
+    npoV &= [npoV[0], sh.poV[^1]]
+    sh.poV.add(npoV)
     deleteFx fxId
 
   saveToUndoHistory()
@@ -267,7 +268,7 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       saveToUndoHistory()
     )
     bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
-      mergeShapes(b))
+      mergeShapes())
 
     tdiv(style = "padding: 5px 0px".toCss):
       var
