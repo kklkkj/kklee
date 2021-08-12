@@ -1,4 +1,4 @@
-import std/[strutils, sequtils, dom]
+import std/[strutils, sequtils, dom, math]
 
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =
@@ -109,6 +109,12 @@ template x*(arr: MapPosition): untyped = arr[0]
 template `x=`*(arr: MapPosition; v): untyped = arr[0] = v
 template y*(arr: MapPosition): untyped = arr[1]
 template `y=`*(arr: MapPosition; v): untyped = arr[1] = v
+
+func rotatePoint*(p: MapPosition; a: float): MapPosition =
+  [
+    p.x * cos(a) - p.y * sin(a),
+    p.x * sin(a) + p.y * cos(a)
+  ]
 
 template moph*: untyped = mapObject.physics
 

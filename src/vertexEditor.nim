@@ -33,10 +33,9 @@ proc setVertexMarker(vId: int) =
       v.x * sh.poS,
       v.y * sh.poS
     ]
-    markerPos: MapPosition = [
-      smp.x * cos(sh.a) - smp.y * sin(sh.a) + sh.c.x,
-      smp.x * sin(sh.a) + smp.y * cos(sh.a) + sh.c.y
-    ]
+  var markerPos: MapPosition = smp.rotatePoint(sh.a)
+  markerPos.x += sh.c.x
+  markerPos.y += sh.c.y
   moph.shapes.add MapShape(
     stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
   )
@@ -80,15 +79,9 @@ proc mergeShapes =
       continue
 
     for c in npoV.mitems:
-      c = [
-        c.x * cos(csh.a) - c.y * sin(csh.a),
-        c.x * sin(csh.a) + c.y * cos(csh.a)
-      ]
+      c = c.rotatePoint(csh.a)
       c = [c.x + csh.c.x - sh.c.x, c.y + csh.c.y - sh.c.y]
-      c = [
-        c.x * cos(-sh.a) - c.y * sin(-sh.a),
-        c.x * sin(-sh.a) + c.y * cos(-sh.a)
-      ]
+      c = c.rotatePoint(-sh.a)
     npoV &= [npoV[0], sh.poV[^1]]
     sh.poV.add(npoV)
     deleteFx fxId

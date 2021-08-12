@@ -98,13 +98,12 @@ func safePos(p: MapPosition): MapPosition =
 
 proc genLinesShape(getPos: float -> MapPosition) =
   proc getPosAdj(x: float): MapPosition =
-    let
-      r = getPos(x)
-      sa = gs.angle.dtr
-    return [
-      r.x * cos(sa) - r.y * sin(sa) + gs.x,
-      r.x * sin(sa) + r.y * cos(sa) + gs.y
-    ]
+    let sa = gs.angle.dtr
+    var r = getPos(x)
+    r = r.rotatePoint(sa)
+    r.x += gs.x
+    r.y += gs.y
+    return r
 
   for n in 0..gs.prec-1:
     let
@@ -220,11 +219,9 @@ proc generateGradient: int =
 
       block:
         let sa = gs.angle.dtr
-        var r = shape.c
-        shape.c = [
-          r.x * cos(sa) - r.y * sin(sa) + gs.x,
-          r.x * sin(sa) + r.y * cos(sa) + gs.y
-        ]
+        shape.c = shape.c.rotatePoint(sa)
+        shape.c.x += gs.x
+        shape.c.y += gs.y
     of sgsRadialGradient:
       let crm = i.float / (gs.prec.float - 1)
       shape = MapShape(
