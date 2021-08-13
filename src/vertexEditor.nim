@@ -88,7 +88,8 @@ proc mergeShapes(b: MapBody; sh: MapShape) =
 
   saveToUndoHistory()
 
-proc roundCorners(poV: seq[MapPosition]; r: float; prec: float): seq[MapPosition] =
+proc roundCorners(poV: seq[MapPosition]; r: float; prec: float):
+    seq[MapPosition] =
   for i, p in poV:
     let
       p1 = poV[if i == 0: poV.high else: i - 1]
@@ -177,9 +178,8 @@ proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
   if poV.len == 0:
     poV.add [0.0, 0.0].MapPosition
 
-  return buildHtml tdiv(style =
-    "flex: auto; overflow-y: auto; display: flex; flex-flow: column; row-gap: 2px"
-      .toCss
+  return buildHtml tdiv(style = ("flex: auto; overflow-y: auto; " &
+    "display: flex; flex-flow: column; row-gap: 2px").toCss
   ):
     ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
       li text "Note: the list of verticies must be in a clockwise direction"

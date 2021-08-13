@@ -45,9 +45,9 @@ proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
     if variable: "#59b0d6"
     else: "#586e77"
   buildHtml:
-    tdiv(style =
-      "width: 10px; height: 10px; margin: 3px; border: 2px solid #111111; background-color: {colour}"
-      .fmt.toCss):
+    tdiv(style = ("width: 10px; height: 10px; margin: 3px; " &
+      "border: 2px solid #111111; background-color: {colour}").fmt.toCss
+    ):
       proc onClick = variable = not variable
 
 func prsFLimited*(s: string): float =

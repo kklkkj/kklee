@@ -366,8 +366,10 @@ proc shapeGenerator*(body: MapBody): VNode =
             afterInput: proc(): void = nil; stringify: T ->
                 string): VNode =
           buildHtml:
-            input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-                value = variable.stringify, style = "width: 150px".toCss):
+            input(class =
+              "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
+              value = variable.stringify, style = "width: 150px".toCss
+            ):
               proc onInput(e: Event; n: VNode) =
                 try:
                   variable = parser $n.value

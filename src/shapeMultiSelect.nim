@@ -38,9 +38,9 @@ proc tfsCheckbox(inp: var boolPropValue): VNode =
     of bpTrue: "#59d65e"
     of bpFalse: "#d65959"
     of bpSame: "#d6bd59"
-  return buildHtml tdiv(style =
-  "width: 10px; height: 10px; margin: 3px; border: 2px solid #111111; background-color: {colour}"
-  .fmt.toCss):
+  return buildHtml tdiv(style = ("width: 10px; height: 10px; margin: 3px; " &
+    "border: 2px solid #111111; background-color: {colour}").fmt.toCss
+  ):
     proc onClick =
       inp = case inp
         of bpSame: bpTrue

@@ -64,7 +64,8 @@ afterUpdateRightBoxBody = proc(fx: int) =
             shapeCzId = i
             break
         if shapeCzId == -1:
-          mapObject.capZones.add MapCapZone(n: "Cap Zone", ty: 0, l: 10, i: fxID)
+          mapObject.capZones.add MapCapZone(
+            n: "Cap Zone", ty: 0, l: 10, i: fxID)
           shapeCzId = mapObject.capZones.high
           updateLeftBox()
           updateRenderer(true)
@@ -160,7 +161,8 @@ proc moveChatToEditor(e: Event) =
     docElemById("mapeditor_leftbox")
   )
   chat.setAttribute("style",
-    "position: fixed; left: 0%; top: 0%; width: calc(20% - 100px); height: 90%; transform: scale(0.9);"
+    ("position: fixed; left: 0%; top: 0%; width: calc(20% - 100px); " &
+     "height: 90%; transform: scale(0.9);")
   )
   parentDocument.getElementById("adboxverticalleftCurse").style.display = "none"
   # Modifying scrollTop immediately won't work, so I used setTimeout 0ms
@@ -264,10 +266,11 @@ let
   shortcutsTip = document.createElement("li")
 
 arithmeticTip.innerText =
-  "You can enter arithmetic into fields, such as 100*2+50, and evaluate it with Shift+Enter"
+  "You can enter arithmetic into fields, such as 100*2+50, and evaluate it " &
+  "with Shift+Enter"
 shortcutsTip.innerText =
-  """Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space,
-Return to editor after play - Shift+Esc"""
+  "Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space, " &
+  "Return to editor after play - Shift+Esc"
 
 tipsList.appendChild(arithmeticTip)
 tipsList.appendChild(shortcutsTip)
