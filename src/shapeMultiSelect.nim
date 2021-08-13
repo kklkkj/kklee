@@ -198,15 +198,15 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
   bonkButton "Select all", proc =
     shapeMultiSelectSwitchPlatform()
     selectedFixtures = collect(newSeq):
-      for fxid in fixturesBody.fx: fxid.getFx
+      for fxId in fixturesBody.fx: fxId.getFx
     shapeMultiSelectElementBorders()
   bonkButton "Deselect all", proc =
     selectedFixtures = @[]
     shapeMultiSelectElementBorders()
   bonkButton "Invert selection", proc =
     selectedFixtures = collect(newSeq):
-      for fxid in fixturesBody.fx:
-        let fx = fxid.getFx
+      for fxId in fixturesBody.fx:
+        let fx = fxId.getFx
         if fx notin selectedFixtures:
           fx
     shapeMultiSelectElementBorders()
@@ -214,9 +214,9 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
 proc shapeMultiSelectDelete: VNode =
   buildHtml bonkButton "Delete shapes", proc =
     for f in selectedFixtures:
-      let fxid = moph.fixtures.find f
-      if fxid == -1: continue
-      deleteFx(fxid)
+      let fxId = moph.fixtures.find f
+      if fxId == -1: continue
+      deleteFx(fxId)
     saveToUndoHistory()
     selectedFixtures = @[]
     updateRenderer(true)

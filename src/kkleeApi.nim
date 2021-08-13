@@ -102,7 +102,7 @@ func shapeType*(s: MapShape): MapShapeType = parseEnum[MapShapeType]($s.stype)
 var mapObject* {.importc: "window.kklee.mapObject".}: MapData
 
 proc fxShape*(fxo: MapFixture): MapShape = mapObject.physics.shapes[fxo.sh]
-proc getFx*(fxi: int): MapFixture = mapObject.physics.fixtures[fxi]
+proc getFx*(fxId: int): MapFixture = mapObject.physics.fixtures[fxId]
 proc getBody*(bi: int): MapBody = mapObject.physics.bodies[bi]
 
 template x*(arr: MapPosition): untyped = arr[0]
@@ -119,14 +119,14 @@ func rotatePoint*(p: MapPosition; a: float): MapPosition =
 template moph*: untyped = mapObject.physics
 
 proc deleteFx*(fxId: int) =
-  let shId = fxid.getFx.sh
+  let shId = fxId.getFx.sh
   moph.fixtures.delete fxId
   moph.shapes.delete shId
   for b in moph.bodies:
     b.fx.keepItIf it != fxId
     for f in b.fx.mitems:
       if f > fxId: dec f
-  for c in mapObject.capzones.mitems:
+  for c in mapObject.capZones.mitems:
     if c.i == fxId: c.i = -1
     if c.i > fxId: dec c.i
   for f in moph.fixtures.mitems:

@@ -225,12 +225,12 @@ proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
         setVertexMarker vId
 
       bonkButton("Down", proc(): void =
-        swap poV[vId], pov[vId + 1]
+        swap poV[vId], poV[vId + 1]
         inc vId
         stuh()
       , vId == poV.high)
       bonkButton("Up", proc(): void =
-        swap poV[vId], pov[vId - 1]
+        swap poV[vId], poV[vId - 1]
         dec vId
         stuh()
       , vId == poV.low)

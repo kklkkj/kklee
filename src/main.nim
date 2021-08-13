@@ -65,7 +65,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
             break
         if shapeCzId == -1:
           mapObject.capZones.add MapCapZone(
-            n: "Cap Zone", ty: 0, l: 10, i: fxID)
+            n: "Cap Zone", ty: 0, l: 10, i: fxId)
           shapeCzId = mapObject.capZones.high
           updateLeftBox()
           updateRenderer(true)
@@ -172,10 +172,10 @@ proc moveChatToEditor(e: Event) =
 proc restoreChat(e: Event) =
   if not isChatInEditor: return
   isChatInEditor = false
-  docElemById("newbonklobby").insertbefore(
+  docElemById("newbonklobby").insertBefore(
     chat, docElemById("newbonklobby_settingsbox")
   )
-  chat.setattribute("style", "")
+  chat.setAttribute("style", "")
   parentDocument.getElementById("adboxverticalleftCurse").style.display = ""
 
 docElemById("newbonklobby_editorbutton")
