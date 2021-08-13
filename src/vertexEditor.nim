@@ -6,16 +6,16 @@ import
 
 var
   markerFxId: Option[int]
-  b: MapBody
-  fx: MapFixture
-  sh: MapShape
+  veB: MapBody
+  veFx: MapFixture
+  veSh: MapShape
 
 proc removeVertexMarker =
   if markerFxId.isNone: return
   let mfxId = markerFxId.get
-  for i, j in b.fx:
+  for i, j in veB.fx:
     if j == mfxId:
-      b.fx.delete i
+      veB.fx.delete i
       break
   moph.shapes.delete mfxId.getFx.sh
   moph.fixtures.delete mfxId
@@ -24,18 +24,18 @@ proc removeVertexMarker =
 
 proc setVertexMarker(vId: int) =
   removeVertexMarker()
-  if vId notin 0..sh.poV.high:
+  if vId notin 0..veSh.poV.high:
     return
   let
-    v = sh.poV[vId]
+    v = veSh.poV[vId]
     # Only scaled marker positions
     smp: MapPosition = [
-      v.x * sh.poS,
-      v.y * sh.poS
+      v.x * veSh.poS,
+      v.y * veSh.poS
     ]
-  var markerPos: MapPosition = smp.rotatePoint(sh.a)
-  markerPos.x += sh.c.x
-  markerPos.y += sh.c.y
+  var markerPos: MapPosition = smp.rotatePoint(veSh.a)
+  markerPos.x += veSh.c.x
+  markerPos.y += veSh.c.y
   moph.shapes.add MapShape(
     stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
   )
@@ -44,7 +44,7 @@ proc setVertexMarker(vId: int) =
     sh: moph.shapes.high
   )
   let fxId = moph.fixtures.high
-  b.fx.add fxId
+  veB.fx.add fxId
   markerFxId = some fxId
   updateRenderer(true)
 
@@ -60,7 +60,7 @@ proc mergeShapes(b: MapBody; sh: MapShape) =
       fxId = b.fx[i]
       cfx = fxId.getFx
       csh = cfx.fxShape
-    if cfx.f != fx.f or cfx == fx or
+    if cfx.f != veFx.f or cfx == veFx or
       not cfx.np:
       inc i
       continue
@@ -136,12 +136,12 @@ proc roundCorners(poV: seq[MapPosition]; r: float; prec: float): seq[MapPosition
                   o.y + radius * sin(a)].MapPosition
     result.add c2
 
-proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
-  b = veb
-  fx = vefx
-  if moph.fixtures.find(fx) == -1:
+proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
+  veB = pveB
+  veFx = pveFx
+  if moph.fixtures.find(veFx) == -1:
     return buildHtml(tdiv): discard
-  sh = fx.fxShape
+  veSh = veFx.fxShape
 
   proc vertex(i: int; v: var MapPosition; poV: var seq[MapPosition]): VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
@@ -171,9 +171,9 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
         removeVertexMarker()
 
   updateRenderer(true)
-  updateRightBoxBody(moph.fixtures.find(fx))
+  updateRightBoxBody(moph.fixtures.find(veFx))
 
-  template poV: untyped = sh.poV
+  template poV: untyped = veSh.poV
   if poV.len == 0:
     poV.add [0.0, 0.0].MapPosition
 
@@ -257,11 +257,11 @@ proc vertexEditor*(veb: var MapBody; vefx: var MapFixture): VNode =
       saveToUndoHistory()
     )
     bonkButton("Set no physics", proc =
-      fx.np = true
+      veFx.np = true
       saveToUndoHistory()
     )
     bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
-      mergeShapes(b, sh))
+      mergeShapes(veB, veSh))
 
     tdiv(style = "padding: 5px 0px".toCss):
       var
