@@ -203,6 +203,13 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
   bonkButton "Deselect all", proc =
     selectedFixtures = @[]
     shapeMultiSelectElementBorders()
+  bonkButton "Invert selection", proc =
+    selectedFixtures = collect(newSeq):
+      for fxid in fixturesBody.fx:
+        let fx = fxid.getFx
+        if fx notin selectedFixtures:
+          fx
+    shapeMultiSelectElementBorders()
 
 proc shapeMultiSelectDelete: VNode =
   buildHtml bonkButton "Delete shapes", proc =
