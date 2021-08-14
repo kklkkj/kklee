@@ -151,6 +151,7 @@ rightBoxShapeTableContainer
 
 let totalMassTextbox = document.createElement("input")
 totalMassTextbox.style.width = "60px"
+totalMassTextbox.style.backgroundColor = "gray"
 docElemById("mapeditor_rightbox_table_dynamic").children[0]
   .appendChild shapeTableCell("Platform mass", totalMassTextbox)
 
