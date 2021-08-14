@@ -147,6 +147,38 @@ rightBoxShapeTableContainer
     shapeMultiSelectElementBorders()
   )
 
+# Total mass of platform value textbox
+
+let totalMassTextbox = document.createElement("input")
+totalMassTextbox.style.width = "60px"
+docElemById("mapeditor_rightbox_table_dynamic").children[0]
+  .appendChild shapeTableCell("Platform mass", totalMassTextbox)
+
+totalMassTextbox.addEventListener("mousemove", proc(e: Event) =
+  var totalMass = 0.0
+  let body = getCurrentBody().getBody
+  for fxId in body.fx:
+    let
+      fx = fxId.getFx
+      sh = fx.fxShape
+      density = if fx.de == jsNull: body.de
+                else: fx.de
+      area = case sh.shapeType
+        of stypeBx:
+          sh.bxH * sh.bxW
+        of stypeCi:
+          PI * sh.ciR ^ 2
+        of stypePo:
+          var area = 0.0
+          for i, p1 in sh.poV:
+            let p2 = sh.poV[if i == sh.poV.high: 0 else: i + 1]
+            area += p1.x * p2.y - p2.x * p1.y
+          area / 2
+      mass = area * density
+    totalMass += mass
+  totalMassTextbox.value = $totalMass
+)
+
 # See chat in editor
 
 let chat = docElemById("newbonklobby_chatbox")

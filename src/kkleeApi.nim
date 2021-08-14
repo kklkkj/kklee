@@ -139,5 +139,7 @@ func copyObject*[T: ref](x: T): T =
   proc parse(_: cstring): T {.importc: "window.JSON.parse".}
   x.stringify.parse
 
+let jsNull* {.importc: "null".}: float
+
 proc docElemById*(s: cstring): Element =
   document.getElementById(s)
