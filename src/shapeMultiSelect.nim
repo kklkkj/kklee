@@ -28,10 +28,22 @@ proc shapeMultiSelectElementBorders* =
       .reversed
     body = getCurrentBody().getBody
   for i, se in shapeElements:
-    if selectedFixtures.find(body.fx[i].getFx) == -1:
+    let prevNode = se.previousSibling
+    if not prevNode.isNil and prevNode.class ==
+        "kkleeMultiSelectShapeIndexLabel":
+      prevNode.remove()
+
+    let fxId = selectedFixtures.find(body.fx[i].getFx)
+    if fxId == -1:
       se.style.border = ""
     else:
       se.style.border = "4px solid blue"
+
+      let indexLabel = document.createElement("span")
+      indexLabel.innerText = $fxId
+      indexLabel.setAttr("style", "color: blue; font-size: 12px")
+      indexLabel.class = "kkleeMultiSelectShapeIndexLabel"
+      se.parentNode.insertBefore(indexLabel, se)
 
 proc tfsCheckbox(inp: var boolPropValue): VNode =
   let colour = case inp
