@@ -119,8 +119,8 @@ proc genLinesShape(getPos: float -> MapPosition) =
     )
     moph.shapes.add shape
 
-    let fixture = MapFixture(n: &"rect{n}", de: NaN, re: NaN,
-      fr: NaN, f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
+    let fixture = MapFixture(n: &"rect{n}", de: jsNull, re: jsNull,
+      fr: jsNull, f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
     )
     moph.fixtures.add fixture
     gs.body.fx.add moph.fixtures.high
@@ -152,7 +152,7 @@ proc generateEllipse: int =
       ].MapPosition
 
     moph.shapes.add shape
-    let fixture = MapFixture(n: "ellipse", de: NaN, re: NaN, fr: NaN,
+    let fixture = MapFixture(n: "ellipse", de: jsNull, re: jsNull, fr: jsNull,
         f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
     )
     moph.fixtures.add fixture
@@ -233,8 +233,8 @@ proc generateGradient: int =
     moph.shapes.add shape
     let
       colour = getGradientColourAt(gs.colour, gs.colour2, i / gs.prec)
-      fixture = MapFixture(n: &"gradient{i}", de: NaN, re: NaN,
-        fr: NaN, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
+      fixture = MapFixture(n: &"gradient{i}", de: jsNull, re: jsNull,
+        fr: jsNull, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
     moph.fixtures.add fixture
     gs.body.fx.add moph.fixtures.high
   return gs.prec
