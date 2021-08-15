@@ -1,3 +1,6 @@
+when not defined js:
+  {.fatal: "This module only works on the JavaScipt platform".}
+
 import std/[strutils, sequtils, dom, math]
 
 template importUpdateFunction(name: untyped;
