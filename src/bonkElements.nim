@@ -57,3 +57,20 @@ func prsFLimited*(s: string): float =
 func prsFLimitedPositive*(s: string): float =
   result = s.prsFLimited
   if result < 0.0: raise newException(ValueError, "prsFLimitedPostive")
+
+type boolPropValue* = enum
+  tfsSame, tfsTrue, tfsFalse
+
+proc tfsCheckbox*(inp: var boolPropValue): VNode =
+  let colour = case inp
+    of tfsTrue: "#59d65e"
+    of tfsFalse: "#d65959"
+    of tfsSame: "#d6bd59"
+  return buildHtml tdiv(style = ("width: 10px; height: 10px; margin: 3px; " &
+    "border: 2px solid #111111; background-color: {colour}").fmt.toCss
+  ):
+    proc onClick =
+      inp = case inp
+        of tfsSame: tfsTrue
+        of tfsTrue: tfsFalse
+        of tfsFalse: tfsSame

@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, algorithm, strformat, dom, math],
+  std/[sugar, strutils, algorithm, dom, math],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
@@ -7,9 +7,6 @@ import
 var
   selectedFixtures*: seq[MapFixture]
   fixturesBody*: MapBody
-
-type boolPropValue = enum
-  bpSame, bpTrue, bpFalse
 
 proc removeDeletedFixtures =
   var i = 0
@@ -44,20 +41,6 @@ proc shapeMultiSelectElementBorders* =
       indexLabel.setAttr("style", "color: blue; font-size: 12px")
       indexLabel.class = "kkleeMultiSelectShapeIndexLabel"
       se.parentNode.insertBefore(indexLabel, se)
-
-proc tfsCheckbox(inp: var boolPropValue): VNode =
-  let colour = case inp
-    of bpTrue: "#59d65e"
-    of bpFalse: "#d65959"
-    of bpSame: "#d6bd59"
-  return buildHtml tdiv(style = ("width: 10px; height: 10px; margin: 3px; " &
-    "border: 2px solid #111111; background-color: {colour}").fmt.toCss
-  ):
-    proc onClick =
-      inp = case inp
-        of bpSame: bpTrue
-        of bpTrue: bpFalse
-        of bpFalse: bpSame
 
 proc prop(name: string; field: VNode): VNode =
   buildHtml: tdiv(style =
@@ -118,9 +101,9 @@ i=1, i=2, etc)"""
     var inp {.global.}: boolPropValue
     appliers.add proc(i: int; fx {.inject.}: var MapFixture) =
       case inp
-      of bpFalse: mapFxProp = false
-      of bpTrue: mapFxProp = true
-      of bpSame: discard
+      of tfsFalse: mapFxProp = false
+      of tfsTrue: mapFxProp = true
+      of tfsSame: discard
     buildHtml:
       prop name, tfsCheckbox(inp)
 
