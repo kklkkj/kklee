@@ -1,6 +1,6 @@
 import
   std/[dom, algorithm, sugar, strutils, math],
-  kkleeApi, kkleeMain, bonkElements, shapeMultiSelect
+  kkleeApi, kkleeMain, bonkElements, shapeMultiSelect, platformMultiSelect
 
 proc shapeTableCell(label: string; cell: Element): Element =
   result = document.createElement("tr")
@@ -78,6 +78,34 @@ afterUpdateRightBoxBody = proc(fx: int) =
 
   shapeMultiSelectElementBorders()
 
+# Platform multiselect
+
+let platformMultiSelectButton = createBonkButton("Multiselect", proc =
+  state = StateObject(kind: sePlatformMultiSelect)
+  rerender()
+)
+platformMultiSelectButton.style.margin = "3px"
+
+proc initPlatformMultiSelect =
+  let platformsContainer = docElemById("mapeditor_leftbox_platformtable")
+  if platformsContainer.isNil: return
+  platformsContainer.appendChild(platformMultiSelectButton)
+  platformMultiSelectElementBorders()
+
+  platformsContainer.children[0].addEventListener("click", proc(e: MouseEvent) =
+    if state.kind != sePlatformMultiSelect or not e.shiftKey: return
+
+    let index = platformsContainer.children[0].children.find e.target.parentNode
+    if index == -1: return
+    let b = moph.bro[index].getBody
+
+    if b notin selectedBodies:
+      selectedBodies.add b
+    else:
+      selectedBodies.delete(selectedBodies.find b)
+    platformMultiSelectElementBorders()
+  )
+
 afterUpdateLeftBox = proc =
   # This fixes the bug where shapeMultiSelectElementBorders would throw an
   # error when the right box was not updated to show the currently selected
@@ -89,6 +117,7 @@ afterUpdateLeftBox = proc =
       body != getCurrentBody().getBody:
     updateRightBoxBody(-1)
 
+  initPlatformMultiSelect()
 
 # Generate shape button
 
@@ -108,7 +137,7 @@ rightBoxShapeTableContainer
     docElemById("mapeditor_rightbox_shapeaddcontainer").nextSibling
   )
 
-# Multiselect shapes button
+# Shape multiselect
 
 let shapeMultiSelectButton = createBonkButton("Multiselect shapes", proc =
   state = StateObject(kind: seShapeMultiSelect)
@@ -127,8 +156,8 @@ rightBoxShapeTableContainer
 rightBoxShapeTableContainer
   .addEventListener("click", proc(e: MouseEvent) =
     if state.kind != seShapeMultiSelect or
-      fixturesBody != getCurrentBody().getBody: return
-    if not e.shiftKey: return
+        fixturesBody != getCurrentBody().getBody or
+        not e.shiftKey: return
 
     let
       shapeElements = rightBoxShapeTableContainer

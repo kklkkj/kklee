@@ -68,13 +68,14 @@ type
                                        # bounciness
     f_1*, f_2*, f_3*, f_4*, f_p*: bool # Collision groups enabled
     f_c*: int                          # Collision group
-    fr*, fricp*: bool                  # Fric, fric players
+    fr*, fricp*, bu*: bool             # Fixed rotation, fric players,
+                                       # anti-tunnel
     p*, lv*: MapPosition               # Position, linear velocity
     fx*: seq[int]                      # Fixture IDs
     cf*: MapBodyCf
   MapBodyCf* = ref object # Constant force
     x*, y*, ct*: float    # x, y, torque
-    w*: bool              # Force diretion - true: absolute, false: relative
+    w*: bool              # Force direction - true: absolute, false: relative
 
   MapFixture* = ref object
     n*: cstring

@@ -2,7 +2,7 @@ import
   std/[dom, sugar],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements, vertexEditor, shapeGenerator, shapeMultiSelect,
-  transferOwnership
+  transferOwnership, platformMultiSelect
 
 let root* = document.createElement("div")
 let karaxRoot* = document.createElement("div")
@@ -26,7 +26,7 @@ midboxst.transition = "width 0.5s"
 type
   StateKindEnum* = enum
     seHidden, seVertexEditor, seShapeGenerator, seShapeMultiSelect,
-    seTransferOwnership
+    seTransferOwnership, sePlatformMultiSelect
   StateObject* = ref object
     kind*: StateKindEnum
     fx*: MapFixture
@@ -72,6 +72,9 @@ proc render: VNode =
       of seTransferOwnership:
         text "Transfer map ownership"
         transferOwnership()
+      of sePlatformMultiSelect:
+        text "Platform multiselect"
+        platformMultiSelect()
 
 
     tdiv(style = "margin: 3px".toCss):
