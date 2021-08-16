@@ -42,7 +42,7 @@ proc shapeMultiSelectElementBorders* =
       indexLabel.class = "kkleeMultiSelectShapeIndexLabel"
       se.parentNode.insertBefore(indexLabel, se)
 
-proc prop(name: string; field: VNode): VNode =
+func prop(name: string; field: VNode): VNode =
   buildHtml: tdiv(style =
     "display:flex; flex-flow: row wrap; justify-content: space-between"
     .toCss):
@@ -55,7 +55,7 @@ proc shapeMultiSelectSwitchPlatform* =
     shapeMultiSelectElementBorders()
   fixturesBody = getCurrentBody().getBody
 
-proc floatNop(f: float): float = f
+func floatNop(f: float): float = f
 
 proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
@@ -69,7 +69,21 @@ selected shapes (the first shape you selected will have i=0, the next one
 i=1, i=2, etc)"""
     li text "Arithmetic, such as x*2+50, will be evaluated"
 
-  var appliers: seq[(int, var MapFixture) -> void]
+  var appliers {.global.}: seq[(int, var MapFixture) -> void]
+
+  proc floatPropInput(inp: var string): VNode =
+    buildHtml: bonkInput(inp, proc(parserInput: string): string =
+      let evtor = newEvaluator()
+      evtor.addVars {"x": 0.0, "i": 0.0}
+      discard evtor.eval parserInput
+      return parserInput
+    , nil, s=>s)
+
+  proc floatPropApplier(inp: string; i: int; prop: float): float =
+    let evtor = newEvaluator()
+    evtor.addVars {"x": prop, "i": i.float}
+    result = evtor.eval(inp).clamp(-1e6, 1e6)
+    if result.isNaN: result = 0
 
   template floatProp(
     name: string; mapFxProp: untyped;
@@ -81,25 +95,15 @@ i=1, i=2, etc)"""
       propToInpF = propToInp
     var inp {.global.}: string = "x"
 
-    appliers.add proc (i: int; fx {.inject.}: var MapFixture) =
-      let evtor = newEvaluator()
-      evtor.addVars {"x": propToInpF(mapFxProp), "i": i.float}
-      var res = inpToPropF(evtor.eval inp)
-      res = res.clamp(-1e6, 1e6)
-      if res == NaN: res = 0
-      mapFxProp = res
+    once: appliers.add proc (i: int; fx {.inject.}: var MapFixture) =
+      mapFxProp = inpToPropF floatPropApplier(inp, i, propToInpF mapFxProp)
 
     buildHtml:
-      prop name, bonkInput(inp, proc(parserInput: string): string =
-        let evtor = newEvaluator()
-        evtor.addVars {"x": 0.0, "i": 0.0}
-        discard evtor.eval parserInput
-        return parserInput
-      , nil, s=>s)
+      prop name, floatPropInput(inp)
 
   template boolProp(name: string; mapFxProp: untyped): untyped =
     var inp {.global.}: boolPropValue
-    appliers.add proc(i: int; fx {.inject.}: var MapFixture) =
+    once: appliers.add proc(i: int; fx {.inject.}: var MapFixture) =
       case inp
       of tfsFalse: mapFxProp = false
       of tfsTrue: mapFxProp = true
@@ -111,7 +115,7 @@ i=1, i=2, etc)"""
     var
       canChange {.global.} = false
       inp {.global.}: int = 0
-    appliers.add proc(i: int; fx: var MapFixture) =
+    once: appliers.add proc(i: int; fx: var MapFixture) =
       if canChange:
         fx.f = inp
     buildHtml tdiv(style = "display: flex".toCss):
@@ -121,7 +125,7 @@ i=1, i=2, etc)"""
     var
       canChange {.global.} = false
       inp {.global.}: string = "Shape %i%"
-    appliers.add proc(i: int; fx: var MapFixture) =
+    once: appliers.add proc(i: int; fx: var MapFixture) =
       if canChange:
         fx.n = inp.replace("%i%", $i).cstring
     buildHtml tdiv(style = "display: flex".toCss):
