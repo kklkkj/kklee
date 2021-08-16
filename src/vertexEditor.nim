@@ -49,7 +49,7 @@ proc setVertexMarker(vId: int) =
   updateRenderer(true)
 
 proc mergeShapes(b: MapBody; sh: MapShape) =
-  # This is buggy because the output verticies might be ordered in a way
+  # This is buggy because the output vertices might be ordered in a way
   # that causes it to be not rendered corrently...
   sh.poV.applyIt [it.x * sh.poS, it.y * sh.poS].MapPosition
   sh.poS = 1.0
@@ -182,7 +182,7 @@ proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
     "display: flex; flex-flow: column; row-gap: 2px").toCss
   ):
     ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
-      li text "Note: the list of verticies must be in a clockwise direction"
+      li text "Note: the list of vertices must be in a clockwise direction"
     for i, v in poV.mpairs:
       vertex(i, v, poV)
     tdiv(style = "margin: 3px".toCss):
@@ -193,7 +193,7 @@ proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
       )
 
     tdiv(style = "display: flex; flex-flow: row wrap".toCss):
-      tdiv(style = "width: 100%".toCss): text "Scale verticies:"
+      tdiv(style = "width: 100%".toCss): text "Scale vertices:"
       var scale {.global.}: MapPosition = [1.0, 1.0]
       text "x:"
       bonkInput scale.x, prsFLimited, nil, niceFormatFloat

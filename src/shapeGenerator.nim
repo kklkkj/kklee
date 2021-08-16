@@ -306,7 +306,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("y", pbi gs.y)
         prop("Colour", colourInput(gs.colour))
         prop("Angle", pbi gs.angle)
-        prop("Shapes/verticies", precInput)
+        prop("Shapes/vertices", precInput)
         prop("Width radius", pbi gs.ewr)
         prop("Height radius", pbi gs.ehr)
         prop("Angle start", pbi gs.eaStart)

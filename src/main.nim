@@ -56,7 +56,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
           )
           rerender()
         se.appendChild shapeTableCell("",
-            createBonkButton("Edit verticies", editVerticies))
+            createBonkButton("Edit vertices", editVerticies))
       proc editCapZone =
         var shapeCzId = -1
         for i, cz in mapObject.capZones:
