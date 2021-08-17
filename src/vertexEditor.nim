@@ -3,56 +3,11 @@ import
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
-
-var
-  markerFxId: Option[int]
-  veB: MapBody
-  veFx: MapFixture
-  veSh: MapShape
-
-proc removeVertexMarker =
-  if markerFxId.isNone: return
-  let mfxId = markerFxId.get
-  for i, j in veB.fx:
-    if j == mfxId:
-      veB.fx.delete i
-      break
-  moph.shapes.delete mfxId.getFx.sh
-  moph.fixtures.delete mfxId
-  markerFxId = none int
-  updateRenderer(true)
-
-proc setVertexMarker(vId: int) =
-  removeVertexMarker()
-  if vId notin 0..veSh.poV.high:
-    return
-  let
-    v = veSh.poV[vId]
-    # Only scaled marker positions
-    smp: MapPosition = [
-      v.x * veSh.poS,
-      v.y * veSh.poS
-    ]
-  var markerPos: MapPosition = smp.rotatePoint(veSh.a)
-  markerPos.x += veSh.c.x
-  markerPos.y += veSh.c.y
-  moph.shapes.add MapShape(
-    stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
-  )
-  moph.fixtures.add MapFixture(
-    n: "temp marker", np: true, f: 0xff0000,
-    sh: moph.shapes.high
-  )
-  let fxId = moph.fixtures.high
-  veB.fx.add fxId
-  markerFxId = some fxId
-  updateRenderer(true)
-
-proc mergeShapes(b: MapBody; sh: MapShape) =
+proc mergeShapes(b: MapBody; veFx: MapFixture; veSh: MapShape) =
   # This is buggy because the output vertices might be ordered in a way
   # that causes it to be not rendered corrently...
-  sh.poV.applyIt [it.x * sh.poS, it.y * sh.poS].MapPosition
-  sh.poS = 1.0
+  veSh.poV.applyIt [it.x * veSh.poS, it.y * veSh.poS].MapPosition
+  veSh.poS = 1.0
 
   var i = 0
   while i < b.fx.len:
@@ -80,10 +35,10 @@ proc mergeShapes(b: MapBody; sh: MapShape) =
 
     for c in npoV.mitems:
       c = c.rotatePoint(csh.a)
-      c = [c.x + csh.c.x - sh.c.x, c.y + csh.c.y - sh.c.y]
-      c = c.rotatePoint(-sh.a)
-    npoV &= [npoV[0], sh.poV[^1]]
-    sh.poV.add(npoV)
+      c = [c.x + csh.c.x - veSh.c.x, c.y + csh.c.y - veSh.c.y]
+      c = c.rotatePoint(-veSh.a)
+    npoV &= [npoV[0], veSh.poV[^1]]
+    veSh.poV.add(npoV)
     deleteFx fxId
 
   saveToUndoHistory()
@@ -137,19 +92,53 @@ proc roundCorners(poV: seq[MapPosition]; r: float; prec: float):
                   o.y + radius * sin(a)].MapPosition
     result.add c2
 
-proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
-  veB = pveB
-  veFx = pveFx
+proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
   if moph.fixtures.find(veFx) == -1:
     return buildHtml(tdiv): discard
-  veSh = veFx.fxShape
+  let veSh = veFx.fxShape
+
+  var markerFx {.global.}: Option[MapFixture]
+
+  proc removeVertexMarker =
+    if markerFx.isNone: return
+    let fxId = moph.fixtures.find markerFx.get
+    if fxId == -1: return
+    deleteFx fxId
+    markerFx = none MapFixture
+    updateRenderer(true)
+
+  proc setVertexMarker(vId: int) =
+    removeVertexMarker()
+    if vId notin 0..veSh.poV.high:
+      return
+    let
+      v = veSh.poV[vId]
+      # Only scaled marker positions
+      smp: MapPosition = [
+        v.x * veSh.poS,
+        v.y * veSh.poS
+      ]
+    var markerPos: MapPosition = smp.rotatePoint(veSh.a)
+    markerPos.x += veSh.c.x
+    markerPos.y += veSh.c.y
+    moph.shapes.add MapShape(
+      stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
+    )
+    moph.fixtures.add MapFixture(
+      n: "temp marker", np: true, f: 0xff0000,
+      sh: moph.shapes.high
+    )
+    let fxId = moph.fixtures.high
+    veB.fx.add fxId
+    markerFx = some moph.fixtures[fxId]
+    updateRenderer(true)
 
   proc vertex(i: int; v: var MapPosition; poV: var seq[MapPosition]): VNode =
     buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
       span(style = "width: 27px; font-size: 12;".toCss):
         text $i
       template cbi(va): untyped = bonkInput(va, prsFLimited, proc =
-        if markerFxId.isSome:
+        if markerFx.isSome:
           removeVertexMarker()
           saveToUndoHistory()
           setVertexMarker(i)
@@ -261,7 +250,7 @@ proc vertexEditor*(pveB: var MapBody; pveFx: var MapFixture): VNode =
       saveToUndoHistory()
     )
     bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
-      mergeShapes(veB, veSh))
+      mergeShapes(veB, veFx, veSh))
 
     tdiv(style = "padding: 5px 0px".toCss):
       var
