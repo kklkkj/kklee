@@ -162,12 +162,12 @@ this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
 .{0,75}.{3,4}\\(false\\).{0,75};\\};(?=.{0,20000}return \\{hue)","g"
     ));
   src = src.replace(colourPickerThing, 
-    `window.kklee.showColourPickerArguments=[...arguments];
+    `window.kklee.showColourPickerArguments=[...arguments];\
 document.getElementById("kkleeColourInput").value="#"+arguments[0]\
 .toString(16).padStart(6,"0");${colourPickerThing};\
 let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
-function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};
-`);
+function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
+  );
   // Map editor test TimeMS
   window.kklee.editorPreviewTimeMs = 30;
   src = src.replace(
