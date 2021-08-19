@@ -59,6 +59,7 @@ type
     shapes*: seq[MapShape]
     bodies*: seq[MapBody]
     bro*: seq[int] # Array of body IDs
+    joints*: seq[MapJoint]
 
   MapBody* = ref object
     n*: cstring
@@ -105,6 +106,9 @@ type
     poS* {.exportc: "s".}: float  # Scale
     poV* {.exportc: "v".}: seq[MapPosition]
 
+  MapJoint* = ref object
+    ba*, bb*: int # ba: Joint body, bb: attached body, -1 if none
+
 func shapeType*(s: MapShape): MapShapeType = parseEnum[MapShapeType]($s.stype)
 
 var mapObject* {.importc: "window.kklee.mapObject".}: MapData
@@ -139,6 +143,28 @@ proc deleteFx*(fxId: int) =
     if c.i > fxId: dec c.i
   for f in moph.fixtures.mitems:
     if f.sh > shId: dec f.sh
+
+proc deleteBody*(bId: int) =
+  while bId.getBody.fx.len > 0:
+    deleteFx bId.getBody.fx[0]
+  moph.bodies.delete bId
+  moph.bro.keepItIf it != bId
+  for otherBId in moph.bro.mitems:
+    if otherBId > bId: dec otherBId
+  block:
+    var jId = 0
+    while jId < moph.joints.len:
+      let j = moph.joints[jId]
+      if j.ba == bId:
+        moph.joints.delete jId
+        continue
+      if j.bb == bId:
+        j.bb = -1
+      if j.ba > bId:
+        dec j.ba
+      if j.bb > bId:
+        dec j.bb
+      inc jId
 
 var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float
 

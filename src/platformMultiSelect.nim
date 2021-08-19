@@ -45,11 +45,13 @@ proc platformMultiSelectDelete: VNode =
     for b in selectedBodies:
       let bId = moph.bodies.find b
       if bId == -1: continue
-      # TODO
+      deleteBody bId
     saveToUndoHistory()
     selectedBodies = @[]
     updateRenderer(true)
     updateLeftBox()
+    setCurrentBody(-1)
+    updateRightBoxBody(-1)
 
 proc platformMultiSelectSelectAll: VNode = buildHtml tdiv:
   bonkButton "Select all", proc =
@@ -212,5 +214,5 @@ proc platformMultiSelect*: VNode = buildHtml(tdiv(
     style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
   platformMultiSelectSelectAll()
   platformMultiSelectEdit()
-  # platformMultiSelectDelete()
+  platformMultiSelectDelete()
   # platformMultiSelectCopy()
