@@ -5,8 +5,7 @@ A browser extension that extends the functionality of the map editor in
 [Discord server](https://discord.gg/kW389FqMz2)
 
 ### Features
-- Multi-select with ability to set shape properties, copy shapes and delete
-  shapes
+- Multi-select for platforms and shapes
 - Vertex editor with ability to round corners and (buggy) ability to merge
   multiple polygons into one
 - Easily generate ellipses, spirals, sine waves, gradients and custom equations

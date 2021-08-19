@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.13
+- Added platform multi-select
+- Added a button in multi-select to invert selection
+- Added index labels to selected shapes
+- Added a label for a platform's total mass
+
 ## v0.12
 - Added ability to transfer map ownership to a contributor of a map if you are
   the original author
