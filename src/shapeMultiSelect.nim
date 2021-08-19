@@ -18,6 +18,7 @@ proc removeDeletedFixtures =
       inc i
 
 proc shapeMultiSelectElementBorders* =
+  removeDeletedFixtures()
   let
     shapeElements = document
       .getElementById("mapeditor_rightbox_shapetablecontainer")
@@ -30,24 +31,17 @@ proc shapeMultiSelectElementBorders* =
         "kkleeMultiSelectShapeIndexLabel":
       prevNode.remove()
 
-    let fxId = selectedFixtures.find(body.fx[i].getFx)
-    if fxId == -1:
+    let selectedId = selectedFixtures.find(body.fx[i].getFx)
+    if selectedId == -1:
       se.style.border = ""
     else:
       se.style.border = "4px solid blue"
 
       let indexLabel = document.createElement("span")
-      indexLabel.innerText = $fxId
+      indexLabel.innerText = $selectedId
       indexLabel.setAttr("style", "color: blue; font-size: 12px")
       indexLabel.class = "kkleeMultiSelectShapeIndexLabel"
       se.parentNode.insertBefore(indexLabel, se)
-
-func prop(name: string; field: VNode): VNode =
-  buildHtml: tdiv(style =
-    "display:flex; flex-flow: row wrap; justify-content: space-between"
-    .toCss):
-    text name
-    field
 
 proc shapeMultiSelectSwitchPlatform* =
   if getCurrentBody().getBody != fixturesBody:
@@ -55,21 +49,20 @@ proc shapeMultiSelectSwitchPlatform* =
     shapeMultiSelectElementBorders()
   fixturesBody = getCurrentBody().getBody
 
-func floatNop(f: float): float = f
 
 proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
 
   ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
     li text "Shift+click shape name fields to select shapes"
-    li text """Note: you will have to reselect the platform to see changes
-made by multiselect"""
-    li text """Variables: x is current value, i is index in list of
-selected shapes (the first shape you selected will have i=0, the next one
-i=1, i=2, etc)"""
+    li text (
+      "Variables: x is current value, i is index in list of selected " &
+      "shapes (the first shape you selected will have i=0, the next one" &
+      "i=1, i=2, etc)"
+    )
     li text "Arithmetic, such as x*2+50, will be evaluated"
 
-  var appliers {.global.}: seq[(int, var MapFixture) -> void]
+  var appliers {.global.}: seq[(int, MapFixture) -> void]
 
   proc floatPropInput(inp: var string): VNode =
     buildHtml: bonkInput(inp, proc(parserInput: string): string =
@@ -95,7 +88,7 @@ i=1, i=2, etc)"""
       propToInpF = propToInp
     var inp {.global.}: string = "x"
 
-    once: appliers.add proc (i: int; fx {.inject.}: var MapFixture) =
+    once: appliers.add proc (i: int; fx {.inject.}: MapFixture) =
       mapFxProp = inpToPropF floatPropApplier(inp, i, propToInpF mapFxProp)
 
     buildHtml:
@@ -103,7 +96,7 @@ i=1, i=2, etc)"""
 
   template boolProp(name: string; mapFxProp: untyped): untyped =
     var inp {.global.}: boolPropValue
-    once: appliers.add proc(i: int; fx {.inject.}: var MapFixture) =
+    once: appliers.add proc(i: int; fx {.inject.}: MapFixture) =
       case inp
       of tfsFalse: mapFxProp = false
       of tfsTrue: mapFxProp = true
@@ -115,17 +108,18 @@ i=1, i=2, etc)"""
     var
       canChange {.global.} = false
       inp {.global.}: int = 0
-    once: appliers.add proc(i: int; fx: var MapFixture) =
+    once: appliers.add proc(i: int; fx: MapFixture) =
       if canChange:
         fx.f = inp
     buildHtml tdiv(style = "display: flex".toCss):
       checkbox(canChange)
       colourInput(inp)
+
   template nameChanger: untyped =
     var
       canChange {.global.} = false
       inp {.global.}: string = "Shape %i%"
-    once: appliers.add proc(i: int; fx: var MapFixture) =
+    once: appliers.add proc(i: int; fx: MapFixture) =
       if canChange:
         fx.n = inp.replace("%i%", $i).cstring
     buildHtml tdiv(style = "display: flex".toCss):
@@ -155,7 +149,7 @@ i=1, i=2, etc)"""
 
   bonkButton "Apply", proc =
     removeDeletedFixtures()
-    for i, f in selectedFixtures.mpairs:
+    for i, f in selectedFixtures:
       for a in appliers: a(i, f)
     saveToUndoHistory()
     updateRenderer(true)

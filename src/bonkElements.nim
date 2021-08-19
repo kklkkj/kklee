@@ -74,3 +74,12 @@ proc tfsCheckbox*(inp: var boolPropValue): VNode =
         of tfsSame: tfsTrue
         of tfsTrue: tfsFalse
         of tfsFalse: tfsSame
+
+func prop*(name: string; field: VNode): VNode =
+  buildHtml: tdiv(style =
+    "display:flex; flex-flow: row wrap; justify-content: space-between"
+    .toCss):
+    text name
+    field
+
+func floatNop*(f: float): float = f
