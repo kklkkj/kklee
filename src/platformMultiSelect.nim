@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, strformat, dom, math],
+  std/[sugar, strutils, strformat, dom, math, options],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
@@ -120,6 +120,37 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
     buildHtml:
       prop name, tfsCheckbox(inp)
 
+  template dropDownProp[T](
+    mapBProp: untyped;
+    options: openArray[tuple[label: string; value: T]]
+  ): untyped =
+    var
+      inp {.global.}: Option[T]
+    once: appliers.add proc(i: int; b {.inject.}: MapBody) =
+      if inp.isSome:
+        mapBProp = inp.get
+    let selectStyle = (if inp.isSome: "border: red solid 2px" else: "").toCss
+    buildHtml:
+      select(style = selectStyle):
+        if inp.isNone:
+          option(selected = ""): text "Unchanged"
+        else:
+          option: text "Unchanged"
+
+        for o in options:
+          let selected = inp.isSome and inp.get == o[1]
+          if selected:
+            option(selected = ""): text o[0]
+          else:
+            option: text o[0]
+
+        proc onInput(e: Event; n: VNode) =
+          let i = e.target.OptionElement.selectedIndex
+          inp =
+            if i == 0: none T.typedesc
+            else: some options[i - 1][1]
+
+
   template nameChanger: untyped =
     var
       canChange {.global.} = false
@@ -131,6 +162,10 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
       checkbox(canChange)
       bonkInput(inp, s => s, nil, s => s)
 
+  prop "Type", dropDownProp(b.btype, [
+    ("Stationary", $btStationary), ("Free moving", $btDynamic),
+    ("Kinematic", $btKinematic)
+  ])
   prop("Name", nameChanger())
   floatProp("x", b.p.x)
   floatProp("y", b.p.y)
@@ -144,6 +179,10 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   floatProp("Friction", b.fric)
   boolProp("Fric players", b.fricp)
   boolProp("Anti-tunnel", b.bu)
+  type cg = MapBodyCollideGroup
+  prop "Collision group", dropDownProp(b.f_c, [
+    ("A", cg.A.int), ("B", cg.B.int), ("C", cg.C.int), ("D", cg.D.int)
+  ])
   boolProp("Col. players", b.f_p)
   boolProp("Col. A", b.f_1)
   boolProp("Col. B", b.f_2)

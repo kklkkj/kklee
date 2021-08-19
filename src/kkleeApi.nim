@@ -76,6 +76,10 @@ type
   MapBodyCf* = ref object # Constant force
     x*, y*, ct*: float    # x, y, torque
     w*: bool              # Force direction - true: absolute, false: relative
+  MapBodyCollideGroup* {.pure.} = enum
+    A = 1, B, C, D
+  MapBodyType* = enum
+    btStationary = "s", btDynamic = "d", btKinematic = "k"
 
   MapFixture* = ref object
     n*: cstring
