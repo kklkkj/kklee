@@ -8,8 +8,9 @@ template m: untyped = mapObject.m
 proc transferOwnership*: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
   if m.a != m.rxa and m.rxa != "":
-    text """Failed to verify that you are the original author. Try saving the
-map first."""
+    text (
+      "Failed to verify that you are the original author. Try saving the " &
+      "map first.")
   else:
     var username {.global.} = ""
     select:

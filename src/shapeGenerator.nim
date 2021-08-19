@@ -390,8 +390,9 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("Y", eqInp(gs.eqInpY))
 
         ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
-          li text """It is recommended that you experiment with equations on
- something like Desmos before adding them here"""
+          li text (
+            "It is recommended that you experiment with equations on " &
+            "something like Desmos before adding them here")
 
 
       bonkButton(&"Save {$gs.kind}", proc =

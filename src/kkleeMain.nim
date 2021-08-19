@@ -52,9 +52,9 @@ proc render: VNode =
         style = "position: static".toCss):
       text "kklee"
 
-    tdiv(style =
-      """margin: 3px; flex: auto; display: flex; flex-direction: column;
-        min-height: 0px; overflow-y: auto""".toCss):
+    tdiv(style = (
+      "margin: 3px; flex: auto; display: flex; flex-direction: column; " &
+      "min-height: 0px; overflow-y: auto").toCss):
 
       case state.kind
       of seHidden:
