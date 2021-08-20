@@ -198,7 +198,9 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("Fixed rotation", b.fr)
   floatProp("Apply x force", b.cf.x)
   floatProp("Apply y force", b.cf.y)
-  boolProp("Direction: green=absolute", b.cf.w)
+  prop "Force direction", dropDownProp(b.cf.w, [
+    ("Absolute", true), ("Relative", false)
+  ])
   floatProp("Apply torque", b.cf.ct)
 
   bonkButton "Apply", proc =
