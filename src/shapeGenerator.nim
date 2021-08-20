@@ -265,12 +265,6 @@ proc shapeGenerator*(body: MapBody): VNode =
 
     template pbi(va): untyped =
       bonkInput(va, prsFLimited, update, niceFormatFloat)
-    template prop(name: string; field: untyped): untyped =
-      buildHtml: tdiv(style =
-        "display:flex; flex-flow: row wrap; justify-content: space-between"
-        .toCss):
-        text name
-        field
 
     if selecting:
       template sb(s): untyped =

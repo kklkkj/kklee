@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, strformat, dom, math, options],
+  std/[sugar, strutils, dom, math, options],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
   kkleeApi, bonkElements
