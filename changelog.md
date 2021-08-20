@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.14
+- Fixed the custom colour picker that was broken in the latest Bonk.io update
+- The browser's default action for Shift+Esc will be prevented when you use it
+  return to the editor
+- Properties in multi-select will be highlighted in red if they are modified
+
 ## v0.13
 - Added platform multi-select
 - Added a button in multi-select to invert selection
