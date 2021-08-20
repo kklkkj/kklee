@@ -77,7 +77,7 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
       mapFxProp = inpToPropF floatPropApplier(inp, i, propToInpF mapFxProp)
 
     buildHtml:
-      prop name, floatPropInput(inp)
+      prop name, floatPropInput(inp), inp != "x"
 
   template boolProp(name: string; mapFxProp: untyped): untyped =
     var inp {.global.}: boolPropValue
@@ -87,7 +87,7 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
       of tfsTrue: mapFxProp = true
       of tfsSame: discard
     buildHtml:
-      prop name, tfsCheckbox(inp)
+      prop name, tfsCheckbox(inp), inp != tfsSame
 
   template colourChanger: untyped =
     var
@@ -96,9 +96,11 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     once: appliers.add proc(i: int; fx: MapFixture) =
       if canChange:
         fx.f = inp
-    buildHtml tdiv(style = "display: flex".toCss):
-      checkbox(canChange)
-      colourInput(inp)
+    buildHtml:
+      let field = buildHtml tdiv(style = "display: flex".toCss):
+        checkbox(canChange)
+        colourInput(inp)
+      prop "Colour", field, canChange
 
   template nameChanger: untyped =
     var
@@ -107,11 +109,13 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     once: appliers.add proc(i: int; fx: MapFixture) =
       if canChange:
         fx.n = inp.replace("%i%", $i).cstring
-    buildHtml tdiv(style = "display: flex".toCss):
-      checkbox(canChange)
-      bonkInput(inp, s => s, nil, s => s)
+    buildHtml:
+      let field = buildHtml tdiv(style = "display: flex".toCss):
+        checkbox(canChange)
+        bonkInput(inp, s => s, nil, s => s)
+      prop "Name", field, canChange
 
-  prop("Name", nameChanger())
+  nameChanger()
   floatProp("x", fx.fxShape.c.x)
   floatProp("y", fx.fxShape.c.y)
   block:
@@ -130,7 +134,7 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("No grapple", fx.ng)
   boolProp("Death", fx.d)
 
-  prop("Colour", colourChanger())
+  colourChanger()
 
   bonkButton "Apply", proc =
     removeDeletedFixtures()

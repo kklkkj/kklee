@@ -76,11 +76,12 @@ proc tfsCheckbox*(inp: var boolPropValue): VNode =
         of tfsTrue: tfsFalse
         of tfsFalse: tfsSame
 
-func prop*(name: string; field: VNode): VNode =
+func prop*(name: string; field: VNode; highlight = false): VNode =
   buildHtml: tdiv(style =
     "display:flex; flex-flow: row wrap; justify-content: space-between"
     .toCss):
-    text name
+    span(style = (if highlight: "color: red" else: "").toCss):
+      text name
     field
 
 func floatNop*(f: float): float = f
@@ -103,9 +104,8 @@ proc dropDownPropSelect*[T](
   inp: var Option[T];
   options: seq[tuple[label: string; value: T]]
 ): VNode =
-  let selectStyle = (if inp.isSome: "border: red solid 2px" else: "").toCss
   buildHtml:
-    select(style = selectStyle):
+    select:
       if inp.isNone:
         option(selected = ""): text "Unchanged"
       else:

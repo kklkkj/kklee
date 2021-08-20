@@ -95,7 +95,7 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
       mapBProp = inpToPropF floatPropApplier(inp, i, propToInpF mapBProp)
 
     buildHtml:
-      prop name, floatPropInput(inp)
+      prop name, floatPropInput(inp), inp != "x"
 
   template boolProp(name: string; mapBProp: untyped): untyped =
     var inp {.global.}: boolPropValue
@@ -105,9 +105,10 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
       of tfsTrue: mapBProp = true
       of tfsSame: discard
     buildHtml:
-      prop name, tfsCheckbox(inp)
+      prop name, tfsCheckbox(inp), inp != tfsSame
 
   template dropDownProp[T](
+    name: string;
     mapBProp: untyped;
     options: openArray[tuple[label: string; value: T]]
   ): untyped =
@@ -116,7 +117,8 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
     once: appliers.add proc(i: int; b {.inject.}: MapBody) =
       if inp.isSome:
         mapBProp = inp.get
-    dropDownPropSelect(inp, @options)
+    buildHtml:
+      prop name, dropDownPropSelect(inp, @options), inp.isSome
 
 
   template nameChanger: untyped =
@@ -126,15 +128,17 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
     once: appliers.add proc(i: int; b: MapBody) =
       if canChange:
         b.n = inp.replace("%i%", $i).cstring
-    buildHtml tdiv(style = "display: flex".toCss):
-      checkbox(canChange)
-      bonkInput(inp, s => s, nil, s => s)
+    buildHtml:
+      let field = buildHtml tdiv(style = "display: flex".toCss):
+        checkbox(canChange)
+        bonkInput(inp, s => s, nil, s => s)
+      prop "Name", field, canChange
 
-  prop "Type", dropDownProp(b.btype, [
+  dropDownProp("Type", b.btype, [
     ("Stationary", $btStationary), ("Free moving", $btDynamic),
     ("Kinematic", $btKinematic)
   ])
-  prop("Name", nameChanger())
+  nameChanger()
   floatProp("x", b.p.x)
   floatProp("y", b.p.y)
   block:
@@ -148,7 +152,7 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("Fric players", b.fricp)
   boolProp("Anti-tunnel", b.bu)
   type cg = MapBodyCollideGroup
-  prop "Collision group", dropDownProp(b.f_c, [
+  dropDownProp("Collision group", b.f_c, [
     ("A", cg.A.int), ("B", cg.B.int), ("C", cg.C.int), ("D", cg.D.int)
   ])
   boolProp("Col. players", b.f_p)
@@ -164,7 +168,7 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("Fixed rotation", b.fr)
   floatProp("Apply x force", b.cf.x)
   floatProp("Apply y force", b.cf.y)
-  prop "Force direction", dropDownProp(b.cf.w, [
+  dropDownProp("Force direction", b.cf.w, [
     ("Absolute", true), ("Relative", false)
   ])
   floatProp("Apply torque", b.cf.ct)
