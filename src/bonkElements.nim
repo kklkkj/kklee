@@ -105,7 +105,7 @@ proc dropDownPropSelect*[T](
   options: seq[tuple[label: string; value: T]]
 ): VNode =
   buildHtml:
-    select:
+    select(style = "width: 80px".toCss):
       if inp.isNone:
         option(selected = ""): text "Unchanged"
       else:
