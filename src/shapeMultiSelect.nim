@@ -1,7 +1,6 @@
 import
   std/[sugar, strutils, algorithm, dom, math],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  pkg/mathexpr,
   kkleeApi, bonkElements
 
 var
@@ -63,20 +62,6 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     li text "Arithmetic, such as x*2+50, will be evaluated"
 
   var appliers {.global.}: seq[(int, MapFixture) -> void]
-
-  proc floatPropInput(inp: var string): VNode =
-    buildHtml: bonkInput(inp, proc(parserInput: string): string =
-      let evtor = newEvaluator()
-      evtor.addVars {"x": 0.0, "i": 0.0}
-      discard evtor.eval parserInput
-      return parserInput
-    , nil, s=>s)
-
-  proc floatPropApplier(inp: string; i: int; prop: float): float =
-    let evtor = newEvaluator()
-    evtor.addVars {"x": prop, "i": i.float}
-    result = evtor.eval(inp).clamp(-1e6, 1e6)
-    if result.isNaN: result = 0
 
   template floatProp(
     name: string; mapFxProp: untyped;

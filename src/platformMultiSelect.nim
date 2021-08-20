@@ -1,7 +1,6 @@
 import
   std/[sugar, strutils, dom, math, options],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  pkg/mathexpr,
   kkleeApi, bonkElements
 
 var selectedBodies*: seq[MapBody]
@@ -82,20 +81,6 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
 
   var appliers {.global.}: seq[(int, MapBody) -> void]
 
-  proc floatPropInput(inp: var string): VNode =
-    buildHtml: bonkInput(inp, proc(parserInput: string): string =
-      let evtor = newEvaluator()
-      evtor.addVars {"x": 0.0, "i": 0.0}
-      discard evtor.eval parserInput
-      return parserInput
-    , nil, s=>s)
-
-  proc floatPropApplier(inp: string; i: int; prop: float): float =
-    let evtor = newEvaluator()
-    evtor.addVars {"x": prop, "i": i.float}
-    result = evtor.eval(inp).clamp(-1e6, 1e6)
-    if result.isNaN: result = 0
-
   template floatProp(
     name: string; mapBProp: untyped;
     inpToProp = floatNop;
@@ -122,30 +107,6 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
     buildHtml:
       prop name, tfsCheckbox(inp)
 
-  proc dropDownPropSelect[T](
-    inp: var Option[T];
-    options: seq[tuple[label: string; value: T]]
-  ): VNode =
-    let selectStyle = (if inp.isSome: "border: red solid 2px" else: "").toCss
-    buildHtml:
-      select(style = selectStyle):
-        if inp.isNone:
-          option(selected = ""): text "Unchanged"
-        else:
-          option: text "Unchanged"
-
-        for o in options:
-          let selected = inp.isSome and inp.get == o[1]
-          if selected:
-            option(selected = ""): text o[0]
-          else:
-            option: text o[0]
-
-        proc onInput(e: Event; n: VNode) =
-          let i = e.target.OptionElement.selectedIndex
-          inp =
-            if i == 0: none T.typedesc
-            else: some options[i - 1][1]
   template dropDownProp[T](
     mapBProp: untyped;
     options: openArray[tuple[label: string; value: T]]
