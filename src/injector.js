@@ -155,16 +155,14 @@ this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
         j8D[1]["style"]["display"] = "block";
     }
   */
-  const colourPickerThing = src.match(
-    new RegExp(
-      "(?<=this\\[.{10,25}\\]=function\\(.{3,4},.{3,4}\
+  src = src.replace(new RegExp(
+    "((?<=this\\[.{10,25}\\]=function\\(.{3,4},.{3,4}\
 ,.{3,4},.{3,4}\\)\\{).{50,250}(.{3,4}\\[.{0,25}\\]=.{3,4}\\[.{0,30}\\];){3}\
-.{0,75}.{3,4}\\(false\\).{0,75};\\};(?=.{0,20000}return \\{hue)","g"
-    ));
-  src = src.replace(colourPickerThing, 
-    `window.kklee.showColourPickerArguments=[...arguments];\
+.{0,75}.{3,4}\\(false\\).{0,75};\\};(?=.{0,200000}return \\{hue))","g"
+  ), 
+  `${""}window.kklee.showColourPickerArguments=[...arguments];\
 document.getElementById("kkleeColourInput").value="#"+arguments[0]\
-.toString(16).padStart(6,"0");${colourPickerThing};\
+.toString(16).padStart(6,"0");$1;\
 let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
 function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   );
