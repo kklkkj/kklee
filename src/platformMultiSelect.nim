@@ -152,7 +152,7 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("Fric players", b.fricp)
   boolProp("Anti-tunnel", b.bu)
   type cg = MapBodyCollideGroup
-  dropDownProp("Collision group", b.f_c, [
+  dropDownProp("Col. group", b.f_c, [
     ("A", cg.A.int), ("B", cg.B.int), ("C", cg.C.int), ("D", cg.D.int)
   ])
   boolProp("Col. players", b.f_p)
@@ -168,7 +168,7 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("Fixed rotation", b.fr)
   floatProp("Apply x force", b.cf.x)
   floatProp("Apply y force", b.cf.y)
-  dropDownProp("Force direction", b.cf.w, [
+  dropDownProp("Force dir.", b.cf.w, [
     ("Absolute", true), ("Relative", false)
   ])
   floatProp("Apply torque", b.cf.ct)
