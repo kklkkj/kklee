@@ -122,15 +122,10 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
     buildHtml:
       prop name, tfsCheckbox(inp)
 
-  template dropDownProp[T](
-    mapBProp: untyped;
-    options: openArray[tuple[label: string; value: T]]
-  ): untyped =
-    var
-      inp {.global.}: Option[T]
-    once: appliers.add proc(i: int; b {.inject.}: MapBody) =
-      if inp.isSome:
-        mapBProp = inp.get
+  proc dropDownPropSelect[T](
+    inp: var Option[T];
+    options: seq[tuple[label: string; value: T]]
+  ): VNode =
     let selectStyle = (if inp.isSome: "border: red solid 2px" else: "").toCss
     buildHtml:
       select(style = selectStyle):
@@ -151,6 +146,16 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
           inp =
             if i == 0: none T.typedesc
             else: some options[i - 1][1]
+  template dropDownProp[T](
+    mapBProp: untyped;
+    options: openArray[tuple[label: string; value: T]]
+  ): untyped =
+    var
+      inp {.global.}: Option[T]
+    once: appliers.add proc(i: int; b {.inject.}: MapBody) =
+      if inp.isSome:
+        mapBProp = inp.get
+    dropDownPropSelect(inp, @options)
 
 
   template nameChanger: untyped =
