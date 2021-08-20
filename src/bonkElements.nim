@@ -41,16 +41,6 @@ proc colourInput*(variable: var int; afterInput: proc(): void = nil): VNode =
         if not afterInput.isNil:
           afterInput()
 
-proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
-  let colour =
-    if variable: "#59b0d6"
-    else: "#586e77"
-  buildHtml:
-    tdiv(style = ("width: 10px; height: 10px; margin: 3px; " &
-      "border: 2px solid #111111; background-color: {colour}").fmt.toCss
-    ):
-      proc onClick = variable = not variable
-
 func prsFLimited*(s: string): float =
   result = s.parseFloat
   if result notin -1e6..1e6: raise newException(ValueError, "prsFLimited")
@@ -62,14 +52,33 @@ func prsFLimitedPositive*(s: string): float =
 type boolPropValue* = enum
   tfsSame, tfsTrue, tfsFalse
 
-proc tfsCheckbox*(inp: var boolPropValue): VNode =
-  let colour = case inp
-    of tfsTrue: "#59d65e"
-    of tfsFalse: "#d65959"
-    of tfsSame: "#d6bd59"
-  return buildHtml tdiv(style = ("width: 10px; height: 10px; margin: 3px; " &
-    "border: 2px solid #111111; background-color: {colour}").fmt.toCss
+proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
+  let things =
+    if variable: ("#59b0d6", "✔")
+    else: ("#586e77", "")
+  buildHtml tdiv(style = ("width: 12px; height: 12px; text-align: center; " &
+    "border: 2px solid #111111; background-color: {things[0]}; margin: 3px;")
+    .fmt.toCss
   ):
+    span(style = ("color: black; font-size: 12px; text-align: center; " &
+      "top: -2px; position: relative").toCss
+    ):
+      text things[1]
+    proc onClick = variable = not variable
+
+proc tfsCheckbox*(inp: var boolPropValue): VNode =
+  let things = case inp
+    of tfsTrue: ("#59d65e", "✔")
+    of tfsFalse: ("#d65959", "✖")
+    of tfsSame: ("#d6bd59", "━")
+  buildHtml tdiv(style = ("width: 12px; height: 12px; text-align: center; " &
+    "border: 2px solid #111111; background-color: {things[0]}; margin: 3px;")
+    .fmt.toCss
+  ):
+    span(style = ("color: black; font-size: 12px; " &
+      "top: -2px; position: relative").toCss
+    ):
+      text things[1]
     proc onClick =
       inp = case inp
         of tfsSame: tfsTrue
