@@ -50,8 +50,11 @@ type
     x*, y*, xv*, yv*: float
   MapCapZone* = ref object
     n*: cstring
-    ty*, i*: int # Type, fixture ID
+    ty*: MapCapZoneType
+    i*: int # Fixture ID
     l*: float    # Time
+  MapCapZoneType* = enum
+    cztNormal = 1, cztRed, cztBlue, cztGreen, cztYellow
 
   MapPhysics* = ref object
     ppm*: float    # Player radius = ppm
