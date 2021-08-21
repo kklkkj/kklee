@@ -51,8 +51,8 @@ type
   MapCapZone* = ref object
     n*: cstring
     ty*: MapCapZoneType
-    i*: int # Fixture ID
-    l*: float    # Time
+    i*: int   # Fixture ID
+    l*: float # Time
   MapCapZoneType* = enum
     cztNormal = 1, cztRed, cztBlue, cztGreen, cztYellow
 
@@ -71,7 +71,7 @@ type
     de*, fric*, ld*, re*: float        # Density, friction, linear drag,
                                        # bounciness
     f_1*, f_2*, f_3*, f_4*, f_p*: bool # Collision groups enabled
-    f_c*: int                          # Collision group
+    f_c*: MapBodyCollideGroup          # Collision group
     fr*, fricp*, bu*: bool             # Fixed rotation, fric players,
                                        # anti-tunnel
     p*, lv*: MapPosition               # Position, linear velocity

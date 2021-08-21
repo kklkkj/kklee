@@ -153,7 +153,7 @@ proc platformMultiSelectEdit: VNode = buildHtml tdiv(
   boolProp("Anti-tunnel", b.bu)
   type cg = MapBodyCollideGroup
   dropDownProp("Col. group", b.f_c, [
-    ("A", cg.A.int), ("B", cg.B.int), ("C", cg.C.int), ("D", cg.D.int)
+    ("A", cg.A), ("B", cg.B), ("C", cg.C), ("D", cg.D)
   ])
   boolProp("Col. players", b.f_p)
   boolProp("Col. A", b.f_1)
