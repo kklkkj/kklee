@@ -15,7 +15,8 @@ A browser extension that extends the functionality of the map editor in
 - Change the speed of map testing in the editor
 - The chat is visible in the map editor
 - Ability to transfer map ownership
-- Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space
+- Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space,
+  Return to editor after pressing play - Shift+Esc
 
 ## Installing
 
@@ -34,12 +35,20 @@ immediately warn you about them.
 1. Go to `chrome://extensions/`
 2. Enable `Developer mode` in the top-right corner of the page.
 3. Drag and drop the zip file into the page.
-4. Open the `details` of the extension and disable `Allow access to file URLs`.
 
 Newer versions will have to be installed manually like this too.
 
----
+## It doesn't work
+Did you:
+- Disable any extensions that are incompatible with kklee, such as
+  Bonk Leagues Client
+- Refresh Bonk.io after installing
 
+It is also possible that a recent Bonk.io update broke the extension and it
+needs to be fixed.
+
+---
+---
 ##### Ignore this if you just want to install the extension.
 ## Building
 
