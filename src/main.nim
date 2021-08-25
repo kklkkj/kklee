@@ -190,6 +190,9 @@ totalMassTextbox.addEventListener("mousemove", proc(e: Event) =
   for fxId in body.fx:
     let
       fx = fxId.getFx
+    if fx.np:
+      continue
+    let
       sh = fx.fxShape
       density = if fx.de == jsNull: body.de
                 else: fx.de
