@@ -87,9 +87,10 @@ type
 
   MapFixture* = ref object
     n*: cstring
-    d*, ng*, np*, fp*: bool # Death, no grapple, no physics, fric players
-    de*, re*, fr*: float    # Set to Nan for no value
-    f*: int                 # Colour
+    d*, ng*, np*, fp*, ig*: bool # Death, no grapple, no physics, fric players,
+                                 # inner grapple
+    de*, re*, fr*: float         # Set to Nan for no value
+    f*: int                      # Colour
     sh*: int
 
   MapShapeType* = enum

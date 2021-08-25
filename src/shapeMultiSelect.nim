@@ -132,6 +132,7 @@ proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
 
   boolProp("No physics", fx.np)
   boolProp("No grapple", fx.ng)
+  boolProp("Inner grapple", fx.ig)
   boolProp("Death", fx.d)
 
   colourChanger()
