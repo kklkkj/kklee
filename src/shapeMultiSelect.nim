@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, algorithm, dom, math],
+  std/[sugar, strutils, sequtils, algorithm, dom, math],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
@@ -205,11 +205,56 @@ proc shapeMultiSelectDelete: VNode =
     updateRenderer(true)
     updateRightBoxBody(-1)
 
+proc shapeMultiSelectMove: VNode = buildHtml tdiv(style =
+  "display: flex; flex-flow: row wrap; justify-content: space-between;".toCss
+    ):
+  text "Move"
+  template fx: untyped = fixturesBody.fx
+  proc update =
+    updateRightBoxBody(-1)
+    updateRenderer(true)
+    saveToUndoHistory()
+  proc getSelectedFxIds: seq[int] =
+    selectedFixtures.mapIt moph.fixtures.find(it)
+  bonkButton "Down", proc =
+    let selectedFxIds = getSelectedFxIds()
+    for i in countup(1, fx.high):
+      if selectedFxIds.find(fx[i]) != -1 and
+          selectedFxIds.find(fx[i - 1]) == -1:
+        swap(fx[i], fx[i - 1])
+    update()
+  bonkButton "Up", proc =
+    let selectedFxIds = getSelectedFxIds()
+    for i in countdown(fx.high - 1, 0):
+      if selectedFxIds.find(fx[i]) != -1 and
+          selectedFxIds.find(fx[i + 1]) == -1:
+        swap(fx[i], fx[i + 1])
+    update()
+  bonkButton "Bottom", proc =
+    let selectedFxIds = getSelectedFxIds()
+    var moveIndex = 0
+    for i in countup(0, fx.high):
+      if selectedFxIds.find(fx[i]) == -1: continue
+      inc moveIndex
+      for j in countdown(i, moveIndex):
+        swap fx[j], fx[j - 1]
+    update()
+  bonkButton "Top", proc =
+    let selectedFxIds = getSelectedFxIds()
+    var moveIndex = fx.high
+    for i in countdown(fx.high, 0):
+      if selectedFxIds.find(fx[i]) == -1: continue
+      dec moveIndex
+      for j in countup(i, moveIndex):
+        swap fx[j], fx[j + 1]
+    update()
+
 proc shapeMultiSelect*: VNode =
   shapeMultiSelectSwitchPlatform()
   buildHtml(tdiv(
       style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
     shapeMultiSelectSelectAll()
     shapeMultiSelectEdit()
+    shapeMultiSelectMove()
     shapeMultiSelectDelete()
     shapeMultiSelectCopy()
