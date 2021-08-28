@@ -52,14 +52,15 @@ proc shapeMultiSelectSwitchPlatform* =
 proc shapeMultiSelectEdit: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
 
-  ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
-    li text "Shift+click shape name fields to select shapes"
-    li text (
-      "Variables: x is current value, i is index in list of selected " &
-      "shapes (the first shape you selected will have i=0, the next one" &
-      "i=1, i=2, etc)"
-    )
-    li text "Arithmetic, such as x*2+50, will be evaluated"
+  proc onMouseEnter =
+    setEditorExplanation("""
+[kklee]
+Shift+click shape name fields to select shapes
+Variables:
+ - x is the current value
+ - i is the index in list of selected shapes (the first shape you selected will have i=0, the next one i=1, i=2, etc)
+Arithmetic, such as x*2+50, will be evaluated
+    """)
 
   var appliers {.global.}: seq[(int, MapFixture) -> void]
 

@@ -181,3 +181,6 @@ let jsNull* {.importc: "null".}: float
 
 proc docElemById*(s: cstring): Element =
   document.getElementById(s)
+
+proc setEditorExplanation*(text: string) =
+  docElemById("mapeditor_midbox_explain").innerText = text

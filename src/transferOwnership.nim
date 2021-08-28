@@ -9,8 +9,8 @@ proc transferOwnership*: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
   if m.a != m.rxa and m.rxa != "":
     text (
-      "Failed to verify that you are the original author. Try saving the " &
-      "map first.")
+      "Failed to verify that you are the original author. You must save this " &
+      "map onto your account first.")
   else:
     var username {.global.} = ""
     select:

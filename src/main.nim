@@ -183,6 +183,12 @@ totalMassTextbox.style.width = "60px"
 totalMassTextbox.style.backgroundColor = "gray"
 docElemById("mapeditor_rightbox_table_dynamic").children[0]
   .appendChild shapeTableCell("Platform mass", totalMassTextbox)
+totalMassTextbox.addEventListener("mouseenter", proc(e: Event) =
+  setEditorExplanation(
+    "[kklee]\n" &
+    "This shows the total mass of the platform. You can't edit this directly."
+  )
+)
 
 totalMassTextbox.addEventListener("mousemove", proc(e: Event) =
   var totalMass = 0.0
