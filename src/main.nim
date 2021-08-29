@@ -93,7 +93,10 @@ proc initPlatformMultiSelect =
   platformMultiSelectElementBorders()
 
   platformsContainer.children[0].addEventListener("click", proc(e: MouseEvent) =
-    if state.kind != sePlatformMultiSelect or not e.shiftKey: return
+    if not e.shiftKey: return
+    if state.kind != sePlatformMultiSelect:
+      state = StateObject(kind: sePlatformMultiSelect)
+      rerender()
 
     let index = platformsContainer.children[0].children.find e.target.parentNode
     if index == -1: return
@@ -155,9 +158,11 @@ rightBoxShapeTableContainer
 
 rightBoxShapeTableContainer
   .addEventListener("click", proc(e: MouseEvent) =
-    if state.kind != seShapeMultiSelect or
-        fixturesBody != getCurrentBody().getBody or
-        not e.shiftKey: return
+    if not e.shiftKey: return
+    fixturesBody = getCurrentBody().getBody
+    if state.kind != seShapeMultiSelect:
+      state = StateObject(kind: seShapeMultiSelect)
+      rerender()
 
     let
       shapeElements = rightBoxShapeTableContainer
