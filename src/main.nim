@@ -85,6 +85,7 @@ let platformMultiSelectButton = createBonkButton("Multiselect", proc =
   rerender()
 )
 platformMultiSelectButton.style.margin = "3px"
+platformMultiSelectButton.style.width = "100px"
 
 proc initPlatformMultiSelect =
   let platformsContainer = docElemById("mapeditor_leftbox_platformtable")
