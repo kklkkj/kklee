@@ -73,6 +73,21 @@ afterUpdateRightBoxBody = proc(fx: int) =
           .children[0].children[shapeCzId].Element.click()
       se.appendChild shapeTableCell("",
         createBonkButton("Capzone", editCapZone))
+      if fixture.fxShape.shapeType == stypeBx:
+        proc rectToPoly =
+          let bx = fixture.fxShape
+          moph.shapes[fixture.sh] = MapShape(
+            stype: $stypePo,
+            a: bx.a,
+            c: bx.c,
+            poS: 1.0,
+            poV: @[[-bx.bxW/2, -bx.bxH/2], [bx.bxW/2, -bx.bxH/2],
+                  [bx.bxW/2, bx.bxH/2], [-bx.bxW/2, bx.bxH/2]]
+          )
+          saveToUndoHistory()
+          updateRightBoxBody(fxId)
+        se.appendChild shapeTableCell("",
+          createBonkButton("To polygon", rectToPoly))
 
 
   shapeMultiSelectElementBorders()
