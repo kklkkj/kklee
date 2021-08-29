@@ -135,6 +135,7 @@ Arithmetic, such as x*2+50, will be evaluated
   boolProp("No grapple", fx.ng)
   boolProp("Inner grapple", fx.ig)
   boolProp("Death", fx.d)
+  boolProp("Shrink", fx.fxShape.sk)
 
   colourChanger()
 

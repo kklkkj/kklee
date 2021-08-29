@@ -122,7 +122,7 @@ proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
     markerPos.x += veSh.c.x
     markerPos.y += veSh.c.y
     moph.shapes.add MapShape(
-      stype: "ci", ciR: 3.0, ciSk: false, c: markerPos
+      stype: "ci", ciR: 3.0, sk: false, c: markerPos
     )
     moph.fixtures.add MapFixture(
       n: "temp marker", np: true, f: 0xff0000,

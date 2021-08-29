@@ -100,14 +100,14 @@ type
     c*: MapPosition
     a* {.exportc: "a".}: float
 
+    sk* {.exportc: "sk".}: bool  # Shrink, not available for polygons
+
     bxW* {.exportc: "w".}: float
     bxH* {.exportc: "h".}: float
-    bxSk* {.exportc: "sk".}: bool # Shrink
 
     ciR* {.exportc: "r".}: float
-    ciSk* {.exportc: "sk".}: bool # Shrink
 
-    poS* {.exportc: "s".}: float  # Scale
+    poS* {.exportc: "s".}: float # Scale
     poV* {.exportc: "v".}: seq[MapPosition]
 
   MapJoint* = ref object
