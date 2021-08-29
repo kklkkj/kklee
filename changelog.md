@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.15
+- Fixed bug in shape capture zone adder
+- No physics shapes won't be counted in total platform mass
+- Added inner grapple and shrink properties to shape multi-select
+- Added ability to move shapes and platforms up/down in multi-select
+- Highlighted properties in multi-select will be purple and bold instead of red
+- Shift+Click will automatically open multi-select if it isn't already open
+- Added a button that converts rectangles to polygons
+
 ## v0.14
 - Fixed the custom colour picker that was broken in the latest Bonk.io update
 - The browser's default action for Shift+Esc will be prevented when you use it
