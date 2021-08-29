@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, dom, math, options],
+  std/[sugar, strutils, sequtils, dom, math, options],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
@@ -184,9 +184,54 @@ Arithmetic, such as x*2+50, will be evaluated
     updateLeftBox()
     updateRightBoxBody(-1)
 
+proc platformMultiSelectMove: VNode = buildHtml tdiv(style =
+  "display: flex; flex-flow: row wrap; justify-content: space-between;".toCss
+    ):
+  text "Move"
+  template bro: untyped = moph.bro
+  proc update =
+    updateLeftBox()
+    updateRenderer(true)
+    saveToUndoHistory()
+  proc getSelectedBIds: seq[int] =
+    selectedBodies.mapIt moph.bodies.find(it)
+  bonkButton "Down", proc =
+    let selectedBIds = getSelectedBIds()
+    for i in countdown(bro.high - 1, 0):
+      if selectedBIds.find(bro[i]) != -1 and
+          selectedBIds.find(bro[i + 1]) == -1:
+        swap(bro[i], bro[i + 1])
+    update()
+  bonkButton "Up", proc =
+    let selectedBIds = getSelectedBIds()
+    for i in countup(1, bro.high):
+      if selectedBIds.find(bro[i]) != -1 and
+          selectedBIds.find(bro[i - 1]) == -1:
+        swap(bro[i], bro[i - 1])
+    update()
+  bonkButton "Bottom", proc =
+    let selectedBIds = getSelectedBIds()
+    var moveIndex = bro.high
+    for i in countdown(bro.high, 0):
+      if selectedBIds.find(bro[i]) == -1: continue
+      dec moveIndex
+      for j in countup(i, moveIndex):
+        swap bro[j], bro[j + 1]
+    update()
+  bonkButton "Top", proc =
+    let selectedBIds = getSelectedBIds()
+    var moveIndex = 0
+    for i in countup(0, bro.high):
+      if selectedBIds.find(bro[i]) == -1: continue
+      inc moveIndex
+      for j in countdown(i, moveIndex):
+        swap bro[j], bro[j - 1]
+    update()
+
 proc platformMultiSelect*: VNode = buildHtml(tdiv(
     style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
   platformMultiSelectSelectAll()
   platformMultiSelectEdit()
+  platformMultiSelectMove()
   platformMultiSelectDelete()
   # platformMultiSelectCopy()
