@@ -89,7 +89,9 @@ func prop*(name: string; field: VNode; highlight = false): VNode =
   buildHtml: tdiv(style =
     "display:flex; flex-flow: row wrap; justify-content: space-between"
     .toCss):
-    span(style = (if highlight: "color: red" else: "").toCss):
+    span(style = (
+      if highlight: "color: blueviolet; font-weight: bold" else: ""
+    ).toCss):
       text name
     field
 
