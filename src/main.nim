@@ -22,7 +22,6 @@ proc createBonkButton(label: string; onclick: proc: void): Element =
   result.onclick = proc(e: Event) = onclick()
 
 afterNewMapObject = hide
-afterUpdateLeftBox = rerender
 
 let
   rightBoxShapeTableContainer =
