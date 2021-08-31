@@ -40,12 +40,14 @@ proc hide* =
   state = StateObject(kind: seHidden)
   kxi.redraw()
 proc rerender* =
-  let s = state
-  hide()
-  discard window.requestAnimationFrame(proc(_: float) =
-    state = s
-    kxi.redraw()
-  )
+  kxi.avoidDomDiffing()
+  kxi.redraw()
+  # let s = state
+  # hide()
+  # discard window.requestAnimationFrame(proc(_: float) =
+  #   state = s
+  #   kxi.redraw()
+  # )
 
 proc render: VNode =
   st.width = "200px"
