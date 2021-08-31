@@ -79,6 +79,7 @@ Variables:
  - x is the current value
  - i is the index in list of selected platforms (the first platform you selected will have i=0, the next one i=1, i=2, etc)
 Arithmetic, such as x*2+50, will be evaluated
+ - n is number of platforms selected
     """)
 
   var appliers {.global.}: seq[(int, MapBody) -> void]
@@ -94,7 +95,8 @@ Arithmetic, such as x*2+50, will be evaluated
     var inp {.global.}: string = "x"
 
     once: appliers.add proc (i: int; b {.inject.}: MapBody) =
-      mapBProp = inpToPropF floatPropApplier(inp, i, propToInpF mapBProp)
+      mapBProp = inpToPropF floatPropApplier(inp, i, selectedBodies.len,
+          propToInpF mapBProp)
 
     buildHtml:
       prop name, floatPropInput(inp), inp != "x"

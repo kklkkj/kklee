@@ -100,14 +100,14 @@ func floatNop*(f: float): float = f
 proc floatPropInput*(inp: var string): VNode =
   buildHtml: bonkInput(inp, proc(parserInput: string): string =
     let evtor = newEvaluator()
-    evtor.addVars {"x": 0.0, "i": 0.0}
+    evtor.addVars {"x": 0.0, "i": 0.0, "n": 0.0}
     discard evtor.eval parserInput
     return parserInput
   , nil, s=>s)
 
-proc floatPropApplier*(inp: string; i: int; prop: float): float =
+proc floatPropApplier*(inp: string; i: int; n: int; prop: float): float =
   let evtor = newEvaluator()
-  evtor.addVars {"x": prop, "i": i.float}
+  evtor.addVars {"x": prop, "i": i.float, "n": n.float}
   result = evtor.eval(inp).clamp(-1e6, 1e6)
   if result.isNaN: result = 0
 
