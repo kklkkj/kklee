@@ -80,6 +80,9 @@ Variables:
  - i is the index in list of selected platforms (the first platform you selected will have i=0, the next one i=1, i=2, etc)
 Arithmetic, such as x*2+50, will be evaluated
  - n is number of platforms selected
+List of supported functions:
+https://yardanico.github.io/nim-mathexpr/mathexpr.html#what-is-supportedqmark
+Additional function: rand() - random number between 0 and 1
     """)
 
   var appliers {.global.}: seq[(int, MapBody) -> void]
