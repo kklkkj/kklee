@@ -308,6 +308,7 @@ colourInput.addEventListener("change", proc(e: Event) =
 
 import mathexpr
 let myEvaluator = newEvaluator()
+myEvaluator.addFunc("rand", mathExprJsRandom, 0)
 
 mapEditorDiv.addEventListener("keydown", proc(
     e: KeyboardEvent) =

@@ -1,7 +1,8 @@
 import
   std/[strformat, dom, sugar, options, strutils],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  pkg/mathexpr
+  pkg/mathexpr,
+  kkleeApi
 
 proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
   let disabledClass = if disabled: "brownButtonDisabled" else: ""
@@ -101,6 +102,7 @@ proc floatPropInput*(inp: var string): VNode =
   buildHtml: bonkInput(inp, proc(parserInput: string): string =
     let evtor = newEvaluator()
     evtor.addVars {"x": 0.0, "i": 0.0, "n": 0.0}
+    evtor.addFunc("rand", mathExprJsRandom, 0)
     discard evtor.eval parserInput
     return parserInput
   , nil, s=>s)
@@ -108,6 +110,7 @@ proc floatPropInput*(inp: var string): VNode =
 proc floatPropApplier*(inp: string; i: int; n: int; prop: float): float =
   let evtor = newEvaluator()
   evtor.addVars {"x": prop, "i": i.float, "n": n.float}
+  evtor.addFunc("rand", mathExprJsRandom, 0)
   result = evtor.eval(inp).clamp(-1e6, 1e6)
   if result.isNaN: result = 0
 

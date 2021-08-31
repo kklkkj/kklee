@@ -184,3 +184,5 @@ proc docElemById*(s: cstring): Element =
 
 proc setEditorExplanation*(text: string) =
   docElemById("mapeditor_midbox_explain").innerText = text
+
+proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
