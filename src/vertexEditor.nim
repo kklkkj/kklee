@@ -205,7 +205,8 @@ proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
         vId = 0
       bonkInput(vId, proc(s: string): int =
         result = s.parseInt
-        if result notin 0..poV.high: raise newException(ValueError, "")
+        if result notin 0..poV.high:
+          raise newException(ValueError, "Invalid vertex ID")
       , nil, v => $v)
 
       let stuh = proc =

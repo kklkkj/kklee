@@ -287,7 +287,8 @@ proc shapeGenerator*(body: MapBody): VNode =
       let precInput =
         bonkInput(gs.prec, proc(s: string): int =
           result = s.parseInt
-          if result notin 1..99: raise newException(ValueError, "")
+          if result notin 1..99:
+            raise newException(ValueError, "prec notin 1.99")
         , update, i => $i)
 
       prop("No physics", checkbox(gs.noPhysics))
