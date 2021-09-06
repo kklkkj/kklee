@@ -4,8 +4,8 @@ import
   kkleeApi, bonkElements, vertexEditor, shapeGenerator, shapeMultiSelect,
   transferOwnership, platformMultiSelect
 
-let root* = document.createElement("div")
-let karaxRoot* = document.createElement("div")
+let root = document.createElement("div")
+let karaxRoot = document.createElement("div")
 karaxRoot.id = "kkleeRoot"
 root.appendChild(karaxRoot)
 let st = root.style
