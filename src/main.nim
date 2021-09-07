@@ -406,3 +406,15 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
 
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
+
+# Fullscreen button
+
+let fullscreenButton = createBonkButton("⛶", toggleFullPage)
+let fbs = fullscreenButton.style
+fbs.position = "absolute"
+fbs.right = "350px"
+fbs.top = "0px"
+fbs.height = "100%"
+fbs.width = "40px"
+fbs.fontSize = "30"
+docElemById("pretty_top_bar").appendChild(fullscreenButton)

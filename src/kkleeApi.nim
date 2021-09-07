@@ -186,3 +186,5 @@ proc setEditorExplanation*(text: string) =
   docElemById("mapeditor_midbox_explain").innerText = text
 
 proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
+
+proc toggleFullPage* {.importc: "window.kklee.toggleFullPage".}
