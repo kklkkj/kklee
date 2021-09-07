@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.16
+- Added a variable for the number of selected items in multi-select
+- Added rand function to arithmetic evaluators
+- Added a link to the list of supported functions in multi-select
+- Added ability to multi-select by item name
+- Added a button to make the game frame fill the entire page
+
 ## v0.15
 - Fixed bug in shape capture zone adder
 - No physics shapes won't be counted in total platform mass
