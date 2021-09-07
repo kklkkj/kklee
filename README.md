@@ -17,6 +17,7 @@ A browser extension that extends the functionality of the map editor in
 - Ability to transfer map ownership
 - Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space,
   Return to editor after pressing play - Shift+Esc
+- A button that makes the game frame fill the entire page
 
 ## Installing
 
