@@ -191,13 +191,26 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
       for fxId in fixturesBody.fx: fxId.getFx
     shapeMultiSelectElementBorders()
   bonkButton "Deselect all", proc =
+    shapeMultiSelectSwitchPlatform()
     selectedFixtures = @[]
     shapeMultiSelectElementBorders()
   bonkButton "Invert selection", proc =
+    shapeMultiSelectSwitchPlatform()
     selectedFixtures = collect(newSeq):
       for fxId in fixturesBody.fx:
         let fx = fxId.getFx
         if fx notin selectedFixtures:
+          fx
+    shapeMultiSelectElementBorders()
+
+  var searchString {.global.} = ""
+  bonkInput(searchString, s => s, nil, s => s)
+  bonkButton "Select names starting with", proc =
+    shapeMultiSelectSwitchPlatform()
+    selectedFixtures = collect(newSeq):
+      for fxId in fixturesBody.fx:
+        let fx = fxId.getFx
+        if fx.n.`$`.startsWith(searchString):
           fx
     shapeMultiSelectElementBorders()
 
