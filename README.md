@@ -1,10 +1,12 @@
 # kklee
 A browser extension that extends the functionality of the map editor in
-[Bonk.io](https://bonk.io).
+[bonk.io](https://bonk.io).
 
 [Discord server](https://discord.gg/kW389FqMz2)
 
-### Features
+<details>
+<summary>Features</summary>
+
 - Multi-select for platforms and shapes
 - Vertex editor with ability to round corners and (buggy) ability to merge
   multiple polygons into one
@@ -15,10 +17,16 @@ A browser extension that extends the functionality of the map editor in
 - Change the speed of map testing in the editor
 - The chat is visible in the map editor
 - Ability to transfer map ownership
-- Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space,
-  Return to editor after pressing play - Shift+Esc
-- A button that makes the game frame fill the entire page
+- Keyboard shortcuts:
+  * Save: `Ctrl + S`
+  * Preview: `Space`
+  * Play: `Shift + Space`,
+  * Return to editor after pressing play: `Shift + Esc`
+- A button in the top bar that makes the game frame fill the entire page
 
+</details>
+
+---
 ## Installing
 
 **Warning:** Before installing any extension this way, you should check the
@@ -44,14 +52,17 @@ Did you:
 - Disable any extensions that are incompatible with kklee, such as
   Bonk Leagues Client
 - Refresh Bonk.io after installing
+- Download the correct file from Releases? It should be called
+  `kklee-[version].zip`, NOT `kklee-master.zip`
 
-It is also possible that a recent Bonk.io update broke the extension and it
+It is also possible that a recent bonk.io update broke the extension and it
 needs to be fixed.
 
 ---
----
-##### Ignore this if you just want to install the extension.
 ## Building
+
+<details>
+<summary>Ignore this if you just want to install the extension</summary>
 
 1. Install the following:
     * [Node.js](https://nodejs.org/) (v16.3.0)
@@ -63,3 +74,5 @@ needs to be fixed.
     - Run `npm run test` to open a temporary browser session with the extension.
     - Run `npm run build-extension` to build the zip file.
       The file will be in `web-ext-artifacts`.
+
+</details>
