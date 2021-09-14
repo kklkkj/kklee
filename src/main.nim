@@ -373,14 +373,14 @@ docElemById("mapeditor_rightbox_platformparams").appendChild(tipsList)
 
 mapEditorDiv.setAttr("tabindex", "0")
 mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
-  if ev.target != mapEditorDiv:
+  if ev.target != mapEditorDiv or
+      docElemById("gamerenderer").style.visibility == "inherit":
     return
   if ev.ctrlKey and ev.key == "s":
     docElemById("mapeditor_midbox_savebutton").click()
     docElemById("mapeditor_save_window_save").click()
   elif ev.shiftKey and ev.key == " ":
     docElemById("mapeditor_midbox_testbutton").click()
-    document.activeElement.blur()
   elif ev.key == " ":
     docElemById("mapeditor_midbox_playbutton").click()
   else:
