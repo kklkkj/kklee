@@ -375,15 +375,17 @@ mapEditorDiv.setAttr("tabindex", "0")
 mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
   if ev.target != mapEditorDiv:
     return
-  ev.preventDefault()
   if ev.ctrlKey and ev.key == "s":
     docElemById("mapeditor_midbox_savebutton").click()
     docElemById("mapeditor_save_window_save").click()
   elif ev.shiftKey and ev.key == " ":
     docElemById("mapeditor_midbox_testbutton").click()
-    mapEditorDiv.blur()
+    document.activeElement.blur()
   elif ev.key == " ":
     docElemById("mapeditor_midbox_playbutton").click()
+  else:
+    return
+  ev.preventDefault()
 )
 
 # Return to map editor after clicking play
