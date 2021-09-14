@@ -390,8 +390,7 @@ mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
 
 # Return to map editor after clicking play
 document.addEventListener("keydown", proc(ev: KeyboardEvent) =
-  if docElemById("mapeditorcontainer").style.display == "block" and
-      docElemById("gamerenderer").style.visibility == "inherit" and
+  if docElemById("gamerenderer").style.visibility == "inherit" and
       ev.shiftKey and ev.key == "Escape":
     ev.preventDefault()
     docElemById("pretty_top_exit").click()
