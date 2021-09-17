@@ -245,6 +245,18 @@ proc platformMultiSelectMove: VNode = buildHtml tdiv(style =
       for j in countdown(i, moveIndex):
         swap bro[j], bro[j - 1]
     update()
+  bonkButton "Reverse", proc =
+    var selectedBIds = getSelectedBIds()
+    let bIdPositions = collect(newSeq):
+      for i, bId in bro:
+        let si = selectedBIds.find bId
+        if si == -1: continue
+        selectedBIds.del si
+        i
+    for i in 0..bIdPositions.len div 2 - 1:
+      swap bro[bIdPositions[i]],
+           bro[bIdPositions[bIdPositions.high - i]]
+    update()
 
 proc platformMultiSelect*: VNode = buildHtml(tdiv(
     style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):

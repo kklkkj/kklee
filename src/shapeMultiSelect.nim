@@ -271,6 +271,18 @@ proc shapeMultiSelectMove: VNode = buildHtml tdiv(style =
       for j in countup(i, moveIndex):
         swap fx[j], fx[j + 1]
     update()
+  bonkButton "Reverse", proc =
+    var selectedFxIds = getSelectedFxIds()
+    let fxIdPositions = collect(newSeq):
+      for i, fxId in fx:
+        let si = selectedFxIds.find fxId
+        if si == -1: continue
+        selectedFxIds.del si
+        i
+    for i in 0..fxIdPositions.len div 2 - 1:
+      swap fx[fxIdPositions[i]],
+           fx[fxIdPositions[fxIdPositions.high - i]]
+    update()
 
 proc shapeMultiSelect*: VNode =
   shapeMultiSelectSwitchPlatform()
