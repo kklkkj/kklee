@@ -11,7 +11,7 @@ proc removeDeletedFixtures =
   var i = 0
   while i < selectedFixtures.len:
     let fx = selectedFixtures[i]
-    if moph.fixtures.find(fx) == -1:
+    if fx notin moph.fixtures:
       selectedFixtures.delete i
     else:
       inc i
@@ -242,22 +242,22 @@ proc shapeMultiSelectMove: VNode = buildHtml tdiv(style =
   bonkButton "Down", proc =
     let selectedFxIds = getSelectedFxIds()
     for i in countup(1, fx.high):
-      if selectedFxIds.find(fx[i]) != -1 and
-          selectedFxIds.find(fx[i - 1]) == -1:
+      if fx[i] in selectedFxIds and
+          fx[i - 1] notin selectedFxIds:
         swap(fx[i], fx[i - 1])
     update()
   bonkButton "Up", proc =
     let selectedFxIds = getSelectedFxIds()
     for i in countdown(fx.high - 1, 0):
-      if selectedFxIds.find(fx[i]) != -1 and
-          selectedFxIds.find(fx[i + 1]) == -1:
+      if fx[i] in selectedFxIds and
+          fx[i + 1] notin selectedFxIds:
         swap(fx[i], fx[i + 1])
     update()
   bonkButton "Bottom", proc =
     let selectedFxIds = getSelectedFxIds()
     var moveIndex = 0
     for i in countup(0, fx.high):
-      if selectedFxIds.find(fx[i]) == -1: continue
+      if fx[i] notin selectedFxIds: continue
       inc moveIndex
       for j in countdown(i, moveIndex):
         swap fx[j], fx[j - 1]
@@ -266,7 +266,7 @@ proc shapeMultiSelectMove: VNode = buildHtml tdiv(style =
     let selectedFxIds = getSelectedFxIds()
     var moveIndex = fx.high
     for i in countdown(fx.high, 0):
-      if selectedFxIds.find(fx[i]) == -1: continue
+      if fx[i] notin selectedFxIds: continue
       dec moveIndex
       for j in countup(i, moveIndex):
         swap fx[j], fx[j + 1]

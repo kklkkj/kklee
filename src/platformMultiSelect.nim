@@ -9,7 +9,7 @@ proc removeDeletedBodies =
   var i = 0
   while i < selectedBodies.len:
     let b = selectedBodies[i]
-    if moph.bodies.find(b) == -1:
+    if b notin moph.bodies:
       selectedBodies.delete i
     else:
       inc i
@@ -216,22 +216,22 @@ proc platformMultiSelectMove: VNode = buildHtml tdiv(style =
   bonkButton "Down", proc =
     let selectedBIds = getSelectedBIds()
     for i in countdown(bro.high - 1, 0):
-      if selectedBIds.find(bro[i]) != -1 and
-          selectedBIds.find(bro[i + 1]) == -1:
+      if bro[i] in selectedBIds and
+          bro[i + 1] notin selectedBIds:
         swap(bro[i], bro[i + 1])
     update()
   bonkButton "Up", proc =
     let selectedBIds = getSelectedBIds()
     for i in countup(1, bro.high):
-      if selectedBIds.find(bro[i]) != -1 and
-          selectedBIds.find(bro[i - 1]) == -1:
+      if bro[i] in selectedBIds and
+          bro[i - 1] notin selectedBIds:
         swap(bro[i], bro[i - 1])
     update()
   bonkButton "Bottom", proc =
     let selectedBIds = getSelectedBIds()
     var moveIndex = bro.high
     for i in countdown(bro.high, 0):
-      if selectedBIds.find(bro[i]) == -1: continue
+      if bro[i] notin selectedBIds: continue
       dec moveIndex
       for j in countup(i, moveIndex):
         swap bro[j], bro[j + 1]
@@ -240,7 +240,7 @@ proc platformMultiSelectMove: VNode = buildHtml tdiv(style =
     let selectedBIds = getSelectedBIds()
     var moveIndex = 0
     for i in countup(0, bro.high):
-      if selectedBIds.find(bro[i]) == -1: continue
+      if bro[i] notin selectedBIds: continue
       inc moveIndex
       for j in countdown(i, moveIndex):
         swap bro[j], bro[j - 1]

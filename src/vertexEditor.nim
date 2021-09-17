@@ -93,7 +93,7 @@ proc roundCorners(poV: seq[MapPosition]; r: float; prec: float):
     result.add c2
 
 proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
-  if moph.fixtures.find(veFx) == -1:
+  if veFx notin moph.fixtures:
     return buildHtml(tdiv): discard
   let veSh = veFx.fxShape
 
