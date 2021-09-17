@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, sequtils, dom, math, options],
+  std/[sugar, strutils, algorithm, sequtils, dom, math, options],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
@@ -66,6 +66,9 @@ proc platformMultiSelectSelectAll: VNode = buildHtml tdiv:
         let b = bId.getBody
         if b notin selectedBodies:
           b
+    platformMultiSelectElementBorders()
+  bonkButton "Reverse selection order", proc =
+    selectedBodies.reverse()
     platformMultiSelectElementBorders()
 
   var searchString {.global.} = ""

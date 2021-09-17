@@ -202,6 +202,9 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
         if fx notin selectedFixtures:
           fx
     shapeMultiSelectElementBorders()
+  bonkButton "Reverse selection order", proc =
+    selectedFixtures.reverse()
+    shapeMultiSelectElementBorders()
 
   var searchString {.global.} = ""
   bonkInput(searchString, s => s, nil, s => s)
