@@ -405,6 +405,14 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
   shapeTableCell("", createBonkButton("Transfer ownership",
       openTransferOwnership)))
 
+# Map size info
+proc openMapSizeInfo =
+  state = StateObject(kind: seMapSizeInfo)
+  rerender()
+docElemById("mapeditor_rightbox_mapparams").appendChild(
+  shapeTableCell("", createBonkButton("Map size info",
+      openMapSizeInfo)))
+
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
 

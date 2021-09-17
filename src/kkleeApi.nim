@@ -27,6 +27,7 @@ importCurrentThing(Spawn)
 importCurrentThing(CapZone)
 
 proc setColourPickerColour*(colour: int) {.importc: "window.kklee.$1".}
+proc dataLimitInfo*: cstring {.importc: "kklee.dataLimitInfo".}
 
 type
   MapPosition* = array[2, float]

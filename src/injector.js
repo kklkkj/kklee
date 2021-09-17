@@ -207,6 +207,16 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   };
   window.addEventListener("resize", function(){if(fullPage) setTimeout(a,50);});
 
+  kklee.dataLimitInfo = () => {
+    try {
+      const d = atob(window.LZString.decompressFromEncodedURIComponent(
+        kklee.mapEncoder.encodeToDatabase(kklee.mapObject))).length;
+      return `${d}/102400 bytes`;
+    } catch {
+      return "Over data limit";
+    }
+  };
+
   require("./nimBuild.js");
   console.log("kklee injector run");
   return src;
