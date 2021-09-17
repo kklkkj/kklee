@@ -232,7 +232,7 @@ proc generateGradient: int =
 
     moph.shapes.add shape
     let
-      colour = getGradientColourAt(gs.colour, gs.colour2, i / gs.prec)
+      colour = getGradientColourAt(gs.colour, gs.colour2, i / (gs.prec - 1))
       fixture = MapFixture(n: &"gradient{i}", de: jsNull, re: jsNull,
         fr: jsNull, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
     moph.fixtures.add fixture
