@@ -91,6 +91,14 @@ proc roundCorners(poV: seq[MapPosition]; r: float; prec: float):
       result.add [o.x + radius * cos(a),
                   o.y + radius * sin(a)].MapPosition
     result.add c2
+  var i = 0
+  while i < result.len:
+    let ni = if i == result.high: 0
+             else: i + 1
+    if result[i] == result[ni]:
+      result.delete i
+    else:
+      inc i
 
 proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
   if veFx notin moph.fixtures:
