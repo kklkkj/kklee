@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.17
+- Fixed bugs in the Shift+Space shortcut
+- Shift+Esc will be usable even if the game wasn't started from the editor
+- Fixed the bug in the gradient generator that caused the final colour to be
+  part of the transition instead of the actual colour you chose
+- Added a button that reverses the selection order in multi-select
+- Added a button that reverses the order of selected items in multi-select
+- Added a map size info panel that shows the total number of  shapes, platforms,
+  etc
+- Fixed a bug in the corner rounder
+
 ## v0.16
 - Added a variable for the number of selected items in multi-select
 - Added rand function to arithmetic evaluators
