@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.18
+- Fixed a bug in the ellipse generator that caused the first vertex to be
+  repeated
+- Added a colour gradient option to shape multi-select
+- Added automatic backups of maps to the browser's offline storage
+
 ## v0.17
 - Fixed bugs in the Shift+Space shortcut
 - Shift+Esc will be usable even if the game wasn't started from the editor
