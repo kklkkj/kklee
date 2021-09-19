@@ -105,12 +105,68 @@ ${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
       ))[0];
   const saveHistoryFunctionName =
     saveHistoryFunction.match(/(?<=function )...(?=\(\))/)[0];
-
+  const newSaveHistoryFunction = saveHistoryFunction.replace(
+    new RegExp("(function ...\\(\\)\\{)"),
+    "$1window.kklee.afterSaveHistory();"
+  );
   src = src.replace(
     saveHistoryFunction,
-    `window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
-${saveHistoryFunction}`
+    `;window.kklee.setMapObject=\
+function(m){${mapObjectName}=m;window.kklee.mapObject=m;};\
+window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
+${newSaveHistoryFunction}`
   );
+
+  if (!localStorage.kkleeMapBackups) {
+    localStorage.kkleeMapBackups = "[]";
+  }
+  kklee.getBackupLabel =
+    b => `${b.mapLabel} - ${new Date(b.timestamp).toLocaleString()}`;
+  kklee.loadBackup = b => 
+    kklee.setMapObject(kklee.mapEncoder.decodeFromDatabase(b.mapData));
+
+  function newBackupSessionId() {
+    kklee.backupSessionId =
+      Date.now().toString(36) + Math.random().toString(36);
+  }
+  kklee.backups = JSON.parse(localStorage.kkleeMapBackups);
+  function backUpMap() {
+    const mapLabel = `${kklee.mapObject.m.n} by ${kklee.mapObject.m.a}`;
+    const mapData = kklee.mapEncoder.encodeToDatabase(kklee.mapObject);
+    const lastBackup = kklee.backups[kklee.backups.length-1];
+
+    if (lastBackup && lastBackup.sessionId == kklee.backupSessionId &&
+        lastBackup.mapLabel == mapLabel) {
+      lastBackup.mapData = mapData;
+      lastBackup.timestamp = Date.now();
+    } else {
+      kklee.backups.push({
+        sessionId: kklee.backupSessionId, mapLabel: mapLabel, 
+        timestamp: Date.now(), mapData: mapData
+      });
+    }
+
+    let i = kklee.backups.length - 1;
+    let size = 0;
+    while (i >= 0) {
+      size += kklee.backups[i].mapData.length;
+      if (size > 3e5)
+        break;
+      else
+        i--;
+    }
+
+    kklee.backups = kklee.backups.slice(i + 1);
+    localStorage.kkleeMapBackups = JSON.stringify(kklee.backups);
+  }
+  newBackupSessionId();
+  // ID will be different every time a new room is made
+  document.getElementById("mainmenuelements")
+    .addEventListener("mousemove", () => newBackupSessionId());
+
+  window.kklee.afterSaveHistory = () => {
+    backUpMap();
+  };
 
   // Replace Float64Array instances with normal arrays
   window.kklee.saveToUndoHistory = () => {

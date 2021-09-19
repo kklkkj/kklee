@@ -214,3 +214,11 @@ func getGradientColourAt*(
       int(colour1[i].float * (1.0 - pos) +
           colour2[i].float * pos)
   return rc[0] shl 16 or rc[1] shl 8 or rc[2]
+
+type
+  MapBackupObject* = ref object
+
+let mapBackups* {.importc: "window.kklee.backups".}: seq[MapBackupObject]
+func getBackupLabel*(b: MapBackupObject): cstring
+  {.importc: "window.kklee.getBackupLabel".}
+proc loadBackup*(b: MapBackupObject) {.importc: "window.kklee.loadBackup".}

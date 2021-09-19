@@ -413,6 +413,14 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
   shapeTableCell("", createBonkButton("Map size info",
       openMapSizeInfo)))
 
+# Map backup loader
+proc openBackupLoader =
+  state = StateObject(kind: seBackups)
+  rerender()
+docElemById("mapeditor_rightbox_mapparams").appendChild(
+  shapeTableCell("", createBonkButton("Load map backup",
+      openBackupLoader)))
+
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
 
