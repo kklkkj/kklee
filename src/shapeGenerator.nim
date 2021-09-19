@@ -9,9 +9,6 @@ type
     sgsEllipse = "Polygon/Ellipse/Spiral", sgsSine = "Sine wave",
     sgsLinearGradient = "Linear gradient",
     sgsRadialGradient = "Radial gradient", sgsEquation = "Parametric equation"
-  EasingType = enum
-    easeNone = "None", easeInSine = "Sine in", easeOutSine = "Sine out",
-    easeInOutSine = "Sine in out"
   ShapeGeneratorState = ref object
     kind: ShapeGeneratorKind
     body: MapBody
@@ -184,26 +181,6 @@ proc generateEquation: int =
 
   result = gs.prec
 
-proc getGradientColourAt(colour1, colour2: int; pos: float): int =
-  proc getRGB(colour: int): array[3, int] =
-    [colour shr 16 and 255, colour shr 8 and 255, colour and 255]
-  let
-    colour1 = getRGB(colour1)
-    colour2 = getRGB(colour2)
-    pos =
-      case gs.gease
-      of easeNone: pos
-      of easeInSine: 1 - cos(pos * PI / 2)
-      of easeOutSine: sin(pos * PI / 2)
-      of easeInOutSine: -0.5 * (cos(pos * PI) - 1)
-  var rc: array[3, int]
-  for i in 0..2:
-    rc[i] =
-      int(colour1[i].float * (1.0 - pos) +
-          colour2[i].float * pos)
-  return rc[0] shl 16 or rc[1] shl 8 or rc[2]
-
-
 proc generateGradient: int =
   for i in 0..gs.prec-1:
     var shape: MapShape
@@ -232,7 +209,9 @@ proc generateGradient: int =
 
     moph.shapes.add shape
     let
-      colour = getGradientColourAt(gs.colour, gs.colour2, i / (gs.prec - 1))
+      colour = getGradientColourAt(
+        gs.colour, gs.colour2, i / (gs.prec - 1), gs.gease
+      )
       fixture = MapFixture(n: &"gradient{i}", de: jsNull, re: jsNull,
         fr: jsNull, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
     moph.fixtures.add fixture

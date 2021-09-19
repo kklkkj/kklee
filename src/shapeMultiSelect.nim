@@ -99,14 +99,35 @@ Additional function: rand() - random number between 0 and 1
     var
       canChange {.global.} = false
       inp {.global.}: int = 0
+      isGradient {.global.} = false
+      inp2 {.global.}: int = 0
+      easingType {.global.} = easeNone
     once: appliers.add proc(i: int; fx: MapFixture) =
-      if canChange:
-        fx.f = inp
-    buildHtml:
-      let field = buildHtml tdiv(style = "display: flex".toCss):
+      if not canChange: return
+      fx.f =
+        if not isGradient: inp
+        else:
+          getGradientColourAt(inp, inp2, i / selectedFixtures.high, easingType)
+
+    let
+      colour1Field = buildHtml tdiv(style = "display: flex".toCss):
         checkbox(canChange)
         colourInput(inp)
-      prop "Colour", field, canChange
+      colour2Field = buildHtml tdiv(style = "display: flex".toCss):
+        checkbox(isGradient)
+        colourInput(inp2)
+      easeTypeField = buildHtml tdiv(style = "display: flex".toCss):
+        select:
+          for e in EasingType:
+            option: text $e
+          proc onInput(e: Event; n: VNode) =
+            easingType = e.target.OptionElement.selectedIndex.EasingType
+    buildHtml tdiv:
+      prop "Colour", colour1Field, canChange
+      if canChange:
+        prop "Grad. Colour 2", colour2Field, isGradient
+        if isGradient:
+          prop "Grad. ease", easeTypeField, isGradient
 
   template nameChanger: untyped =
     var
