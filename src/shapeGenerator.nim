@@ -144,7 +144,7 @@ proc generateEllipse: int =
       c: [gs.x, gs.y].MapPosition
     )
 
-    for n in 0..gs.prec:
+    for n in 0..gs.prec-1:
       let a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) /
         gs.prec.float * n.float
       shape.poV.add [
