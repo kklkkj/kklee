@@ -6,7 +6,7 @@ import
 
 type
   ShapeGeneratorKind = enum
-    sgsEllipse = "Ellipse/Spiral", sgsSine = "Sine wave",
+    sgsEllipse = "Polygon/Ellipse/Spiral", sgsSine = "Sine wave",
     sgsLinearGradient = "Linear gradient",
     sgsRadialGradient = "Radial gradient", sgsEquation = "Parametric equation"
   EasingType = enum
