@@ -13,7 +13,7 @@
   part of the transition instead of the actual colour you chose
 - Added a button that reverses the selection order in multi-select
 - Added a button that reverses the order of selected items in multi-select
-- Added a map size info panel that shows the total number of  shapes, platforms,
+- Added a map size info panel that shows the total number of shapes, platforms,
   etc
 - Fixed a bug in the corner rounder
 

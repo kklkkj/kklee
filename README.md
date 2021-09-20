@@ -21,8 +21,9 @@ A browser extension that extends the functionality of the map editor in
   * Save: `Ctrl + S`
   * Preview: `Space`
   * Play: `Shift + Space`,
-  * Return to editor after pressing play: `Shift + Esc`
+  * Exit game: `Shift + Esc`
 - A button in the top bar that makes the game frame fill the entire page
+- Automatic backups of maps to the browser's offline storage
 
 </details>
 
