@@ -117,9 +117,40 @@ window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
 ${newSaveHistoryFunction}`
   );
 
-  if (!localStorage.kkleeMapBackups) {
-    localStorage.kkleeMapBackups = "[]";
+  const dbOpenRequest = window.indexedDB.open("kkleeStorage_347859220", 1);
+  let db;
+  kklee.backups = [];
+
+  dbOpenRequest.onsuccess = () => {
+    db = dbOpenRequest.result;
+    db.transaction("backups");
+    const transaction = db.transaction("backups");
+    const getRequest = transaction.objectStore("backups").get(1);
+    getRequest.onsuccess = () => {
+      kklee.backups = getRequest.result;
+    };
+    getRequest.onerror = event => {
+      console.error(event);
+      alert("kklee: unable to get backups from database");
+    };
+  };
+  function saveBackups() {
+    if(!db) return;
+    const transaction = db.transaction("backups", "readwrite");
+    transaction.objectStore("backups").put(kklee.backups, 1);
+    db.onerror = console.error;
   }
+  dbOpenRequest.onerror = event => {
+    console.error(event);
+    alert("kklee: unable to open IndexedDB");
+  };
+  dbOpenRequest.onupgradeneeded = event => {
+    const db = event.target.result;
+    const b = db.createObjectStore("backups");
+    b.put(JSON.parse(localStorage.kkleeMapBackups || "[]"), 1);
+    delete localStorage.kkleeMapBackups;
+  };
+
   kklee.getBackupLabel =
     b => `${b.mapLabel} - ${new Date(b.timestamp).toLocaleString()}`;
   kklee.loadBackup = b => 
@@ -129,7 +160,6 @@ ${newSaveHistoryFunction}`
     kklee.backupSessionId =
       Date.now().toString(36) + Math.random().toString(36);
   }
-  kklee.backups = JSON.parse(localStorage.kkleeMapBackups);
   function backUpMap() {
     const mapLabel = `${kklee.mapObject.m.n} by ${kklee.mapObject.m.a}`;
     const mapData = kklee.mapEncoder.encodeToDatabase(kklee.mapObject);
@@ -150,14 +180,14 @@ ${newSaveHistoryFunction}`
     let size = 0;
     while (i >= 0) {
       size += kklee.backups[i].mapData.length;
-      if (size > 3e5)
+      if (size > 1e6)
         break;
       else
         i--;
     }
 
     kklee.backups = kklee.backups.slice(i + 1);
-    localStorage.kkleeMapBackups = JSON.stringify(kklee.backups);
+    saveBackups();
   }
   newBackupSessionId();
   // ID will be different every time a new room is made
