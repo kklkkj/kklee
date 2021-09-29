@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.19
+- Changed how map backups are stored
+- Changed some UI styles
+- Increased shape generator shapes/vertices limit from 99 to 999
+- Added polygon scale property to shape multi-select
+- Added a way to rotate and scale multi-selected shapes around a point
+
 ## v0.18
 - Fixed a bug in the ellipse generator that caused the first vertex to be
   repeated
