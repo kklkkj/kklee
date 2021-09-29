@@ -142,6 +142,27 @@ Additional function: rand() - random number between 0 and 1
         bonkInput(inp, s => s, nil, s => s)
       prop "Name", field, canChange
 
+  template rotateAroundPoint: untyped =
+    var
+      point {.global.} = [0.0, 0.0].MapPosition
+      degrees {.global.} = 0.0
+    once: appliers.add proc(i: int; fx: MapFixture) =
+      if degrees == 0.0: return
+      var p = fx.fxShape.c
+      p.x -= point.x
+      p.y -= point.y
+      fx.fxShape.c = rotatePoint(p, degrees.degToRad)
+      fx.fxShape.c.x += point.x
+      fx.fxShape.c.y += point.y
+      fx.fxShape.a += degrees.degToRad
+    buildHtml tdiv:
+      let pointInput = buildHtml tdiv:
+        bonkInput(point[0], prsFLimited, nil, niceFormatFloat)
+        bonkInput(point[1], prsFLimited, nil, niceFormatFloat)
+      prop "Rotate around", pointInput, degrees != 0.0
+      prop "by amount", bonkInput(degrees, prsFLimited, nil, niceFormatFloat),
+        degrees != 0.0
+
   nameChanger()
   floatProp("x", fx.fxShape.c.x)
   floatProp("y", fx.fxShape.c.y)
@@ -165,6 +186,7 @@ Additional function: rand() - random number between 0 and 1
   boolProp("Shrink", fx.fxShape.sk)
 
   colourChanger()
+  rotateAroundPoint()
 
   bonkButton "Apply", proc =
     removeDeletedFixtures()
