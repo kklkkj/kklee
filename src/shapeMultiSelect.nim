@@ -142,26 +142,41 @@ Additional function: rand() - random number between 0 and 1
         bonkInput(inp, s => s, nil, s => s)
       prop "Name", field, canChange
 
-  template rotateAroundPoint: untyped =
+  template rotateAndScale: untyped =
     var
       point {.global.} = [0.0, 0.0].MapPosition
       degrees {.global.} = 0.0
+      scale {.global.} = 1.0
     once: appliers.add proc(i: int; fx: MapFixture) =
-      if degrees == 0.0: return
-      var p = fx.fxShape.c
+      template sh: untyped = fx.fxShape
+      var p = sh.c
       p.x -= point.x
       p.y -= point.y
-      fx.fxShape.c = rotatePoint(p, degrees.degToRad)
-      fx.fxShape.c.x += point.x
-      fx.fxShape.c.y += point.y
-      fx.fxShape.a += degrees.degToRad
+      if degrees != 0.0:
+        p = rotatePoint(p, degrees.degToRad)
+      sh.a += degrees.degToRad
+      p.x *= scale
+      p.y *= scale
+      p.x += point.x
+      p.y += point.y
+      sh.c = p
+      case sh.shapeType
+      of stypeBx:
+        sh.bxW *= scale
+        sh.bxH *= scale
+      of stypeCi:
+        sh.ciR *= scale
+      of stypePo:
+        sh.poS *= scale
     buildHtml tdiv:
       let pointInput = buildHtml tdiv:
         bonkInput(point[0], prsFLimited, nil, niceFormatFloat)
         bonkInput(point[1], prsFLimited, nil, niceFormatFloat)
-      prop "Rotate around", pointInput, degrees != 0.0
-      prop "by amount", bonkInput(degrees, prsFLimited, nil, niceFormatFloat),
+      prop "Rotate by", bonkInput(degrees, prsFLimited, nil, niceFormatFloat),
         degrees != 0.0
+      prop "Scale by", bonkInput(scale, prsFLimited, nil, niceFormatFloat),
+        scale != 1.0
+      prop "Around point", pointInput, false
 
   nameChanger()
   floatProp("x", fx.fxShape.c.x)
@@ -186,7 +201,7 @@ Additional function: rand() - random number between 0 and 1
   boolProp("Shrink", fx.fxShape.sk)
 
   colourChanger()
-  rotateAroundPoint()
+  rotateAndScale()
 
   bonkButton "Apply", proc =
     removeDeletedFixtures()

@@ -35,7 +35,8 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
 
 proc colourInput*(variable: var int; afterInput: proc(): void = nil): VNode =
   buildHtml:
-    input(`type` = "color", style = "width: 30px".toCss):
+    input(`type` = "color",
+        style = "width: 30px; height: 20px; border: none".toCss):
       proc onInput(e: Event; n: VNode) =
         let v = $n.value
         variable = v[1..^1].parseHexInt
