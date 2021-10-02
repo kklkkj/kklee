@@ -18,6 +18,7 @@ proc removeDeletedFixtures =
 
 proc shapeMultiSelectElementBorders* =
   removeDeletedFixtures()
+  if getCurrentBody() == -1: return
   let
     shapeElements = document
       .getElementById("mapeditor_rightbox_shapetablecontainer")
@@ -43,6 +44,7 @@ proc shapeMultiSelectElementBorders* =
       se.parentNode.insertBefore(indexLabel, se)
 
 proc shapeMultiSelectSwitchPlatform* =
+  if getCurrentBody() == -1: return
   if getCurrentBody().getBody != fixturesBody:
     selectedFixtures = @[]
     shapeMultiSelectElementBorders()
