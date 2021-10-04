@@ -435,3 +435,10 @@ fbs.height = "100%"
 fbs.width = "40px"
 fbs.fontSize = "30"
 docElemById("pretty_top_bar").appendChild(fullscreenButton)
+
+# Add max height for colour picker's existing colours container
+
+let existingColoursContainer =
+  docElemById("mapeditor_colorpicker_existingcontainer")
+existingColoursContainer.style.maxHeight = "150px"
+existingColoursContainer.style.overflowY = "scroll"
