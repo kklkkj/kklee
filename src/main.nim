@@ -333,7 +333,7 @@ mapEditorDiv.addEventListener("keydown", proc(
 
 let speedSlider = document.createElement("input").InputElement
 speedSlider.`type` = "range"
-speedSlider.min = "1"
+speedSlider.min = "0"
 speedSlider.max = "8"
 speedSlider.step = "1"
 speedSlider.value = "3"
@@ -341,7 +341,10 @@ speedSlider.class = "compactSlider compactSlider_classic"
 speedSlider.style.width = "100px"
 speedSlider.setAttr("title", "Preview speed")
 speedSlider.addEventListener("input", proc(e: Event) =
-  editorPreviewTimeMs = parseFloat($speedSlider.value) ^ 3 + 3
+  # Default is 30
+  let n = parseFloat($speedSlider.value)
+  editorPreviewTimeMs = if n == 0.0: 0.0
+                        else: n ^ 3 + 3.0
 )
 let rightButtonContainer =
   docElemById("mapeditor_midbox_rightbuttoncontainer")
