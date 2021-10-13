@@ -439,6 +439,10 @@ fbs.width = "40px"
 fbs.fontSize = "30"
 docElemById("pretty_top_bar").appendChild(fullscreenButton)
 
+# Fix chat box autofill
+docElemById("newbonklobby_chat_input").setAttr("autocomplete", "off")
+docElemById("ingamechatinputtext").setAttr("autocomplete", "off")
+
 # Add max height for colour picker's existing colours container
 
 let existingColoursContainer =
