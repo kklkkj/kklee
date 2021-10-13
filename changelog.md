@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.20
+- Fixed bug in ellipse generator
+- Made the existing colours container in the colour picker have a maximum height
+  and a scroll bar
+- Added 0 as a value to preview speed slider
+- Fixed the chat box autofill bug
+- Added up/down arrow shortcuts for changing number number field value with
+  Ctrl, Shift and Ctrl+Shift modifiers
+
 ## v0.19
 - Changed how map backups are stored
 - Changed some UI styles

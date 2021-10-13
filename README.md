@@ -22,6 +22,12 @@ A browser extension that extends the functionality of the map editor in
   * Preview: `Space`
   * Play: `Shift + Space`,
   * Exit game: `Shift + Esc`
+  * Up/down arrow to increase or decrease number input fields. Shortcut
+    modifiers for changing increase amount:
+    - Just Arrow: `10`
+    - Shift + Arrow: `1`
+    - Ctrl + Arrow: `100`
+    - Ctrl + Shift + Arrow: `0.1`
 - A button in the top bar that makes the game frame fill the entire page
 - Automatic backups of maps to the browser's offline storage
 
