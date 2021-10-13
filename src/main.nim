@@ -310,9 +310,8 @@ import mathexpr
 let myEvaluator = newEvaluator()
 myEvaluator.addFunc("rand", mathExprJsRandom, 0)
 
-mapEditorDiv.addEventListener("keydown", proc(
-    e: KeyboardEvent) =
-  if not (e.shiftKey and e.key == "Enter"):
+mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
+  if not (ev.shiftKey and ev.key == "Enter"):
     return
   let el = document.activeElement
   if not el.classList.contains("mapeditor_field"):
@@ -357,18 +356,24 @@ rightButtonContainer.insertBefore(
 
 let
   tipsList = document.createElement("ul")
-  arithmeticTip = document.createElement("li")
-  shortcutsTip = document.createElement("li")
 
-arithmeticTip.innerText =
+proc addTip(t: string) =
+  let el = document.createElement("ul")
+  el.innerText = t
+  tipsList.appendChild(el)
+addTip(
   "You can enter arithmetic into fields, such as 100*2+50, and evaluate it " &
   "with Shift+Enter"
-shortcutsTip.innerText =
+)
+addTip(
   "Keyboard shortcuts: Save - Ctrl+S, Preview - Space, Play - Shift+Space, " &
   "Return to editor after play - Shift+Esc"
+)
+addTip(
+  "Use up/down arrows in number fields to increase/decrease value - " &
+  "Just arrow: 10, Shift+Arrow: 1, Ctrl+Arrow: 100, Ctrl+Shift+Arrow: 0.1"
+)
 
-tipsList.appendChild(arithmeticTip)
-tipsList.appendChild(shortcutsTip)
 tipsList.setAttr("style", "font-size: 11px;padding: 10px 15px;")
 docElemById("mapeditor_rightbox_platformparams").appendChild(tipsList)
 
@@ -376,19 +381,35 @@ docElemById("mapeditor_rightbox_platformparams").appendChild(tipsList)
 
 mapEditorDiv.setAttr("tabindex", "0")
 mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
-  if ev.target != mapEditorDiv or
-      docElemById("gamerenderer").style.visibility == "inherit":
-    return
-  if ev.ctrlKey and ev.key == "s":
-    docElemById("mapeditor_midbox_savebutton").click()
-    docElemById("mapeditor_save_window_save").click()
-  elif ev.shiftKey and ev.key == " ":
-    docElemById("mapeditor_midbox_testbutton").click()
-  elif ev.key == " ":
-    docElemById("mapeditor_midbox_playbutton").click()
-  else:
-    return
-  ev.preventDefault()
+  block:
+    if ev.target != mapEditorDiv or
+        docElemById("gamerenderer").style.visibility == "inherit":
+      break
+    if ev.ctrlKey and ev.key == "s":
+      docElemById("mapeditor_midbox_savebutton").click()
+      docElemById("mapeditor_save_window_save").click()
+    elif ev.shiftKey and ev.key == " ":
+      docElemById("mapeditor_midbox_testbutton").click()
+    elif ev.key == " ":
+      docElemById("mapeditor_midbox_playbutton").click()
+    else:
+      break
+    ev.preventDefault()
+  block:
+    if not document.activeElement.classList.contains("mapeditor_field"):
+      break
+    let val = try: parseFloat $ev.target.value
+              except: break
+    let amount =
+      if ev.ctrlKey and ev.shiftKey: 0.1
+      elif ev.shiftKey: 1
+      elif ev.ctrlKey: 100
+      else: 10
+    if ev.key == "ArrowUp":
+      ev.target.value = $(val + amount)
+    elif ev.key == "ArrowDown":
+      ev.target.value = $(val - amount)
+    dispatchInputEvent(ev.target)
 )
 
 # Return to map editor after clicking play

@@ -302,11 +302,13 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       return "Over data limit";
     }
   };
+  kklee.dispatchInputEvent = el => el.dispatchEvent(new InputEvent("input"));
 
   require("./nimBuild.js");
   console.log("kklee injector run");
   return src;
 }
+
 
 if(!window.bonkCodeInjectors)
   window.bonkCodeInjectors = [];

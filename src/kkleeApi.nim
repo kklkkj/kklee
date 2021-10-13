@@ -222,3 +222,5 @@ let mapBackups* {.importc: "window.kklee.backups".}: seq[MapBackupObject]
 func getBackupLabel*(b: MapBackupObject): cstring
   {.importc: "window.kklee.getBackupLabel".}
 proc loadBackup*(b: MapBackupObject) {.importc: "window.kklee.loadBackup".}
+
+proc dispatchInputEvent*(n: Node) {.importc: "window.kklee.dispatchInputEvent".}
