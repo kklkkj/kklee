@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, sequtils, algorithm, dom, math],
+  std/[sugar, strutils, sequtils, algorithm, dom, math, options],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
@@ -217,33 +217,47 @@ Additional function: rand() - random number between 0 and 1
 proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):
   var
-    copyShapes {.global.}: seq[tuple[fx: MapFixture; sh: MapShape]]
+    copyShapes {.global.}: seq[tuple[fx: MapFixture; sh: MapShape;
+        cz: Option[MapCapZone]]]
     pasteAmount {.global.} = 1
   bonkButton "Copy shapes", proc =
     removeDeletedFixtures()
     copyShapes = @[]
     for fx in selectedFixtures:
-      copyShapes.add (fx: fx.copyObject(), sh: fx.fxShape.copyObject())
+      let fxId = moph.fixtures.find(fx)
+      var copiedCz = none MapCapZone
+      for cz in mapObject.capZones:
+        if cz.i == fxId:
+          copiedCz = some cz.copyObject()
+          break
+      copyShapes.add (
+        fx: fx.copyObject(),
+        sh: fx.fxShape.copyObject(),
+        cz: copiedCz
+      )
 
   prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
   bonkButton "Paste shapes", proc =
     shapeMultiSelectSwitchPlatform()
-    proc copyFxSh(fx: MapFixture; sh: MapShape) =
-      moph.shapes.add sh.copyObject()
-      let newFx = fx.copyObject()
-      moph.fixtures.add newFx
-      newFx.sh = moph.shapes.high
-      selectedFixtures.add newFx
-      fixturesBody.fx.add moph.fixtures.high
     block outer:
       for _ in 1..pasteAmount:
-        for (fx, sh) in copyShapes.mitems:
+        for (fx, sh, cz) in copyShapes.mitems:
           if fixturesBody.fx.len > 100:
             break outer
-          copyFxSh(fx, sh)
+          moph.shapes.add sh.copyObject()
+          let newFx = fx.copyObject()
+          moph.fixtures.add newFx
+          newFx.sh = moph.shapes.high
+          selectedFixtures.add newFx
+          fixturesBody.fx.add moph.fixtures.high
+          if cz.isSome:
+            let newCz = cz.get.copyObject()
+            newCz.i = moph.fixtures.high
+            mapObject.capZones.add newCz
     saveToUndoHistory()
     updateRenderer(true)
     updateRightBoxBody(-1)
+    updateLeftBox()
 
 proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
   bonkButton "Select all", proc =
