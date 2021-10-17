@@ -281,6 +281,8 @@ docElemById("hostleaveconfirmwindow_okbutton")
 
 docElemById("newbonklobby")
   .addEventListener("mouseover", restoreChat)
+docElemById("gamerenderer")
+  .addEventListener("mouseover", restoreChat)
 
 docElemById("mapeditor_midbox_testbutton")
   .addEventListener("click", proc(e: Event) =
