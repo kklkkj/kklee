@@ -258,10 +258,82 @@ proc platformMultiSelectMove: VNode = buildHtml tdiv(style =
            bro[bIdPositions[bIdPositions.high - i]]
     update()
 
+proc platformMultiSelectCopy: VNode = buildHtml tdiv(
+    style = "display: flex; flex-flow: column".toCss):
+  var
+    copyPlats {.global.}: seq[tuple[
+      b: MapBody;
+      shapes: seq[tuple[fx: MapFixture; sh: MapShape;
+        cz: Option[MapCapZone]]];
+      joints: seq[tuple[j: MapJoint; b2Id: Option[int]]];
+    ]]
+    pasteAmount {.global.} = 1
+  bonkButton "Copy platforms", proc =
+    removeDeletedBodies()
+    copyPlats = @[]
+    for b in selectedBodies:
+      let
+        copyB = b.copyObject()
+        copyShapes = b.fx.mapIt (
+          fx: it.getFx.copyObject(),
+          sh: it.getFx.fxShape.copyObject(),
+          cz: block:
+            var r = none MapCapZone
+            for cz in mapObject.capZones:
+              if cz.i == it:
+                r = some cz.copyObject()
+                break
+            r
+        )
+        copyJoints = collect(newSeq):
+          for j in moph.joints:
+            if j.ba != moph.bodies.find(b):
+              continue
+            var b2Id = none int
+            if j.bb != -1:
+              let t = selectedBodies.find j.bb.getBody
+              if t != -1:
+                b2Id = some t
+            (j: j.copyObject(), b2Id: b2Id)
+      copyPlats.add (b: copyB, shapes: copyShapes, joints: copyJoints)
+
+  prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
+  bonkButton "Paste platforms", proc =
+    let ogBodiesLen = moph.bodies.len
+    for _ in 1..pasteAmount:
+      for cp in copyPlats:
+        let newB = cp.b.copyObject()
+        newB.fx = @[]
+        moph.bodies.add newB
+        moph.bro.insert(moph.bodies.high, 0)
+        selectedBodies.add newB
+        for cs in cp.shapes:
+          let
+            newFx = cs.fx.copyObject()
+            newSh = cs.sh.copyObject()
+          moph.shapes.add newSh
+          newFx.sh = moph.shapes.high
+          moph.fixtures.add newFx
+          newB.fx.add moph.fixtures.high
+          if cs.cz.isSome:
+            let newCz = cs.cz.get.copyObject()
+            newCz.i = moph.fixtures.high
+            mapObject.capZones.add newCz
+        for cj in cp.joints:
+          let newJ = cj.j.copyObject()
+          newJ.ba = moph.bodies.high
+          newJ.bb = if cj.b2Id.isNone: -1
+            else: cj.b2Id.get + ogBodiesLen
+          moph.joints.add newJ
+
+    saveToUndoHistory()
+    updateRenderer(true)
+    updateLeftBox()
+
 proc platformMultiSelect*: VNode = buildHtml(tdiv(
     style = "display: flex; flex-flow: column; row-gap: 10px".toCss)):
   platformMultiSelectSelectAll()
   platformMultiSelectEdit()
   platformMultiSelectMove()
   platformMultiSelectDelete()
-  # platformMultiSelectCopy()
+  platformMultiSelectCopy()
