@@ -12,6 +12,6 @@
   "scripts": {
     "test": "web-ext run -s ./dist",
     "build": "webpack",
-    "build-extension": "web-ext build -s ./dist --overwrite-dest"
+    "build-extension": "web-ext build -s ./dist --overwrite-dest && nim e generateUserscript.nims"
   }
 }
