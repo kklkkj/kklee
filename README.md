@@ -73,7 +73,7 @@ needs to be fixed.
 
 1. Install the following:
     * [Node.js](https://nodejs.org/) (v16.3.0)
-    * [Nim](https://nim-lang.org/) (v1.4.8)
+    * [Nim](https://nim-lang.org/) (v1.6.0)
 2. Run `npm ci` to install npm dependecies.
 3. Run `nimble install -d` to install nimble dependencies.
 4. Run `npm run build`.

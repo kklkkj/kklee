@@ -38,7 +38,7 @@ proc shapeMultiSelectElementBorders* =
       se.style.border = "4px solid blue"
 
       let indexLabel = document.createElement("span")
-      indexLabel.innerText = $selectedId
+      indexLabel.innerText = cstring $selectedId
       indexLabel.setAttr("style", "color: blue; font-size: 12px")
       indexLabel.class = "kkleeMultiSelectShapeIndexLabel"
       se.parentNode.insertBefore(indexLabel, se)

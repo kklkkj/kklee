@@ -107,7 +107,8 @@ proc initPlatformMultiSelect =
   platformsContainer.appendChild(platformMultiSelectButton)
   platformMultiSelectElementBorders()
 
-  platformsContainer.children[0].addEventListener("click", proc(e: MouseEvent) =
+  platformsContainer.children[0].addEventListener("click", proc(e: Event) =
+    let e = e.MouseEvent
     if not e.shiftKey: return
     if state.kind != sePlatformMultiSelect:
       state = StateObject(kind: sePlatformMultiSelect)
@@ -172,7 +173,8 @@ rightBoxShapeTableContainer
   )
 
 rightBoxShapeTableContainer
-  .addEventListener("click", proc(e: MouseEvent) =
+  .addEventListener("click", proc(e: Event) =
+    let e = e.MouseEvent
     if not e.shiftKey: return
     fixturesBody = getCurrentBody().getBody
     if state.kind != seShapeMultiSelect:
@@ -235,7 +237,7 @@ totalMassTextbox.addEventListener("mousemove", proc(e: Event) =
           area / 2
       mass = area * density
     totalMass += mass
-  totalMassTextbox.value = $totalMass
+  totalMassTextbox.value = cstring $totalMass
 )
 
 # See chat in editor
@@ -312,8 +314,9 @@ import mathexpr
 let myEvaluator = newEvaluator()
 myEvaluator.addFunc("rand", mathExprJsRandom, 0)
 
-mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
-  if not (ev.shiftKey and ev.key == "Enter"):
+mapEditorDiv.addEventListener("keydown", proc(e: Event) =
+  let e = e.KeyboardEvent
+  if not (e.shiftKey and e.key == "Enter"):
     return
   let el = document.activeElement
   if not el.classList.contains("mapeditor_field"):
@@ -323,7 +326,7 @@ mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
     let evalRes = myEvaluator.eval($el.value)
     if evalRes.isNaN or evalRes > 1e6 or evalRes < -1e6:
       raise ValueError.newException("Number is NaN or is too big")
-    el.value = evalRes.niceFormatFloat()
+    el.value = cstring evalRes.niceFormatFloat()
     el.dispatchEvent(newEvent("input"))
     saveToUndoHistory()
   except CatchableError:
@@ -382,43 +385,45 @@ docElemById("mapeditor_rightbox_platformparams").appendChild(tipsList)
 # Keyboard shortcuts
 
 mapEditorDiv.setAttr("tabindex", "0")
-mapEditorDiv.addEventListener("keydown", proc(ev: KeyboardEvent) =
+mapEditorDiv.addEventListener("keydown", proc(e: Event) =
+  let e = e.KeyboardEvent
   block:
-    if ev.target != mapEditorDiv or
+    if e.target != mapEditorDiv or
         docElemById("gamerenderer").style.visibility == "inherit":
       break
-    if ev.ctrlKey and ev.key == "s":
+    if e.ctrlKey and e.key == "s":
       docElemById("mapeditor_midbox_savebutton").click()
       docElemById("mapeditor_save_window_save").click()
-    elif ev.shiftKey and ev.key == " ":
+    elif e.shiftKey and e.key == " ":
       docElemById("mapeditor_midbox_testbutton").click()
-    elif ev.key == " ":
+    elif e.key == " ":
       docElemById("mapeditor_midbox_playbutton").click()
     else:
       break
-    ev.preventDefault()
+    e.preventDefault()
   block:
     if not document.activeElement.classList.contains("mapeditor_field"):
       break
-    let val = try: parseFloat $ev.target.value
+    let val = try: parseFloat $e.target.value
               except: break
     let amount =
-      if ev.ctrlKey and ev.shiftKey: 0.1
-      elif ev.shiftKey: 1
-      elif ev.ctrlKey: 100
+      if e.ctrlKey and e.shiftKey: 0.1
+      elif e.shiftKey: 1
+      elif e.ctrlKey: 100
       else: 10
-    if ev.key == "ArrowUp":
-      ev.target.value = $(val + amount)
-    elif ev.key == "ArrowDown":
-      ev.target.value = $(val - amount)
-    dispatchInputEvent(ev.target)
+    if e.key == "ArrowUp":
+      e.target.value = cstring $(val + amount)
+    elif e.key == "ArrowDown":
+      e.target.value = cstring $(val - amount)
+    dispatchInputEvent(e.target)
 )
 
 # Return to map editor after clicking play
-document.addEventListener("keydown", proc(ev: KeyboardEvent) =
+document.addEventListener("keydown", proc(e: Event) =
+  let e = e.KeyboardEvent
   if docElemById("gamerenderer").style.visibility == "inherit" and
-      ev.shiftKey and ev.key == "Escape":
-    ev.preventDefault()
+      e.shiftKey and e.key == "Escape":
+    e.preventDefault()
     docElemById("pretty_top_exit").click()
     mapEditorDiv.focus()
 )

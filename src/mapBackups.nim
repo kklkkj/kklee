@@ -1,5 +1,4 @@
 import
-  std/[dom],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi
 

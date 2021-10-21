@@ -7,7 +7,7 @@ import
 proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
   let disabledClass = if disabled: "brownButtonDisabled" else: ""
   buildHtml(tdiv(
-    class = &"brownButton brownButton_classic buttonShadow {disabledClass}")
+    class = cstring &"brownButton brownButton_classic buttonShadow {disabledClass}")
   ):
     text label
     if not disabled:
@@ -23,7 +23,7 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
         string): VNode =
   buildHtml:
     input(class = "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-        value = variable.stringify, style = "width: 50px".toCss):
+        value = cstring variable.stringify, style = "width: 50px".toCss):
       proc onInput(e: Event; n: VNode) =
         try:
           variable = parser $n.value

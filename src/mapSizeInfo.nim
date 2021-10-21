@@ -1,5 +1,5 @@
 import
-  std/[dom, strformat],
+  std/[strformat],
   pkg/karax/[karaxdsl, vdom, vstyles],
   kkleeApi
 

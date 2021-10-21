@@ -21,10 +21,10 @@ proc transferOwnership*: VNode = buildHtml tdiv(
       proc onInput(e: Event; n: VNode) =
         username = $e.target.OptionElement.value
     bonkButton(&"Transfer ownership to {username}", proc =
-      if username notin m.cr:
+      if username.cstring notin m.cr:
         username = ""
         return
-      m.a = username
+      m.a = cstring username
       m.rxa = ""
       m.rxdb = 1
       m.rxid = 0

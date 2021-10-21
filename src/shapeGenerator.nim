@@ -116,7 +116,7 @@ proc genLinesShape(getPos: float -> MapPosition) =
     )
     moph.shapes.add shape
 
-    let fixture = MapFixture(n: &"rect{n}", de: jsNull, re: jsNull,
+    let fixture = MapFixture(n: cstring &"rect{n}", de: jsNull, re: jsNull,
       fr: jsNull, f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
     )
     moph.fixtures.add fixture
@@ -214,7 +214,7 @@ proc generateGradient: int =
       colour = getGradientColourAt(
         gs.colour, gs.colour2, i / (gs.prec - 1), gs.gease
       )
-      fixture = MapFixture(n: &"gradient{i}", de: jsNull, re: jsNull,
+      fixture = MapFixture(n: cstring &"gradient{i}", de: jsNull, re: jsNull,
         fr: jsNull, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
     moph.fixtures.add fixture
     gs.body.fx.add moph.fixtures.high
@@ -344,7 +344,7 @@ proc shapeGenerator*(body: MapBody): VNode =
           buildHtml:
             input(class =
               "mapeditor_field mapeditor_field_spacing_bodge fieldShadow",
-              value = variable.stringify, style = "width: 150px".toCss
+              value = cstring variable.stringify, style = "width: 150px".toCss
             ):
               proc onInput(e: Event; n: VNode) =
                 try:

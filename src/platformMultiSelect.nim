@@ -34,7 +34,7 @@ proc platformMultiSelectElementBorders * =
       be.style.border = "4px solid blue"
 
       let indexLabel = document.createElement("span")
-      indexLabel.innerText = $selectedId
+      indexLabel.innerText = cstring $selectedId
       indexLabel.setAttr("style", "color: blue; font-size: 12px")
       indexLabel.class = "kkleeMultiSelectPlatformIndexLabel"
       be.insertBefore(indexLabel, be.children[0])
@@ -155,8 +155,8 @@ Additional function: rand() - random number between 0 and 1
       prop "Name", field, canChange
 
   dropDownProp("Type", b.btype, [
-    ("Stationary", $btStationary), ("Free moving", $btDynamic),
-    ("Kinematic", $btKinematic)
+    ("Stationary", cstring $btStationary), ("Free moving", cstring $btDynamic),
+    ("Kinematic", cstring $btKinematic)
   ])
   nameChanger()
   floatProp("x", b.p.x)
