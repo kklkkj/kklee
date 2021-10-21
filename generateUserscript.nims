@@ -18,4 +18,6 @@ let
 {readFile("./dist/injector.js")}
 """
 
-writeFile("./web-ext-artifacts/kklee.user.js", userScriptSrc)
+let version = manifest["version"].getStr()
+writeFile(&"./web-ext-artifacts/kklee-{version}.user.js",
+  userScriptSrc)
