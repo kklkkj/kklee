@@ -5,7 +5,7 @@ import
 
 proc mergeShapes(b: MapBody; veFx: MapFixture; veSh: MapShape) =
   # This is buggy because the output vertices might be ordered in a way
-  # that causes it to be not rendered corrently...
+  # that causes it to be not rendered correctly...
   veSh.poV.applyIt [it.x * veSh.poS, it.y * veSh.poS].MapPosition
   veSh.poS = 1.0
 
