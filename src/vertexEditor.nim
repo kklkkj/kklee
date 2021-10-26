@@ -1,5 +1,5 @@
 import
-  std/[dom, sugar, strutils, options, math, algorithm, sequtils],
+  std/[dom, sugar, strutils, options, math, algorithm, sequtils, strformat],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
@@ -100,6 +100,9 @@ proc roundCorners(poV: seq[MapPosition]; r: float; prec: float):
     else:
       inc i
 
+proc isNotAnticlockwise(p1, p2, p3: MapPosition): bool =
+  (p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x) >= 0
+
 proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
   if veFx notin moph.fixtures:
     return buildHtml(tdiv): discard
@@ -142,7 +145,13 @@ proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
     updateRenderer(true)
 
   proc vertex(i: int; v: var MapPosition; poV: var seq[MapPosition]): VNode =
-    buildHtml tdiv(style = "display: flex; flex-flow: row wrap".toCss):
+    let border = if isNotAntiClockwise(
+        poV[if i == 0: poV.high else: i - 1],
+        v,
+        poV[if i == poV.high: 0 else: i + 1]
+      ): "none" else: "1px red solid"
+    buildHtml tdiv(
+        style = toCss &"display: flex; flex-flow: row wrap; border: {border}"):
       span(style = "width: 27px; font-size: 12;".toCss):
         text $i
       template cbi(va): untyped = bonkInput(va, prsFLimited, proc =
