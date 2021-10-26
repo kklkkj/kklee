@@ -15,6 +15,10 @@ let
 // @grant        none
 // ==/UserScript==
 
+/*
+  Usable with:
+  https://greasyfork.org/en/scripts/433861-code-injector-bonk-io
+*/
 {readFile("./dist/injector.js")}
 """
 
