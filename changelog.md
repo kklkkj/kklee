@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.21
+- Copying shapes in multi-select will also copy capzones
+- Added copy & paste to platform multi-select (though joints aren't copied
+  properly)
+- Fixed a minor bug when making the chat box visible in editor
+
 ## v0.20
 - Fixed bug in ellipse generator
 - Made the existing colours container in the colour picker have a maximum height
