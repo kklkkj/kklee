@@ -33,6 +33,7 @@
     "max-len": [
       "error",
       80
-    ]
+    ],
+    "keyword-spacing": "warn"
   }
 }

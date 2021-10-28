@@ -65,7 +65,7 @@ window.kklee.mapEncoder=${mapEncoderName};`
       .slice(0, 3)
       .map(s => s.split("=")[0])
     ;
-  if(resetFunctionNames.length !== 9)
+  if (resetFunctionNames.length !== 9)
     throw "resetFunctionNames length is not 9";
 
   let ufInj = "";
@@ -73,7 +73,7 @@ window.kklee.mapEncoder=${mapEncoderName};`
   const apiUpdateFunctionNames = 
     ["LeftBox", "RightBoxBody", "Renderer","Warnings", 
       "UndoButtons","ModeDropdown"];
-  for(const i in updateFunctionNames) {
+  for (const i in updateFunctionNames) {
     const on = updateFunctionNames[i], nn = apiUpdateFunctionNames[i];
 
     ufInj += `let ${on}OLD=${on};${on}=function(){${on}OLD(...arguments);\
@@ -84,7 +84,7 @@ window.kklee.update${nn}=${on};`;
 
   const apiCurrentlySelectedNames =
     ["Body", "Spawn", "CapZone"];
-  for(const i in currentlySelectedNames) {
+  for (const i in currentlySelectedNames) {
     const on = currentlySelectedNames[i], nn = apiCurrentlySelectedNames[i];
 
     ufInj += `window.kklee.getCurrent${nn}=function(){return ${on};};\
@@ -135,7 +135,7 @@ ${newSaveHistoryFunction}`
     };
   };
   function saveBackups() {
-    if(!db) return;
+    if (!db) return;
     const transaction = db.transaction("backups", "readwrite");
     transaction.objectStore("backups").put(kklee.backups, 1);
     db.onerror = console.error;
@@ -291,7 +291,8 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       parent.document.body.style.overflowY = "";
     }
   };
-  window.addEventListener("resize", function(){if(fullPage) setTimeout(a,50);});
+  window.addEventListener("resize", 
+    function () {if (fullPage) setTimeout(a,50);});
 
   kklee.dataLimitInfo = () => {
     try {
@@ -310,7 +311,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
 }
 
 
-if(!window.bonkCodeInjectors)
+if (!window.bonkCodeInjectors)
   window.bonkCodeInjectors = [];
 window.bonkCodeInjectors.push(bonkCode => {
   try {
@@ -360,7 +361,7 @@ const currentVersion = require("../dist/manifest.json").version
 line-height: normal;";
     el.onclick = () => window.open("https://github.com/kklkkj/kklee");
     parent.document.getElementById("bonkioheader").appendChild(el);
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     alert("A new version of kklee is available!");
   }

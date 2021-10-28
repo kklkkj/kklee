@@ -4,14 +4,14 @@
 
   await null;
 
-  if(!window.bonkCodeInjectors) {
+  if (!window.bonkCodeInjectors) {
     window.bonkCodeInjectors = [];
     alert("Something went wrong with loading Bonk.io extensions.");
   }
   for (const inj of window.bonkCodeInjectors) {
     try {
       src = inj(src);
-    } catch(error) {
+    } catch (error) {
       alert("One of your Bonk.io extensions was unable to be loaded");
       console.error(error);
     }
