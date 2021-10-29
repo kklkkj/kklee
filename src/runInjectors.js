@@ -1,4 +1,4 @@
-(async ()=> {
+(async () => {
   const bonkScriptResponse = await fetch("https://bonk.io/js/alpha2s.js?real");
   let src = await bonkScriptResponse.text();
 
