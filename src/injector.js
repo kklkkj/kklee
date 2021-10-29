@@ -274,7 +274,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   */
 
   // Exposes variable used for map editor preview overlay drawing
-  kklee.editorPreviewOverlay = { opacity: 0.3 };
+  kklee.editorPreviewOverlay = { opacity: 0.3, textureCache: null };
   src = src.replace(
     new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
 \\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
@@ -312,7 +312,26 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       parent.document.body.style.overflowY = "";
     }
   };
-  kklee.editorPreviewOverlay.load = () => {
+
+  kklee.editorPreviewOverlay.drawBackground = () => {
+    // Clear the canvas (delete the previous image)
+    kklee.editorPreviewOverlay.background.clear();
+    // Set the linestyle to yellow before drawing the rectangle
+    kklee.editorPreviewOverlay.background.lineStyle(4, 16776960);
+
+    kklee.editorPreviewOverlay.background.beginTextureFill({
+      texture: kklee.editorPreviewOverlay.textureCache,
+      alpha: kklee.editorPreviewOverlay.opacity
+    });
+
+    kklee.editorPreviewOverlay.background.drawRect(-2, -2, 738, 508); 
+    kklee.editorPreviewOverlay.background.endFill();
+
+    // Update the renderer so the image shows
+    kklee.updateRenderer(true);
+  };
+
+  kklee.editorPreviewOverlay.loadImage = () => {
     const img = new Image();
 
     // TODO: Add feedback to the user that it has failed
@@ -329,27 +348,15 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       img.width = "738";
       img.height = "508";
 
-      // Clear the canvas (delete the previous image)
-      kklee.editorPreviewOverlay.background.clear();
-      // Set the linestyle to yellow before drawing the rectangle
-      kklee.editorPreviewOverlay.background.lineStyle(4, 16776960);
-
       // Alpha is opacity of drawn image
-      kklee.editorPreviewOverlay.background.beginTextureFill({
-        texture: window.PIXI.Texture.from(img),
-        alpha: kklee.editorPreviewOverlay.opacity
-      });
-
-      kklee.editorPreviewOverlay.background.drawRect(-2, -2, 738, 508); 
-      kklee.editorPreviewOverlay.background.endFill();
-
-      // Update the renderer so the image shows
-      kklee.updateRenderer(true);
+      kklee.editorPreviewOverlay.textureCache = window.PIXI.Texture.from(img);
+      kklee.editorPreviewOverlay.drawBackground();
     };
 
     // Load the image from file picker to the <Image> element
     img.src = URL.createObjectURL(event.target.files[0]);
   };
+
   window.addEventListener("resize",
     function () { if (fullPage) setTimeout(a, 50); });
 

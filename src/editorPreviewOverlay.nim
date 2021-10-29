@@ -14,14 +14,17 @@ proc editorPreviewOverlay*: VNode = buildHtml tdiv(
     accept="image/*"):
       proc onchange(ev: Event; n: VNode) =
         loadEditorPreviewOverlay()
+  label(`for` = "kkleeEditorPreviewOverlayOpacity"):
+    span text "Opacity:"
   input(
+    id = "kkleeEditorPreviewOverlayOpacity",
     class = "compactSlider compactSlider_classic",
     `type` = "range",
     min = "0",
     max = "1",
     step = "0.05",
-    value = "0.75", # This is not working
+    value = "0.75", # This is not working :/
     title = "Opacity"):
       proc onchange(ev: Event; n: VNode) =
         editorPreviewOverlayOpacity = parseFloat(n.value)
-        loadEditorPreviewOverlay()
+        drawEditorPreviewOverlay()
