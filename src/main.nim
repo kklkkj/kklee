@@ -453,7 +453,7 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
       openBackupLoader)))
 
 
-# Map size info
+# Editor preview image overlay 
 proc openEditorPreviewOverlay =
   state = StateObject(kind: seEditorPreviewOverlay)
   rerender()

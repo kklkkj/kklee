@@ -173,6 +173,9 @@ proc deleteBody*(bId: int) =
 
 var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float
 
+# TODO: Create my own type
+# var editorPreviewOutline* {.importc: "window.kklee.$1".}:
+
 func copyObject*[T: ref](x: T): T =
   proc stringify(_: T): cstring {.importc: "window.JSON.stringify".}
   proc parse(_: cstring): T {.importc: "window.JSON.parse".}
