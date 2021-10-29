@@ -274,11 +274,11 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   */
 
   // Exposes variable used for map editor preview overlay drawing
-  kklee.editorPreviewOverlay = { opacity: 0.3, textureCache: null };
+  kklee.editorImageOverlay = { opacity: 0.3, textureCache: null };
   src = src.replace(
     new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
 \\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
-    "window.kklee.editorPreviewOverlay.background=$1"
+    "window.kklee.editorImageOverlay.background=$1"
   );
 
   const mgfs = parent.document.getElementById("maingameframe").style;
@@ -315,25 +315,28 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
 
   // I think there is too much JS, some can be converted to nim
   // but I don't know how to...
-  kklee.editorPreviewOverlay.drawBackground = () => {
-    // Clear the canvas (delete the previous image)
-    kklee.editorPreviewOverlay.background.clear();
-    // Set the linestyle to yellow before drawing the rectangle
-    kklee.editorPreviewOverlay.background.lineStyle(4, 16776960);
+  kklee.editorImageOverlay.drawBackground = () => {
+    // No image is selected, so don't draw anything
+    if (!kklee.editorImageOverlay.textureCache) return;
 
-    kklee.editorPreviewOverlay.background.beginTextureFill({
-      texture: kklee.editorPreviewOverlay.textureCache,
-      alpha: kklee.editorPreviewOverlay.opacity
+    // Clear the canvas (delete the previous image)
+    kklee.editorImageOverlay.background.clear();
+    // Set the linestyle to yellow before drawing the rectangle
+    kklee.editorImageOverlay.background.lineStyle(4, 16776960);
+
+    kklee.editorImageOverlay.background.beginTextureFill({
+      texture: kklee.editorImageOverlay.textureCache,
+      alpha: kklee.editorImageOverlay.opacity
     });
 
-    kklee.editorPreviewOverlay.background.drawRect(-2, -2, 738, 508); 
-    kklee.editorPreviewOverlay.background.endFill();
+    kklee.editorImageOverlay.background.drawRect(-2, -2, 738, 508); 
+    kklee.editorImageOverlay.background.endFill();
 
     // Update the renderer so the image shows
     kklee.updateRenderer(true);
   };
 
-  kklee.editorPreviewOverlay.loadImage = () => {
+  kklee.editorImageOverlay.loadImage = () => {
     const img = new Image();
 
     // TODO: Add feedback to the user that it has failed
@@ -351,8 +354,8 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       img.height = "508";
 
       // Alpha is opacity of drawn image
-      kklee.editorPreviewOverlay.textureCache = window.PIXI.Texture.from(img);
-      kklee.editorPreviewOverlay.drawBackground();
+      kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
+      kklee.editorImageOverlay.drawBackground();
     };
 
     // Load the image from file picker to the <Image> element

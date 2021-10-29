@@ -1,23 +1,23 @@
 import
-  pkg/karax/[kbase, vdom, kdom, vstyles, karax, karaxdsl, jdict, jstrutils, jjson],
+  pkg/karax/[vdom, kdom, vstyles, karax, karaxdsl, jstrutils],
   kkleeApi
   
-proc editorPreviewOverlay*: VNode = buildHtml tdiv(
+proc editorImageOverlay*: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column; font-size: 16px".toCss):
   
-  label(`for` = "kkleeEditorPreviewOverlayInput"):
+  label(`for` = "kkleeEditorImageOverlayInput"):
     span text "Select files:"
   input(
     class = "brownButton brownButton_classic buttonShadow",
     `type` = "file",
-    id = "kkleeEditorPreviewOverlayInput",
+    id = "kkleeEditorImageOverlayInput",
     accept="image/*"):
       proc onchange(ev: Event; n: VNode) =
-        loadEditorPreviewOverlay()
-  label(`for` = "kkleeEditorPreviewOverlayOpacity"):
+        loadEditorImageOverlay()
+  label(`for` = "kkleeEditorImageOverlayOpacity"):
     span text "Opacity:"
   input(
-    id = "kkleeEditorPreviewOverlayOpacity",
+    id = "kkleeEditorImageOverlayOpacity",
     class = "compactSlider compactSlider_classic",
     `type` = "range",
     min = "0",
@@ -26,5 +26,5 @@ proc editorPreviewOverlay*: VNode = buildHtml tdiv(
     value = "0.75", # This is not working :/
     title = "Opacity"):
       proc onchange(ev: Event; n: VNode) =
-        editorPreviewOverlayOpacity = parseFloat(n.value)
-        drawEditorPreviewOverlay()
+        editorImageOverlayOpacity = parseFloat(n.value)
+        drawEditorImageOverlay()

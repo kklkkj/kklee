@@ -454,12 +454,12 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
 
 
 # Editor preview image overlay 
-proc openEditorPreviewOverlay =
-  state = StateObject(kind: seEditorPreviewOverlay)
+proc openEditorImageOverlay =
+  state = StateObject(kind: seEditorImageOverlay)
   rerender()
 docElemById("mapeditor_rightbox_mapparams").appendChild(
-  shapeTableCell("", createBonkButton("Editor overlay",
-      openEditorPreviewOverlay)))
+  shapeTableCell("", createBonkButton("Image overlay",
+      openEditorImageOverlay)))
 
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
