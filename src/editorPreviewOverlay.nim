@@ -13,9 +13,15 @@ proc editorPreviewOverlay*: VNode = buildHtml tdiv(
     id = "kkleeEditorPreviewOverlayInput",
     accept="image/*"):
       proc onchange(ev: Event; n: VNode) =
-        var img: ImageElement = ImageElement()
-        img.width = 738
-        img.height = 508
-        # TODO: Fix. This is horrible.
-        # TODO: Add window.kklee.editorPreviewOutline to kkleeApi
-        # editorPreviewOutline.clear()
+        loadEditorPreviewOverlay()
+  input(
+    class = "compactSlider compactSlider_classic",
+    `type` = "range",
+    min = "0",
+    max = "1",
+    step = "0.05",
+    value = "0.75", # This is not working
+    title = "Opacity"):
+      proc onchange(ev: Event; n: VNode) =
+        editorPreviewOverlayOpacity = parseFloat(n.value)
+        loadEditorPreviewOverlay()

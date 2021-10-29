@@ -172,9 +172,7 @@ proc deleteBody*(bId: int) =
       inc jId
 
 var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float
-
-# TODO: Create my own type
-# var editorPreviewOutline* {.importc: "window.kklee.$1".}:
+var editorPreviewOverlayOpacity* {.importc: "window.kklee.editorPreviewOverlay.opacity".}: float
 
 func copyObject*[T: ref](x: T): T =
   proc stringify(_: T): cstring {.importc: "window.JSON.stringify".}
@@ -192,6 +190,7 @@ proc setEditorExplanation*(text: string) =
 proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
 
 proc toggleFullPage* {.importc: "window.kklee.toggleFullPage".}
+proc loadEditorPreviewOverlay* {.importc: "window.kklee.editorPreviewOverlay.load".}
 
 type
   EasingType* = enum

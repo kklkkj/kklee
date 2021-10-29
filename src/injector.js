@@ -274,10 +274,11 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   */
 
   // Exposes variable used for map editor preview overlay drawing
+  kklee.editorPreviewOverlay = { opacity: 0.3 };
   src = src.replace(
     new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
 \\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
-    "window.kklee.editorPreviewOutline=$1"
+    "window.kklee.editorPreviewOverlay.background=$1"
   );
 
   const mgfs = parent.document.getElementById("maingameframe").style;
@@ -310,6 +311,44 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       xpb.visibility = "inherit";
       parent.document.body.style.overflowY = "";
     }
+  };
+  kklee.editorPreviewOverlay.load = () => {
+    const img = new Image();
+
+    // TODO: Add feedback to the user that it has failed
+    img.onerror = (error) => console.error(error);
+
+    img.onload = () => {
+    // I don't know why this doesn't work either
+    // Hardcoding these values probably isn't good but it "works"
+    // You can probably calculate it from some other values
+    // img.width = editorRect.width
+    // img.height = editorRect.height
+
+      // Stretch image to fit
+      img.width = "738";
+      img.height = "508";
+
+      // Clear the canvas (delete the previous image)
+      kklee.editorPreviewOverlay.background.clear();
+      // Set the linestyle to yellow before drawing the rectangle
+      kklee.editorPreviewOverlay.background.lineStyle(4, 16776960);
+
+      // Alpha is opacity of drawn image
+      kklee.editorPreviewOverlay.background.beginTextureFill({
+        texture: window.PIXI.Texture.from(img),
+        alpha: kklee.editorPreviewOverlay.opacity
+      });
+
+      kklee.editorPreviewOverlay.background.drawRect(-2, -2, 738, 508); 
+      kklee.editorPreviewOverlay.background.endFill();
+
+      // Update the renderer so the image shows
+      kklee.updateRenderer(true);
+    };
+
+    // Load the image from file picker to the <Image> element
+    img.src = URL.createObjectURL(event.target.files[0]);
   };
   window.addEventListener("resize",
     function () { if (fullPage) setTimeout(a, 50); });
