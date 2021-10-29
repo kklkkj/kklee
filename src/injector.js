@@ -313,6 +313,8 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     }
   };
 
+  // I think there is too much JS, some can be converted to nim
+  // but I don't know how to...
   kklee.editorPreviewOverlay.drawBackground = () => {
     // Clear the canvas (delete the previous image)
     kklee.editorPreviewOverlay.background.clear();
