@@ -246,7 +246,7 @@ this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
 ,.{3,4},.{3,4}\\)\\{).{50,250}(.{3,4}\\[.{0,25}\\]=.{3,4}\\[.{0,30}\\];){3}\
 .{0,75}.{3,4}\\(false\\).{0,75};\\};(?=.{0,200000}return \\{hue))", "g"
   ),
-    `${""}window.kklee.showColourPickerArguments=[...arguments];\
+  `${""}window.kklee.showColourPickerArguments=[...arguments];\
 document.getElementById("kkleeColourInput").value="#"+arguments[0]\
 .toString(16).padStart(6,"0");$1;\
 let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
@@ -258,6 +258,26 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     new RegExp("(?<=(?<!Infinity.{0,300});.{3,4}\\[.{1,20}\\]\\=)30\
 (?=;.{0,30}while.{10,150}Date.{0,5000})", "g"),
     "window.kklee.editorPreviewTimeMs"
+  );
+
+  /*
+  Map editor rectangle overlay drawing
+    if (C3V[22]) {
+      C3V[38] = new PIXI.Graphics();  // Exported as editorPreviewOutline
+      C3V[38].lineStyle(4, 16776960); // Set the outline to yellow (0xffff00)
+      S9L.u1R(15);
+      C3V[38].drawRect(-2, -2, S9L.N1R(4, 730), S9L.g1R(4, 500)); // Draw rect
+      C3V[19].addChild(C3V[38]);
+      C3V[92] = new PIXI.Graphics();
+      C3V[19].addChild(C3V[92]);
+    }
+  */
+
+  // Exposes variable used for map editor preview overlay drawing
+  src = src.replace(
+    new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
+\\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
+    "window.kklee.editorPreviewOutline=$1"
   );
 
   const mgfs = parent.document.getElementById("maingameframe").style;
