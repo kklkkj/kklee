@@ -12,6 +12,7 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(
   # it can handle the events for the input
   # Hide the original file input so only the bonk themed label shows
   label(`for` = "kkleeEditorImageOverlayInput"):
+    # Button is a noop - the <input> should handle it
     span bonkButton("Choose image", proc = return)
   input(
     `type` = "file",
@@ -21,6 +22,9 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(
       proc oninput(e: Event; n: VNode) =
         loadEditorImageOverlay(e)
       proc onclick(e: Event; n: VNode) =
+        # This will reset the input's value to an empty string
+        # so if the user picks another image with the same file name, oninput()
+        # will be triggered and the image will be overlayed again
         n.value = ""
 
   # Calling the function without any parameters will clear the image
