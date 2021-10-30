@@ -313,6 +313,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     }
   };
 
+  const errorColor = "rgb(204, 68, 68)";
   // I think there is too much JS, some can be converted to nim
   // but I don't know how to...
   kklee.editorImageOverlay.drawBackground = () => {
@@ -329,37 +330,41 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       alpha: kklee.editorImageOverlay.opacity
     });
 
-    kklee.editorImageOverlay.background.drawRect(-2, -2, 738, 508); 
+    kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504); 
     kklee.editorImageOverlay.background.endFill();
 
     // Update the renderer so the image shows
     kklee.updateRenderer(true);
   };
 
-  kklee.editorImageOverlay.loadImage = () => {
+  kklee.editorImageOverlay.loadImage = ({target}) => {
     const img = new Image();
 
-    // TODO: Add feedback to the user that it has failed
-    img.onerror = (error) => console.error(error);
+    // If someone tries something that an <img> can't handle
+    img.onerror = (evt) => {
+      console.error(evt);
+      target.style.color = errorColor;
+    };
 
     img.onload = () => {
-    // I don't know why this doesn't work either
-    // Hardcoding these values probably isn't good but it "works"
-    // You can probably calculate it from some other values
-    // img.width = editorRect.width
-    // img.height = editorRect.height
+      try {
+        // Stretch image to fit editor preview
+        img.width = "734";
+        img.height = "504";
 
-      // Stretch image to fit
-      img.width = "738";
-      img.height = "508";
-
-      // Alpha is opacity of drawn image
-      kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
-      kklee.editorImageOverlay.drawBackground();
+        // Alpha is opacity of drawn image
+        kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
+        kklee.editorImageOverlay.drawBackground();
+        
+        target.style.color = "black";
+      } catch (er) {
+        console.error(er);
+        target.style.color = errorColor;
+      }
     };
 
     // Load the image from file picker to the <Image> element
-    img.src = URL.createObjectURL(event.target.files[0]);
+    img.src = URL.createObjectURL(target.files[0]);
   };
 
   window.addEventListener("resize",

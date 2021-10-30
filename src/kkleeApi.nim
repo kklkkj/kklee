@@ -190,7 +190,7 @@ proc setEditorExplanation*(text: string) =
 proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
 
 proc toggleFullPage* {.importc: "window.kklee.toggleFullPage".}
-proc loadEditorImageOverlay* {.importc: "window.kklee.editorImageOverlay.loadImage".}
+proc loadEditorImageOverlay*(e: Event) {.importc: "window.kklee.editorImageOverlay.loadImage".}
 proc drawEditorImageOverlay* {.importc: "window.kklee.editorImageOverlay.drawBackground".}
 
 type
