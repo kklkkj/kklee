@@ -452,6 +452,15 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
   shapeTableCell("", createBonkButton("Load map backup",
       openBackupLoader)))
 
+
+# Editor preview image overlay 
+proc openEditorImageOverlay =
+  state = StateObject(kind: seEditorImageOverlay)
+  rerender()
+docElemById("mapeditor_rightbox_mapparams").appendChild(
+  shapeTableCell("", createBonkButton("Image overlay",
+      openEditorImageOverlay)))
+
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
 

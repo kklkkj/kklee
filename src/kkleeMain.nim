@@ -2,7 +2,7 @@ import
   std/[dom, sugar],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements, vertexEditor, shapeGenerator, shapeMultiSelect,
-  transferOwnership, platformMultiSelect, mapSizeInfo, mapBackups
+  transferOwnership, platformMultiSelect, mapSizeInfo, mapBackups, editorImageOverlay
 
 let root = document.createElement("div")
 let karaxRoot = document.createElement("div")
@@ -32,7 +32,8 @@ type
     seTransferOwnership = "Transfer map ownership",
     sePlatformMultiSelect = "Platform multiselect",
     seMapSizeInfo = "Map size info",
-    seBackups = "Map backup loader"
+    seBackups = "Map backup loader",
+    seEditorImageOverlay = "Editor image overlay"
   StateObject* = ref object
     kind*: StateKindEnum
     fx*: MapFixture
@@ -82,6 +83,7 @@ proc render: VNode =
       of sePlatformMultiSelect: platformMultiSelect()
       of seMapSizeInfo: mapSizeInfo()
       of seBackups: mapBackupLoader()
+      of seEditorImageOverlay: editorImageOverlay()
 
     tdiv(style = "margin: 3px".toCss):
       bonkButton("Close", () => (state.kind = seHidden))

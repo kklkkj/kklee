@@ -272,6 +272,27 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     "window.kklee.editorPreviewTimeMs"
   );
 
+  /*
+  Map editor rectangle overlay drawing
+    if (C3V[22]) {
+      C3V[38] = new PIXI.Graphics();  // Exported as editorPreviewOutline
+      C3V[38].lineStyle(4, 16776960); // Set the outline to yellow (0xffff00)
+      S9L.u1R(15);
+      C3V[38].drawRect(-2, -2, S9L.N1R(4, 730), S9L.g1R(4, 500)); // Draw rect
+      C3V[19].addChild(C3V[38]);
+      C3V[92] = new PIXI.Graphics();
+      C3V[19].addChild(C3V[92]);
+    }
+  */
+
+  // Exposes variable used for map editor preview overlay drawing
+  kklee.editorImageOverlay = { opacity: 0.3, textureCache: null };
+  src = src.replace(
+    new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
+\\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
+    "window.kklee.editorImageOverlay.background=$1"
+  );
+
   const mgfs = parent.document.getElementById("maingameframe").style;
   const bcs = document.getElementById("bonkiocontainer").style;
   const me = document.getElementById("mapeditor").style;
@@ -307,6 +328,64 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     if (fullPage) setTimeout(a, 50);
   });
 
+  const errorColor = "rgb(204, 68, 68)";
+  kklee.editorImageOverlay.drawBackground = () => {
+    // Clear the canvas (delete the previous image)
+    kklee.editorImageOverlay.background.clear();
+    // Set the linestyle to yellow before drawing the rectangle
+    kklee.editorImageOverlay.background.lineStyle(4, 16776960);
+
+    if (kklee.editorImageOverlay.textureCache) {
+      kklee.editorImageOverlay.background.beginTextureFill({
+        texture: kklee.editorImageOverlay.textureCache,
+        alpha: kklee.editorImageOverlay.opacity
+      });
+    }
+
+    kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504); 
+    kklee.editorImageOverlay.background.endFill();
+
+    // Update the renderer so the image shows
+    kklee.updateRenderer(true);
+  };
+
+  kklee.editorImageOverlay.loadImage = (event) => {
+    // If nothing is passed, then reset the image
+    if (!event || !event.target|| !event.target.files.length) {
+      kklee.editorImageOverlay.textureCache = null;
+      kklee.editorImageOverlay.drawBackground();
+      return;
+    }
+    
+    const target = event.target;
+    const img = new Image();
+
+    // If someone tries something that an <img> can't handle
+    img.onerror = () => target.style.color = errorColor;
+    img.onload = () => {
+      try {
+        // Stretch image to fit editor preview
+        img.width = "734";
+        img.height = "504";
+
+        kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
+        kklee.editorImageOverlay.drawBackground();
+        
+        target.style.color = "black";
+      } catch (er) {
+        console.error(er);
+        target.style.color = errorColor;
+      }
+    };
+
+    // Load the image from file picker to the <Image> element
+    img.src = URL.createObjectURL(target.files[0]);
+  };
+
+  window.addEventListener("resize", function () {
+    if (fullPage) setTimeout(a, 50);
+  });
+  
   kklee.dataLimitInfo = () => {
     try {
       const d = atob(
