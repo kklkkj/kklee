@@ -172,8 +172,11 @@ proc deleteBody*(bId: int) =
       inc jId
 
 var editorPreviewTimeMs* {.importc: "window.kklee.$1".}: float
+
 var editorImageOverlayOpacity*
     {.importc: "window.kklee.editorImageOverlay.opacity".}: float
+var editorImageOverlayState*
+    {.importc: "window.kklee.editorImageOverlay.imageState".}: cstring
 
 func copyObject*[T: ref](x: T): T =
   proc stringify(_: T): cstring {.importc: "window.JSON.stringify".}

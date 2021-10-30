@@ -4,8 +4,8 @@ import
   kkleeApi, bonkElements
 
 proc editorImageOverlay*: VNode = buildHtml tdiv(style =
-    "display: flex; flex-flow: column; font-size: 16px; row-gap: 10px".toCss):
-  
+  "display: flex; flex-flow: column; font-size: 16px; row-gap: 10px".toCss):
+
   span text "Select an image to overlay onto the editor preview."
   span text "The image will be stretched to fit the editor preview's"
 
@@ -29,21 +29,26 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
       # will be triggered and the image will be overlayed again
       n.value = ""
 
-  # Calling the function without any parameters will clear the image
-  bonkButton("Clear image", proc () = loadEditorImageOverlay())
+  if editorImageOverlayState == "error":
+    span(style = "color: rgb(204, 68, 68)".toCss):
+      text "An error occurred"
 
-  # Opacity slider - Value from 0 to 1
-  label(`for` = "kkleeEditorImageOverlayOpacity"):
-    span text "Overlay opacity:"
-  input(
-    id = "kkleeEditorImageOverlayOpacity",
-    title = "Overlay opacity",
-    class = "compactSlider compactSlider_classic",
-    `type` = "range",
-    min = "0",
-    max = "1",
-    step = "0.05"
-  ):
-    proc oninput(e: Event; n: VNode) =
-      editorImageOverlayOpacity = parseFloat($n.value)
-      drawEditorImageOverlay()
+  if editorImageOverlayState == "image":
+    # Calling the function without any parameters will clear the image
+    bonkButton("Clear image", proc () = loadEditorImageOverlay())
+
+    # Opacity slider - Value from 0 to 1
+    label(`for` = "kkleeEditorImageOverlayOpacity"):
+      span text "Overlay opacity:"
+    input(
+      id = "kkleeEditorImageOverlayOpacity",
+      title = "Overlay opacity",
+      class = "compactSlider compactSlider_classic",
+      `type` = "range",
+      min = "0",
+      max = "1",
+      step = "0.05"
+    ):
+      proc oninput(e: Event; n: VNode) =
+        editorImageOverlayOpacity = parseFloat($n.value)
+        drawEditorImageOverlay()

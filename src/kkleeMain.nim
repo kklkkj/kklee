@@ -56,6 +56,9 @@ proc rerender* =
   #   kxi.redraw()
   # )
 
+var exportedRerenderKklee {.importc: "window.kklee.rerenderKklee".}: proc()
+exportedRerenderKklee = rerender
+
 proc render: VNode =
   st.width = "200px"
   midboxst.width = "calc(100% - 600px)"
@@ -73,7 +76,7 @@ proc render: VNode =
       span(style = "margin-bottom: 12px".toCss):
         text $state.kind
       case state.kind
-      of seHidden: 
+      of seHidden:
         st.width = "0px"
         midboxst.width = "calc(100% - 415px)"
       of seVertexEditor: vertexEditor(state.b, state.fx)

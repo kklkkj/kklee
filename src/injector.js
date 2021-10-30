@@ -286,7 +286,11 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   */
 
   // Exposes variable used for map editor preview overlay drawing
-  kklee.editorImageOverlay = { opacity: 0.3, textureCache: null };
+  kklee.editorImageOverlay = {
+    opacity: 0.3,
+    textureCache: null,
+    imageState: "none",
+  };
   src = src.replace(
     new RegExp(
       "(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
@@ -330,7 +334,6 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     if (fullPage) setTimeout(a, 50);
   });
 
-  const errorColor = "rgb(204, 68, 68)";
   kklee.editorImageOverlay.drawBackground = () => {
     // Clear the canvas (delete the previous image)
     kklee.editorImageOverlay.background.clear();
@@ -356,6 +359,8 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     if (!event || !event.target || !event.target.files.length) {
       kklee.editorImageOverlay.textureCache = null;
       kklee.editorImageOverlay.drawBackground();
+      kklee.editorImageOverlay.imageState = "none";
+      kklee.rerenderKklee();
       return;
     }
 
@@ -363,7 +368,10 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     const img = new Image();
 
     // If someone tries something that an <img> can't handle
-    img.onerror = () => (target.style.color = errorColor);
+    img.onerror = () => {
+      kklee.editorImageOverlay.imageState = "error";
+      kklee.rerenderKklee();
+    };
     img.onload = () => {
       try {
         // Stretch image to fit editor preview
@@ -373,10 +381,12 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
         kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
         kklee.editorImageOverlay.drawBackground();
 
-        target.style.color = "black";
+        kklee.editorImageOverlay.imageState = "image";
+        kklee.rerenderKklee();
       } catch (er) {
         console.error(er);
-        target.style.color = errorColor;
+        kklee.editorImageOverlay.imageState = "error";
+        kklee.rerenderKklee();
       }
     };
 
