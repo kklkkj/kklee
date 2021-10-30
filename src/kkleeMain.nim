@@ -25,8 +25,15 @@ midboxst.transition = "width 0.5s"
 
 type
   StateKindEnum* = enum
-    seHidden, seVertexEditor, seShapeGenerator, seShapeMultiSelect,
-    seTransferOwnership, sePlatformMultiSelect, seMapSizeInfo, seBackups, seEditorImageOverlay
+    seHidden = "",
+    seVertexEditor = "Vertex editor",
+    seShapeGenerator = "Shape generator",
+    seShapeMultiSelect = "Shape multiselect",
+    seTransferOwnership = "Transfer map ownership",
+    sePlatformMultiSelect = "Platform multiselect",
+    seMapSizeInfo = "Map size info",
+    seBackups = "Map backup loader",
+    seEditorImageOverlay = "Editor image overlay"
   StateObject* = ref object
     kind*: StateKindEnum
     fx*: MapFixture
@@ -63,34 +70,20 @@ proc render: VNode =
       "margin: 3px; flex: auto; display: flex; flex-direction: column; " &
       "min-height: 0px; overflow-y: auto").toCss):
 
+      span(style = "margin-bottom: 12px".toCss):
+        text $state.kind
       case state.kind
-      of seHidden:
+      of seHidden: 
         st.width = "0px"
         midboxst.width = "calc(100% - 415px)"
-      of seVertexEditor:
-        text "Vertex Editor"
-        vertexEditor(state.b, state.fx)
-      of seShapeGenerator:
-        text "Generate a shape"
-        shapeGenerator(state.b)
-      of seShapeMultiSelect:
-        text "Shape multiselect"
-        shapeMultiSelect()
-      of seTransferOwnership:
-        text "Transfer map ownership"
-        transferOwnership()
-      of sePlatformMultiSelect:
-        text "Platform multiselect"
-        platformMultiSelect()
-      of seMapSizeInfo:
-        text "Map size info"
-        mapSizeInfo()
-      of seBackups:
-        text "Map backup loader"
-        mapBackupLoader()
-      of seEditorImageOverlay:
-        text "Editor image overlay"
-        editorImageOverlay()
+      of seVertexEditor: vertexEditor(state.b, state.fx)
+      of seShapeGenerator: shapeGenerator(state.b)
+      of seShapeMultiSelect: shapeMultiSelect()
+      of seTransferOwnership: transferOwnership()
+      of sePlatformMultiSelect: platformMultiSelect()
+      of seMapSizeInfo: mapSizeInfo()
+      of seBackups: mapBackupLoader()
+      of seEditorImageOverlay: editorImageOverlay()
 
     tdiv(style = "margin: 3px".toCss):
       bonkButton("Close", () => (state.kind = seHidden))
