@@ -1,7 +1,26 @@
 import
-  std/[strutils],
+  std/[strutils, strformat],
   pkg/karax/[vdom, kdom, vstyles, karax, karaxdsl],
-  kkleeApi, bonkElements
+  bonkElements
+
+
+# Load an image from an <input>'s onInput or onChange event
+proc loadEditorImageOverlay*(e: Event)
+    {.importc: "window.kklee.editorImageOverlay.loadImage".}
+# If there are no parameters, it will reset the image to nothing
+proc loadEditorImageOverlay*()
+    {.importc: "window.kklee.editorImageOverlay.loadImage".}
+proc updateSpriteSettings*()
+    {.importc: "window.kklee.editorImageOverlay.updateSpriteSettings".}
+
+type editorImageOverlayObject = ref object
+  x, y, w, h, ogW, ogH, opacity: float
+  imageState: cstring
+
+var st*
+    {.importc: "window.kklee.editorImageOverlay".}: editorImageOverlayObject
+
+
 
 proc editorImageOverlay*: VNode = buildHtml tdiv(style =
   "display: flex; flex-flow: column; font-size: 16px; row-gap: 10px".toCss):
@@ -29,11 +48,11 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
       # will be triggered and the image will be overlayed again
       n.value = ""
 
-  if editorImageOverlayState == "error":
+  if st.imageState == "error":
     span(style = "color: rgb(204, 68, 68)".toCss):
       text "An error occurred"
 
-  if editorImageOverlayState == "image":
+  if st.imageState == "image":
     # Calling the function without any parameters will clear the image
     bonkButton("Clear image", proc () = loadEditorImageOverlay())
 
@@ -50,5 +69,19 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
       step = "0.05"
     ):
       proc oninput(e: Event; n: VNode) =
-        editorImageOverlayOpacity = parseFloat($n.value)
-        drawEditorImageOverlay()
+        st.opacity = parseFloat($n.value)
+        updateSpriteSettings()
+    span text &"Image res.: {st.ogW.int}x{st.ogH.int}"
+ 
+    span:
+      text "X:"
+      bonkInput(st.x, parseFloat, updateSpriteSettings, niceFormatFloat)
+    span:
+      text "Y:"
+      bonkInput(st.y, parseFloat, updateSpriteSettings, niceFormatFloat)
+    span:
+      text "Width:"
+      bonkInput(st.w, parseFloat, updateSpriteSettings, niceFormatFloat)
+    span:
+      text "Height:"
+      bonkInput(st.h, parseFloat, updateSpriteSettings, niceFormatFloat)
