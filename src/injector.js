@@ -314,21 +314,18 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   };
 
   const errorColor = "rgb(204, 68, 68)";
-  // I think there is too much JS, some can be converted to nim
-  // but I don't know how to...
   kklee.editorImageOverlay.drawBackground = () => {
-    // No image is selected, so don't draw anything
-    if (!kklee.editorImageOverlay.textureCache) return;
-
     // Clear the canvas (delete the previous image)
     kklee.editorImageOverlay.background.clear();
     // Set the linestyle to yellow before drawing the rectangle
     kklee.editorImageOverlay.background.lineStyle(4, 16776960);
 
-    kklee.editorImageOverlay.background.beginTextureFill({
-      texture: kklee.editorImageOverlay.textureCache,
-      alpha: kklee.editorImageOverlay.opacity
-    });
+    if (kklee.editorImageOverlay.textureCache) {
+      kklee.editorImageOverlay.background.beginTextureFill({
+        texture: kklee.editorImageOverlay.textureCache,
+        alpha: kklee.editorImageOverlay.opacity
+      });
+    }
 
     kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504); 
     kklee.editorImageOverlay.background.endFill();
@@ -337,22 +334,25 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     kklee.updateRenderer(true);
   };
 
-  kklee.editorImageOverlay.loadImage = ({target}) => {
+  kklee.editorImageOverlay.loadImage = (event) => {
+    // If nothing is passed, then reset the image
+    if (!event || !event.target|| !event.target.files.length) {
+      kklee.editorImageOverlay.textureCache = null;
+      kklee.editorImageOverlay.drawBackground();
+      return;
+    }
+    
+    const target = event.target;
     const img = new Image();
 
     // If someone tries something that an <img> can't handle
-    img.onerror = (evt) => {
-      console.error(evt);
-      target.style.color = errorColor;
-    };
-
+    img.onerror = () => target.style.color = errorColor;
     img.onload = () => {
       try {
         // Stretch image to fit editor preview
         img.width = "734";
         img.height = "504";
 
-        // Alpha is opacity of drawn image
         kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
         kklee.editorImageOverlay.drawBackground();
         
