@@ -54,10 +54,10 @@ window.kklee.mapEncoder=${mapEncoderName};`
   )[0];
 
   const resetFunctionNames = theResetFunction
-  // Function body excluding last semicolon
+    // Function body excluding last semicolon
     .match(/(?<=\{).+(?=;\})/)[0]
     .split(";")
-  // Exclude the weird obfuscation function
+    // Exclude the weird obfuscation function
     .filter((s) => !s.match(/.+(\.).+\(\)/));
   const updateFunctionNames = resetFunctionNames
     .slice(3)
@@ -324,6 +324,9 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
       parent.document.body.style.overflowY = "";
     }
   };
+  window.addEventListener("resize", function () {
+    if (fullPage) setTimeout(a, 50);
+  });
 
   const errorColor = "rgb(204, 68, 68)";
   kklee.editorImageOverlay.drawBackground = () => {
