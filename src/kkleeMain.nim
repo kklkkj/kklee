@@ -71,7 +71,7 @@ proc render: VNode =
 
     tdiv(style = (
       "margin: 3px; flex: auto; display: flex; flex-direction: column; " &
-      "min-height: 0px; overflow-y: auto").toCss):
+      "min-height: 0px; overflow-y: auto; overflow-x: hidden").toCss):
 
       span(style = "margin-bottom: 12px".toCss):
         text $state.kind
