@@ -21,12 +21,10 @@ var st*
     {.importc: "window.kklee.editorImageOverlay".}: editorImageOverlayObject
 
 
-
 proc editorImageOverlay*: VNode = buildHtml tdiv(style =
-  "display: flex; flex-flow: column; font-size: 16px; row-gap: 10px".toCss):
+  "display: flex; flex-flow: column; font-size: 16px; row-gap: 5px".toCss):
 
   span text "Select an image to overlay onto the editor preview."
-  span text "The image will be stretched to fit the editor preview's"
 
   # Add a bonk themed label to the file input
   # it can handle the events for the input
@@ -56,6 +54,8 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
     # Calling the function without any parameters will clear the image
     bonkButton("Clear image", proc () = loadEditorImageOverlay())
 
+    span text &"Image res.: {st.ogW.int}x{st.ogH.int}"
+
     # Opacity slider - Value from 0 to 1
     label(`for` = "kkleeEditorImageOverlayOpacity"):
       span text "Overlay opacity:"
@@ -71,7 +71,6 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
       proc oninput(e: Event; n: VNode) =
         st.opacity = parseFloat($n.value)
         updateSpriteSettings()
-    span text &"Image res.: {st.ogW.int}x{st.ogH.int}"
  
     span:
       text "X:"
