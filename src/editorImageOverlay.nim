@@ -14,7 +14,7 @@ proc updateSpriteSettings*()
     {.importc: "window.kklee.editorImageOverlay.updateSpriteSettings".}
 
 type editorImageOverlayObject = ref object
-  x, y, w, h, ogW, ogH, opacity: float
+  x, y, w, h, ogW, ogH, angle, opacity: float
   imageState: cstring
 
 var st*
@@ -85,3 +85,6 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
     span:
       text "Height:"
       bonkInput(st.h, parseFloat, updateSpriteSettings, niceFormatFloat)
+    span:
+      text "Angle:"
+      bonkInput(st.angle, parseFloat, updateSpriteSettings, niceFormatFloat)

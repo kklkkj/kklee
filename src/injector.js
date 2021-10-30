@@ -329,6 +329,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     y: 0,
     w: 0,
     h: 0,
+    angle: 0,
     ogW: 0,
     ogH: 0,
     sprite: null,
@@ -350,6 +351,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     p.width = e.w;
     p.height = e.h;
     p.alpha = e.opacity;
+    p.angle = e.angle;
     kklee.updateRenderer(true);
   };
   kklee.editorImageOverlay.loadImage = (event) => {
