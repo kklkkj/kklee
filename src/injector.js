@@ -1,37 +1,37 @@
 function injector(bonkCode) {
-	window.onbeforeunload = function () {
-		return "Are you sure?";
-	};
+  window.onbeforeunload = function () {
+    return "Are you sure?";
+  };
 
-	const kklee = {};
-	window.kklee = kklee;
-	let src = bonkCode;
+  const kklee = {};
+  window.kklee = kklee;
+  let src = bonkCode;
 
-	const mapObjectName = src
-		.match(/rxid:[a-zA-Z0-9]{3}\[\d+\]/)[0]
-		.split(":")[1];
-	// Escape regex special characters
-	const monEsc = mapObjectName.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
-	const varArrName = mapObjectName.split("[")[0];
+  const mapObjectName = src
+    .match(/rxid:[a-zA-Z0-9]{3}\[\d+\]/)[0]
+    .split(":")[1];
+  // Escape regex special characters
+  const monEsc = mapObjectName.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+  const varArrName = mapObjectName.split("[")[0];
 
-	// When a new map object is created, also assign it to a global variable
-	src = src.replace(
-		new RegExp(`(${monEsc}=[^;]+;)`, "g"),
-		`$1window.kklee.mapObject=${mapObjectName};\
+  // When a new map object is created, also assign it to a global variable
+  src = src.replace(
+    new RegExp(`(${monEsc}=[^;]+;)`, "g"),
+    `$1window.kklee.mapObject=${mapObjectName};\
 if(window.kklee.afterNewMapObject)window.kklee.afterNewMapObject();`
-	);
+  );
 
-	const mapEncoderName = src.match(
-		new RegExp(`${monEsc}=(.)\\[.{1,25}\\]\\(\\);`)
-	)[1];
+  const mapEncoderName = src.match(
+    new RegExp(`${monEsc}=(.)\\[.{1,25}\\]\\(\\);`)
+  )[1];
 
-	src = src.replace(
-		new RegExp(`function ${mapEncoderName}\\(\\)\\{\\}`, "g"),
-		`function ${mapEncoderName}(){};\
+  src = src.replace(
+    new RegExp(`function ${mapEncoderName}\\(\\)\\{\\}`, "g"),
+    `function ${mapEncoderName}(){};\
 window.kklee.mapEncoder=${mapEncoderName};`
-	);
+  );
 
-	/*
+  /*
   This function contains some useful stuff
     function j0Z() {
         z5i[977] = -1; // selected body
@@ -46,191 +46,191 @@ window.kklee.mapEncoder=${mapEncoderName};`
         I6s(); // update mode dropdown selection
     }
   */
-	const theResetFunction = src.match(
-		new RegExp(
-			"function ...\\(\\){.{0,40}\
+  const theResetFunction = src.match(
+    new RegExp(
+      "function ...\\(\\){.{0,40}\
 (...\\[\\d+\\]=-1;){2}.{0,40}(...\\(true\\);).{0,40}(...\\(\\);){2}[^}]+\\}"
-		)
-	)[0];
+    )
+  )[0];
 
-	const resetFunctionNames = theResetFunction
-	// Function body excluding last semicolon
-		.match(/(?<=\{).+(?=;\})/)[0]
-		.split(";")
-	// Exclude the weird obfuscation function
-		.filter((s) => !s.match(/.+(\.).+\(\)/));
-	const updateFunctionNames = resetFunctionNames
-		.slice(3)
-		.map((s) => s.split("(")[0]);
-	const currentlySelectedNames = resetFunctionNames
-		.slice(0, 3)
-		.map((s) => s.split("=")[0]);
-	if (resetFunctionNames.length !== 9)
-		throw "resetFunctionNames length is not 9";
+  const resetFunctionNames = theResetFunction
+  // Function body excluding last semicolon
+    .match(/(?<=\{).+(?=;\})/)[0]
+    .split(";")
+  // Exclude the weird obfuscation function
+    .filter((s) => !s.match(/.+(\.).+\(\)/));
+  const updateFunctionNames = resetFunctionNames
+    .slice(3)
+    .map((s) => s.split("(")[0]);
+  const currentlySelectedNames = resetFunctionNames
+    .slice(0, 3)
+    .map((s) => s.split("=")[0]);
+  if (resetFunctionNames.length !== 9)
+    throw "resetFunctionNames length is not 9";
 
-	let ufInj = "";
+  let ufInj = "";
 
-	const apiUpdateFunctionNames = [
-		"LeftBox",
-		"RightBoxBody",
-		"Renderer",
-		"Warnings",
-		"UndoButtons",
-		"ModeDropdown",
-	];
-	for (const i in updateFunctionNames) {
-		const on = updateFunctionNames[i],
-			nn = apiUpdateFunctionNames[i];
+  const apiUpdateFunctionNames = [
+    "LeftBox",
+    "RightBoxBody",
+    "Renderer",
+    "Warnings",
+    "UndoButtons",
+    "ModeDropdown",
+  ];
+  for (const i in updateFunctionNames) {
+    const on = updateFunctionNames[i],
+      nn = apiUpdateFunctionNames[i];
 
-		ufInj += `let ${on}OLD=${on};${on}=function(){${on}OLD(...arguments);\
+    ufInj += `let ${on}OLD=${on};${on}=function(){${on}OLD(...arguments);\
 if(window.kklee.afterUpdate${nn})window.kklee.afterUpdate${nn}(...arguments);};\
 window.kklee.update${nn}=${on};`;
-	}
+  }
 
-	const apiCurrentlySelectedNames = ["Body", "Spawn", "CapZone"];
-	for (const i in currentlySelectedNames) {
-		const on = currentlySelectedNames[i],
-			nn = apiCurrentlySelectedNames[i];
+  const apiCurrentlySelectedNames = ["Body", "Spawn", "CapZone"];
+  for (const i in currentlySelectedNames) {
+    const on = currentlySelectedNames[i],
+      nn = apiCurrentlySelectedNames[i];
 
-		ufInj += `window.kklee.getCurrent${nn}=function(){return ${on};};\
+    ufInj += `window.kklee.getCurrent${nn}=function(){return ${on};};\
 window.kklee.setCurrent${nn}=function(v){return ${on}=v;};`;
-	}
+  }
 
-	src = src.replace(theResetFunction, `${theResetFunction};{${ufInj}};`);
+  src = src.replace(theResetFunction, `${theResetFunction};{${ufInj}};`);
 
-	// Only part of the function body
-	const saveHistoryFunction = src.match(
-		new RegExp(
-			`function ...\\(\\)\\{.{1,170}${varArrName}\\[\\d{1,3}\\]--;\\}\
+  // Only part of the function body
+  const saveHistoryFunction = src.match(
+    new RegExp(
+      `function ...\\(\\)\\{.{1,170}${varArrName}\\[\\d{1,3}\\]--;\\}\
 ${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
-		)
-	)[0];
-	const saveHistoryFunctionName = saveHistoryFunction.match(
-		/(?<=function )...(?=\(\))/
-	)[0];
-	const newSaveHistoryFunction = saveHistoryFunction.replace(
-		new RegExp("(function ...\\(\\)\\{)"),
-		"$1window.kklee.afterSaveHistory();"
-	);
-	src = src.replace(
-		saveHistoryFunction,
-		`;window.kklee.setMapObject=\
+    )
+  )[0];
+  const saveHistoryFunctionName = saveHistoryFunction.match(
+    /(?<=function )...(?=\(\))/
+  )[0];
+  const newSaveHistoryFunction = saveHistoryFunction.replace(
+    new RegExp("(function ...\\(\\)\\{)"),
+    "$1window.kklee.afterSaveHistory();"
+  );
+  src = src.replace(
+    saveHistoryFunction,
+    `;window.kklee.setMapObject=\
 function(m){${mapObjectName}=m;window.kklee.mapObject=m;};\
 window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
 ${newSaveHistoryFunction}`
-	);
+  );
 
-	const dbOpenRequest = window.indexedDB.open("kkleeStorage_347859220", 1);
-	let db;
-	kklee.backups = [];
+  const dbOpenRequest = window.indexedDB.open("kkleeStorage_347859220", 1);
+  let db;
+  kklee.backups = [];
 
-	dbOpenRequest.onsuccess = () => {
-		db = dbOpenRequest.result;
-		db.transaction("backups");
-		const transaction = db.transaction("backups");
-		const getRequest = transaction.objectStore("backups").get(1);
-		getRequest.onsuccess = () => {
-			kklee.backups = getRequest.result;
-		};
-		getRequest.onerror = (event) => {
-			console.error(event);
-			alert("kklee: unable to get backups from database");
-		};
-	};
-	function saveBackups() {
-		if (!db) return;
-		const transaction = db.transaction("backups", "readwrite");
-		transaction.objectStore("backups").put(kklee.backups, 1);
-		db.onerror = console.error;
-	}
-	dbOpenRequest.onerror = (event) => {
-		console.error(event);
-		alert("kklee: unable to open IndexedDB");
-	};
-	dbOpenRequest.onupgradeneeded = (event) => {
-		const db = event.target.result;
-		const b = db.createObjectStore("backups");
-		b.put(JSON.parse(localStorage.kkleeMapBackups || "[]"), 1);
-		delete localStorage.kkleeMapBackups;
-	};
+  dbOpenRequest.onsuccess = () => {
+    db = dbOpenRequest.result;
+    db.transaction("backups");
+    const transaction = db.transaction("backups");
+    const getRequest = transaction.objectStore("backups").get(1);
+    getRequest.onsuccess = () => {
+      kklee.backups = getRequest.result;
+    };
+    getRequest.onerror = (event) => {
+      console.error(event);
+      alert("kklee: unable to get backups from database");
+    };
+  };
+  function saveBackups() {
+    if (!db) return;
+    const transaction = db.transaction("backups", "readwrite");
+    transaction.objectStore("backups").put(kklee.backups, 1);
+    db.onerror = console.error;
+  }
+  dbOpenRequest.onerror = (event) => {
+    console.error(event);
+    alert("kklee: unable to open IndexedDB");
+  };
+  dbOpenRequest.onupgradeneeded = (event) => {
+    const db = event.target.result;
+    const b = db.createObjectStore("backups");
+    b.put(JSON.parse(localStorage.kkleeMapBackups || "[]"), 1);
+    delete localStorage.kkleeMapBackups;
+  };
 
-	kklee.getBackupLabel = (b) =>
-		`${b.mapLabel} - ${new Date(b.timestamp).toLocaleString()}`;
-	kklee.loadBackup = (b) =>
-		kklee.setMapObject(kklee.mapEncoder.decodeFromDatabase(b.mapData));
+  kklee.getBackupLabel = (b) =>
+    `${b.mapLabel} - ${new Date(b.timestamp).toLocaleString()}`;
+  kklee.loadBackup = (b) =>
+    kklee.setMapObject(kklee.mapEncoder.decodeFromDatabase(b.mapData));
 
-	function newBackupSessionId() {
-		kklee.backupSessionId =
+  function newBackupSessionId() {
+    kklee.backupSessionId =
       Date.now().toString(36) + Math.random().toString(36);
-	}
-	function backUpMap() {
-		const mapLabel = `${kklee.mapObject.m.n} by ${kklee.mapObject.m.a}`;
-		const mapData = kklee.mapEncoder.encodeToDatabase(kklee.mapObject);
-		const lastBackup = kklee.backups[kklee.backups.length - 1];
+  }
+  function backUpMap() {
+    const mapLabel = `${kklee.mapObject.m.n} by ${kklee.mapObject.m.a}`;
+    const mapData = kklee.mapEncoder.encodeToDatabase(kklee.mapObject);
+    const lastBackup = kklee.backups[kklee.backups.length - 1];
 
-		if (
-			lastBackup &&
+    if (
+      lastBackup &&
       lastBackup.sessionId == kklee.backupSessionId &&
       lastBackup.mapLabel == mapLabel
-		) {
-			lastBackup.mapData = mapData;
-			lastBackup.timestamp = Date.now();
-		} else {
-			kklee.backups.push({
-				sessionId: kklee.backupSessionId,
-				mapLabel: mapLabel,
-				timestamp: Date.now(),
-				mapData: mapData,
-			});
-		}
+    ) {
+      lastBackup.mapData = mapData;
+      lastBackup.timestamp = Date.now();
+    } else {
+      kklee.backups.push({
+        sessionId: kklee.backupSessionId,
+        mapLabel: mapLabel,
+        timestamp: Date.now(),
+        mapData: mapData,
+      });
+    }
 
-		let i = kklee.backups.length - 1;
-		let size = 0;
-		while (i >= 0) {
-			size += kklee.backups[i].mapData.length;
-			if (size > 1e6) break;
-			else i--;
-		}
+    let i = kklee.backups.length - 1;
+    let size = 0;
+    while (i >= 0) {
+      size += kklee.backups[i].mapData.length;
+      if (size > 1e6) break;
+      else i--;
+    }
 
-		kklee.backups = kklee.backups.slice(i + 1);
-		saveBackups();
-	}
-	newBackupSessionId();
-	// ID will be different every time a new room is made
-	document
-		.getElementById("mainmenuelements")
-		.addEventListener("mousemove", () => newBackupSessionId());
+    kklee.backups = kklee.backups.slice(i + 1);
+    saveBackups();
+  }
+  newBackupSessionId();
+  // ID will be different every time a new room is made
+  document
+    .getElementById("mainmenuelements")
+    .addEventListener("mousemove", () => newBackupSessionId());
 
-	window.kklee.afterSaveHistory = () => {
-		backUpMap();
-	};
+  window.kklee.afterSaveHistory = () => {
+    backUpMap();
+  };
 
-	// Replace Float64Array instances with normal arrays
-	window.kklee.saveToUndoHistory = () => {
-		function fix(obj) {
-			for (const k of Object.keys(obj)) {
-				if (obj[k] instanceof Float64Array) obj[k] = [...obj[k]];
-				else if (obj[k] instanceof Object) fix(obj[k]);
-			}
-		}
-		fix(kklee.mapObject);
-		window.kklee.saveToUndoHistoryOLD();
-	};
+  // Replace Float64Array instances with normal arrays
+  window.kklee.saveToUndoHistory = () => {
+    function fix(obj) {
+      for (const k of Object.keys(obj)) {
+        if (obj[k] instanceof Float64Array) obj[k] = [...obj[k]];
+        else if (obj[k] instanceof Object) fix(obj[k]);
+      }
+    }
+    fix(kklee.mapObject);
+    window.kklee.saveToUndoHistoryOLD();
+  };
 
-	/*
+  /*
     Prevent removal of event listener for activating chat with enter key when
     lobby is hidden
   */
-	src = src.replace(
-		new RegExp(
-			"(?<=this\\[.{10,20}\\]=function\\(\\)\\{.{20,40}\
+  src = src.replace(
+    new RegExp(
+      "(?<=this\\[.{10,20}\\]=function\\(\\)\\{.{20,40}\
 this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
 .{3,4}\\);"
-		),
-		""
-	);
+    ),
+    ""
+  );
 
-	/*
+  /*
   Colour picker
     this["showColorPicker"] = function(H0R, k0R, C0R, u0R) {
         var Z8D = [arguments];
@@ -248,31 +248,31 @@ this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
         j8D[1]["style"]["display"] = "block";
     }
   */
-	src = src.replace(
-		new RegExp(
-			"((?<=this\\[.{10,25}\\]=function\\(.{3,4},.{3,4}\
+  src = src.replace(
+    new RegExp(
+      "((?<=this\\[.{10,25}\\]=function\\(.{3,4},.{3,4}\
 ,.{3,4},.{3,4}\\)\\{).{50,250}(.{3,4}\\[.{0,25}\\]=.{3,4}\\[.{0,30}\\];){3}\
 .{0,75}.{3,4}\\(false\\).{0,75};\\};(?=.{0,200000}return \\{hue))",
-			"g"
-		),
-		`${""}window.kklee.showColourPickerArguments=[...arguments];\
+      "g"
+    ),
+    `${""}window.kklee.showColourPickerArguments=[...arguments];\
 document.getElementById("kkleeColourInput").value="#"+arguments[0]\
 .toString(16).padStart(6,"0");$1;\
 let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
 function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
-	);
-	// Map editor test TimeMS
-	window.kklee.editorPreviewTimeMs = 30;
-	src = src.replace(
-		new RegExp(
-			"(?<=(?<!Infinity.{0,300});.{3,4}\\[.{1,20}\\]\\=)30\
+  );
+  // Map editor test TimeMS
+  window.kklee.editorPreviewTimeMs = 30;
+  src = src.replace(
+    new RegExp(
+      "(?<=(?<!Infinity.{0,300});.{3,4}\\[.{1,20}\\]\\=)30\
 (?=;.{0,30}while.{10,150}Date.{0,5000})",
-			"g"
-		),
-		"window.kklee.editorPreviewTimeMs"
-	);
+      "g"
+    ),
+    "window.kklee.editorPreviewTimeMs"
+  );
 
-	/*
+  /*
   Map editor rectangle overlay drawing
     if (C3V[22]) {
       C3V[38] = new PIXI.Graphics();  // Exported as editorPreviewOutline
@@ -285,130 +285,130 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     }
   */
 
-	// Exposes variable used for map editor preview overlay drawing
-	kklee.editorImageOverlay = { opacity: 0.3, textureCache: null };
-	src = src.replace(
-		new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
+  // Exposes variable used for map editor preview overlay drawing
+  kklee.editorImageOverlay = { opacity: 0.3, textureCache: null };
+  src = src.replace(
+    new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
 \\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
-		"window.kklee.editorImageOverlay.background=$1"
-	);
+    "window.kklee.editorImageOverlay.background=$1"
+  );
 
-	const mgfs = parent.document.getElementById("maingameframe").style;
-	const bcs = document.getElementById("bonkiocontainer").style;
-	const me = document.getElementById("mapeditor").style;
-	const xpb = document.getElementById("xpbarcontainer").style;
-	document.getElementById("prettymenu").style.boxShadow = "none";
+  const mgfs = parent.document.getElementById("maingameframe").style;
+  const bcs = document.getElementById("bonkiocontainer").style;
+  const me = document.getElementById("mapeditor").style;
+  const xpb = document.getElementById("xpbarcontainer").style;
+  document.getElementById("prettymenu").style.boxShadow = "none";
 
-	let fullPage = false;
-	let a = () => {
-		mgfs.position = "fixed";
-		mgfs.zIndex = "10000";
-		mgfs.marginTop = "";
-		const s = Math.min(innerWidth / 730, innerHeight / 500);
-		bcs.width = `${s * 730}px`;
-		bcs.height = `${s * 500}px`;
-		bcs.border = "none";
-		xpb.visibility = "hidden";
-		me.maxWidth = `${s * 730 * 0.9}px`;
-		me.maxHeight = `${s * 500 * 0.9}px`;
-		parent.document.body.style.overflowY = "hidden";
-	};
-	kklee.toggleFullPage = () => {
-		fullPage = !fullPage;
-		if (fullPage) a();
-		else {
-			mgfs.position = "";
-			mgfs.zIndex = "";
-			bcs.border = "";
-			xpb.visibility = "inherit";
-			parent.document.body.style.overflowY = "";
-		}
-	};
+  let fullPage = false;
+  let a = () => {
+    mgfs.position = "fixed";
+    mgfs.zIndex = "10000";
+    mgfs.marginTop = "";
+    const s = Math.min(innerWidth / 730, innerHeight / 500);
+    bcs.width = `${s * 730}px`;
+    bcs.height = `${s * 500}px`;
+    bcs.border = "none";
+    xpb.visibility = "hidden";
+    me.maxWidth = `${s * 730 * 0.9}px`;
+    me.maxHeight = `${s * 500 * 0.9}px`;
+    parent.document.body.style.overflowY = "hidden";
+  };
+  kklee.toggleFullPage = () => {
+    fullPage = !fullPage;
+    if (fullPage) a();
+    else {
+      mgfs.position = "";
+      mgfs.zIndex = "";
+      bcs.border = "";
+      xpb.visibility = "inherit";
+      parent.document.body.style.overflowY = "";
+    }
+  };
 
-	const errorColor = "rgb(204, 68, 68)";
-	kklee.editorImageOverlay.drawBackground = () => {
-		// Clear the canvas (delete the previous image)
-		kklee.editorImageOverlay.background.clear();
-		// Set the linestyle to yellow before drawing the rectangle
-		kklee.editorImageOverlay.background.lineStyle(4, 16776960);
+  const errorColor = "rgb(204, 68, 68)";
+  kklee.editorImageOverlay.drawBackground = () => {
+    // Clear the canvas (delete the previous image)
+    kklee.editorImageOverlay.background.clear();
+    // Set the linestyle to yellow before drawing the rectangle
+    kklee.editorImageOverlay.background.lineStyle(4, 16776960);
 
-		if (kklee.editorImageOverlay.textureCache) {
-			kklee.editorImageOverlay.background.beginTextureFill({
-				texture: kklee.editorImageOverlay.textureCache,
-				alpha: kklee.editorImageOverlay.opacity
-			});
-		}
+    if (kklee.editorImageOverlay.textureCache) {
+      kklee.editorImageOverlay.background.beginTextureFill({
+        texture: kklee.editorImageOverlay.textureCache,
+        alpha: kklee.editorImageOverlay.opacity
+      });
+    }
 
-		kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504); 
-		kklee.editorImageOverlay.background.endFill();
+    kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504); 
+    kklee.editorImageOverlay.background.endFill();
 
-		// Update the renderer so the image shows
-		kklee.updateRenderer(true);
-	};
+    // Update the renderer so the image shows
+    kklee.updateRenderer(true);
+  };
 
-	kklee.editorImageOverlay.loadImage = (event) => {
-		// If nothing is passed, then reset the image
-		if (!event || !event.target|| !event.target.files.length) {
-			kklee.editorImageOverlay.textureCache = null;
-			kklee.editorImageOverlay.drawBackground();
-			return;
-		}
+  kklee.editorImageOverlay.loadImage = (event) => {
+    // If nothing is passed, then reset the image
+    if (!event || !event.target|| !event.target.files.length) {
+      kklee.editorImageOverlay.textureCache = null;
+      kklee.editorImageOverlay.drawBackground();
+      return;
+    }
     
-		const target = event.target;
-		const img = new Image();
+    const target = event.target;
+    const img = new Image();
 
-		// If someone tries something that an <img> can't handle
-		img.onerror = () => target.style.color = errorColor;
-		img.onload = () => {
-			try {
-				// Stretch image to fit editor preview
-				img.width = "734";
-				img.height = "504";
+    // If someone tries something that an <img> can't handle
+    img.onerror = () => target.style.color = errorColor;
+    img.onload = () => {
+      try {
+        // Stretch image to fit editor preview
+        img.width = "734";
+        img.height = "504";
 
-				kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
-				kklee.editorImageOverlay.drawBackground();
+        kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
+        kklee.editorImageOverlay.drawBackground();
         
-				target.style.color = "black";
-			} catch (er) {
-				console.error(er);
-				target.style.color = errorColor;
-			}
-		};
+        target.style.color = "black";
+      } catch (er) {
+        console.error(er);
+        target.style.color = errorColor;
+      }
+    };
 
-		// Load the image from file picker to the <Image> element
-		img.src = URL.createObjectURL(target.files[0]);
-	};
+    // Load the image from file picker to the <Image> element
+    img.src = URL.createObjectURL(target.files[0]);
+  };
 
-	window.addEventListener("resize", function () {
-		if (fullPage) setTimeout(a, 50);
-	});
+  window.addEventListener("resize", function () {
+    if (fullPage) setTimeout(a, 50);
+  });
   
-	kklee.dataLimitInfo = () => {
-		try {
-			const d = atob(
-				window.LZString.decompressFromEncodedURIComponent(
-					kklee.mapEncoder.encodeToDatabase(kklee.mapObject)
-				)
-			).length;
-			return `${d}/102400 bytes`;
-		} catch {
-			return "Over data limit";
-		}
-	};
-	kklee.dispatchInputEvent = (el) => el.dispatchEvent(new InputEvent("input"));
+  kklee.dataLimitInfo = () => {
+    try {
+      const d = atob(
+        window.LZString.decompressFromEncodedURIComponent(
+          kklee.mapEncoder.encodeToDatabase(kklee.mapObject)
+        )
+      ).length;
+      return `${d}/102400 bytes`;
+    } catch {
+      return "Over data limit";
+    }
+  };
+  kklee.dispatchInputEvent = (el) => el.dispatchEvent(new InputEvent("input"));
 
-	require("./nimBuild.js");
-	console.log("kklee injector run");
-	return src;
+  require("./nimBuild.js");
+  console.log("kklee injector run");
+  return src;
 }
 
 if (!window.bonkCodeInjectors) window.bonkCodeInjectors = [];
 window.bonkCodeInjectors.push((bonkCode) => {
-	try {
-		return injector(bonkCode);
-	} catch (error) {
-		alert(
-			`Whoops! kklee was unable to load.
+  try {
+    return injector(bonkCode);
+  } catch (error) {
+    alert(
+      `Whoops! kklee was unable to load.
 
 
 This may be due to an update to Bonk.io. If so, please report this error!
@@ -418,50 +418,50 @@ This could also be because you have an extension that is incompatible with \
 kklee, such as the Bonk Leagues Client. You would have to disable it to use \
 kklee.
     `
-		);
-		throw error;
-	}
+    );
+    throw error;
+  }
 });
 console.log("kklee injector loaded");
 
 const currentVersion = require("../dist/manifest.json")
-	.version.split(".")
-	.map(Number); // "0.10" --> [0,10]
+  .version.split(".")
+  .map(Number); // "0.10" --> [0,10]
 
 (async () => {
-	const req = await fetch("https://api.github.com/repos/kklkkj/kklee/releases");
-	const releases = await req.json();
-	let outdated = false;
-	for (const r of releases) {
-		// "v0.10" --> [0,10]
-		const version = r.tag_name.substr(1).split(".").map(Number);
-		if (version.length != 2 || isNaN(version[0]) || isNaN(version[1])) continue;
-		if (
-			version[0] > currentVersion[0] ||
+  const req = await fetch("https://api.github.com/repos/kklkkj/kklee/releases");
+  const releases = await req.json();
+  let outdated = false;
+  for (const r of releases) {
+    // "v0.10" --> [0,10]
+    const version = r.tag_name.substr(1).split(".").map(Number);
+    if (version.length != 2 || isNaN(version[0]) || isNaN(version[1])) continue;
+    if (
+      version[0] > currentVersion[0] ||
       (version[0] == currentVersion[0] && version[1] > currentVersion[1])
-		) {
-			outdated = true;
-			break;
-		}
-	}
-	if (!outdated) return;
+    ) {
+      outdated = true;
+      break;
+    }
+  }
+  if (!outdated) return;
 
-	try {
-		const el = document.createElement("span");
-		el.textContent = "A new version of kklee is available! Click this";
-		el.style =
+  try {
+    const el = document.createElement("span");
+    el.textContent = "A new version of kklee is available! Click this";
+    el.style =
       "position: absolute; background: linear-gradient(#33a, #d53);\
 line-height: normal;";
-		el.onclick = () => window.open("https://github.com/kklkkj/kklee");
-		parent.document.getElementById("bonkioheader").appendChild(el);
-	} catch (error) {
-		console.error(error);
-		alert("A new version of kklee is available!");
-	}
+    el.onclick = () => window.open("https://github.com/kklkkj/kklee");
+    parent.document.getElementById("bonkioheader").appendChild(el);
+  } catch (error) {
+    console.error(error);
+    alert("A new version of kklee is available!");
+  }
 })().catch((err) => {
-	console.error(err);
-	alert(
-		"Something went wrong with checking if the current version of kklee is \
+  console.error(err);
+  alert(
+    "Something went wrong with checking if the current version of kklee is \
 outdated"
-	);
+  );
 });
