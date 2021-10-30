@@ -1,12 +1,14 @@
 # Changelog
 
 ## v0.21
+
 - Copying shapes in multi-select will also copy capzones
 - Added copy & paste to platform multi-select (though joints aren't copied
   properly)
 - Fixed a minor bug when making the chat box visible in editor
 
 ## v0.20
+
 - Fixed bug in ellipse generator
 - Made the existing colours container in the colour picker have a maximum height
   and a scroll bar
@@ -16,6 +18,7 @@
   Ctrl, Shift and Ctrl+Shift modifiers
 
 ## v0.19
+
 - Changed how map backups are stored
 - Changed some UI styles
 - Increased shape generator shapes/vertices limit from 99 to 999
@@ -23,12 +26,14 @@
 - Added a way to rotate and scale multi-selected shapes around a point
 
 ## v0.18
+
 - Fixed a bug in the ellipse generator that caused the first vertex to be
   repeated
 - Added a colour gradient option to shape multi-select
 - Added automatic backups of maps to the browser's offline storage
 
 ## v0.17
+
 - Fixed bugs in the Shift+Space shortcut
 - Shift+Esc will be usable even if the game wasn't started from the editor
 - Fixed the bug in the gradient generator that caused the final colour to be
@@ -40,6 +45,7 @@
 - Fixed a bug in the corner rounder
 
 ## v0.16
+
 - Added a variable for the number of selected items in multi-select
 - Added rand function to arithmetic evaluators
 - Added a link to the list of supported functions in multi-select
@@ -47,6 +53,7 @@
 - Added a button to make the game frame fill the entire page
 
 ## v0.15
+
 - Fixed bug in shape capture zone adder
 - No physics shapes won't be counted in total platform mass
 - Added inner grapple and shrink properties to shape multi-select
@@ -56,24 +63,28 @@
 - Added a button that converts rectangles to polygons
 
 ## v0.14
+
 - Fixed the custom colour picker that was broken in the latest Bonk.io update
 - The browser's default action for Shift+Esc will be prevented when you use it
   return to the editor
 - Properties in multi-select will be highlighted in red if they are modified
 
 ## v0.13
+
 - Added platform multi-select
 - Added a button in multi-select to invert selection
 - Added index labels to selected shapes
 - Added a label for a platform's total mass
 
 ## v0.12
+
 - Added ability to transfer map ownership to a contributor of a map if you are
   the original author
 - Added ability to round the corners of a polygon in the vertex editor
 - Added the shape name property to the shape multi-select editor
 
 ## v0.11
+
 - Fixed bugs in the vertex editor
 - Added a button in shape properties that adds a new or views an existing
   capture zone for that shape
@@ -81,6 +92,7 @@
 - Changed shortcut for returning to editor after pressing play to Shift+Esc
 
 ## v0.10
+
 - Removed the "move to platform" feature in multi-select
 - Removed multi-duplicate and added option to specify how many times copied
   shapes should be pasted
@@ -91,6 +103,7 @@
 - Made Shift+Space also return you back to the editor
 
 ## v0.9
+
 - After applying in multi-select, shape properties will be updated immediately
 - Added shape multi-duplicate. This lets you duplicate a shape a specified
   number of times and the duplicates will be automatically multi-selected
@@ -99,34 +112,41 @@
 - Added ability to copy and paste shapes in multi-select
 
 ## v0.8
+
 - Fixed bug in the shape generator that caused the editor to break
 
 ## v0.7
+
 - Added shape colour option to multi-select
 - Added rect height option to ellipse and sine wave generators
 - Added parametric equation generator
 
 ## v0.6
+
 - Improved description for the shape multi-selection panel
 - Added a label for the preview speed slider
 - Added a tip about arithmetic evaluation
 - Added ability to delete selected shapes in multi-select
 
 ## v0.5
+
 - Make polygon merger work with scaled polygons
 - Fix bug where chat scrolls to the top when you enter the map editor
 - Added multi-select for shapes
 
 ## v0.4
+
 - Fix annoying bug where chat would scroll up when you click it
 
 ## v0.3
+
 - Moved the chat box to a better place
 - Fixed the bug where the chat box disappears if you get disconnected from
   the server while editing a map
 - Added option for easing gradients
 
 ## v0.2
+
 - Added automatic checking of updates (you'll still have to install them
   manually)
 - Added generators for linear and radial gradients
@@ -134,9 +154,11 @@
 - Added changelog.md
 
 ## v0.1
+
 First release
 
 Features:
+
 - The chat is visible in the map editor
 - Vertex editor
 - (Buggy) Merge multiple polygons into one
