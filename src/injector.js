@@ -288,8 +288,10 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   // Exposes variable used for map editor preview overlay drawing
   kklee.editorImageOverlay = { opacity: 0.3, textureCache: null };
   src = src.replace(
-    new RegExp("(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
-\\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"),
+    new RegExp(
+      "(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
+\\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"
+    ),
     "window.kklee.editorImageOverlay.background=$1"
   );
 
@@ -338,11 +340,11 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     if (kklee.editorImageOverlay.textureCache) {
       kklee.editorImageOverlay.background.beginTextureFill({
         texture: kklee.editorImageOverlay.textureCache,
-        alpha: kklee.editorImageOverlay.opacity
+        alpha: kklee.editorImageOverlay.opacity,
       });
     }
 
-    kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504); 
+    kklee.editorImageOverlay.background.drawRect(-2, -2, 734, 504);
     kklee.editorImageOverlay.background.endFill();
 
     // Update the renderer so the image shows
@@ -351,17 +353,17 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
 
   kklee.editorImageOverlay.loadImage = (event) => {
     // If nothing is passed, then reset the image
-    if (!event || !event.target|| !event.target.files.length) {
+    if (!event || !event.target || !event.target.files.length) {
       kklee.editorImageOverlay.textureCache = null;
       kklee.editorImageOverlay.drawBackground();
       return;
     }
-    
+
     const target = event.target;
     const img = new Image();
 
     // If someone tries something that an <img> can't handle
-    img.onerror = () => target.style.color = errorColor;
+    img.onerror = () => (target.style.color = errorColor);
     img.onload = () => {
       try {
         // Stretch image to fit editor preview
@@ -370,7 +372,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
 
         kklee.editorImageOverlay.textureCache = window.PIXI.Texture.from(img);
         kklee.editorImageOverlay.drawBackground();
-        
+
         target.style.color = "black";
       } catch (er) {
         console.error(er);
@@ -385,7 +387,7 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
   window.addEventListener("resize", function () {
     if (fullPage) setTimeout(a, 50);
   });
-  
+
   kklee.dataLimitInfo = () => {
     try {
       const d = atob(
