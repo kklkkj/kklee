@@ -190,8 +190,13 @@ proc setEditorExplanation*(text: string) =
 proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
 
 proc toggleFullPage* {.importc: "window.kklee.toggleFullPage".}
+
+# Load an image from an <input>'s onInput or onChange event
 proc loadEditorImageOverlay*(e: Event) {.importc: "window.kklee.editorImageOverlay.loadImage".}
-proc loadEditorImageOverlay* {.importc: "window.kklee.editorImageOverlay.loadImage".}
+# If there are no parameters, it will reset the image to nothing
+proc loadEditorImageOverlay*() {.importc: "window.kklee.editorImageOverlay.loadImage".}
+# Redraw the image but does not change the image - called when
+# the opacity changes
 proc drawEditorImageOverlay* {.importc: "window.kklee.editorImageOverlay.drawBackground".}
 
 type

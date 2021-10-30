@@ -10,7 +10,7 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(
 
   # Add a bonk themed label to the file input
   # it can handle the events for the input
-  # Hide the original file input so only the bonk themed one shows
+  # Hide the original file input so only the bonk themed label shows
   label(`for` = "kkleeEditorImageOverlayInput"):
     span bonkButton("Choose image", proc = return)
   input(
@@ -23,10 +23,10 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(
       proc onclick(e: Event; n: VNode) =
         n.value = ""
 
-  bonkButton("Clear image", proc () = 
-    loadEditorImageOverlay()
-  )
+  # Calling the function without any parameters will clear the image
+  bonkButton("Clear image", proc () = loadEditorImageOverlay())
 
+  # Opacity slider - Value from 0 to 1
   label(`for` = "kkleeEditorImageOverlayOpacity"):
     span text "Overlay opacity:"
   input(
@@ -38,8 +38,5 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(
     max = "1",
     step = "0.05"):
       proc oninput(e: Event; n: VNode) =
-        try:
-          editorImageOverlayOpacity = parseFloat($n.value)
-          drawEditorImageOverlay()
-        except CatchableError:
-          e.target.style.color = "rgb(204, 68, 68)"
+        editorImageOverlayOpacity = parseFloat($n.value)
+        drawEditorImageOverlay()
