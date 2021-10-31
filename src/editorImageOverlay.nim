@@ -63,6 +63,7 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
       id = "kkleeEditorImageOverlayOpacity",
       title = "Overlay opacity",
       class = "compactSlider compactSlider_classic",
+      style = "background: transparent; width: 99%".toCss,
       `type` = "range",
       min = "0",
       max = "1",
@@ -71,22 +72,17 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
       proc oninput(e: Event; n: VNode) =
         st.opacity = parseFloat($n.value)
         updateSpriteSettings()
- 
-    span:
-      text "X:"
+
+    prop "X:",
       bonkInput(st.x, parseFloat, updateSpriteSettings, niceFormatFloat)
-    span:
-      text "Y:"
+    prop "Y:",
       bonkInput(st.y, parseFloat, updateSpriteSettings, niceFormatFloat)
-    span:
-      text "Width:"
+    prop "Width:",
       bonkInput(st.w, parseFloat, updateSpriteSettings, niceFormatFloat)
-    span:
-      text "Height:"
+    prop "Height:",
       bonkInput(st.h, parseFloat, updateSpriteSettings, niceFormatFloat)
-    span:
-      text "Angle:"
-      bonkInput(st.angle, parseFloat, updateSpriteSettings, niceFormatFloat)
+    prop "Angle:",
+       bonkInput(st.angle, parseFloat, updateSpriteSettings, niceFormatFloat)
     bonkButton "Fit to screen", proc =
       st.angle = 0
       st.x = 0
