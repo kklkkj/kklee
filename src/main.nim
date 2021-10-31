@@ -343,6 +343,8 @@ speedSlider.step = "1"
 speedSlider.value = "3"
 speedSlider.class = "compactSlider compactSlider_classic"
 speedSlider.style.width = "100px"
+speedSlider.style.background =
+  "linear-gradient(90deg, transparent 36%, #431, transparent 42%)"
 speedSlider.setAttr("title", "Preview speed")
 speedSlider.addEventListener("input", proc(e: Event) =
   # Default is 30
@@ -453,7 +455,7 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
       openBackupLoader)))
 
 
-# Editor preview image overlay 
+# Editor preview image overlay
 proc openEditorImageOverlay =
   state = StateObject(kind: seEditorImageOverlay)
   rerender()
