@@ -87,3 +87,11 @@ proc editorImageOverlay*: VNode = buildHtml tdiv(style =
     span:
       text "Angle:"
       bonkInput(st.angle, parseFloat, updateSpriteSettings, niceFormatFloat)
+    bonkButton "Fit to screen", proc =
+      st.angle = 0
+      st.x = 0
+      st.y = 0
+      let s = min(730 / st.ogW, 500 / st.ogH)
+      st.w = s * st.ogW
+      st.h = s * st.ogH
+      updateSpriteSettings()
