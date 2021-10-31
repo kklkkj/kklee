@@ -1,5 +1,5 @@
 when not defined js:
-  {.fatal: "This module only works on the JavaScipt platform".}
+  {.error: "This module only works on the JavaScipt platform".}
 
 import std/[strutils, sequtils, dom, math]
 
