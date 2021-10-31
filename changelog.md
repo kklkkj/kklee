@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.22
+
+- Added a way to overlay an image over the editor preview
+- Added an indicator on the preview speed slider to show where normal speed is
+
 ## v0.21
 
 - Copying shapes in multi-select will also copy capzones
