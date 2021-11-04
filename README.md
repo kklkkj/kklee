@@ -31,6 +31,7 @@ A browser extension that extends the functionality of the map editor in
     - Ctrl + Shift + Arrow: `0.1`
 - A button in the top bar that makes the game frame fill the entire page
 - Automatic backups of maps to the browser's offline storage
+- Image overlay in the editor preview
 
 </details>
 
