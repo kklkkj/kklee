@@ -21,11 +21,11 @@ proc platformMultiSelectElementBorders * =
   let platformElements = platformsContainer.children[0].children
 
   for i, bodyElementParent in platformElements:
-    let
-      be = bodyElementParent.children[0]
-      firstChild = be.children[0]
-    if firstChild.class == "kkleeMultiSelectPlatformIndexLabel":
-      firstChild.remove()
+    let be = bodyElementParent.children[0]
+
+    if be.children.len >= 2 and
+        be.children[1].class == "kkleeMultiSelectPlatformIndexLabel":
+      be.children[1].remove()
 
     let selectedId = selectedBodies.find(moph.bro[i].getBody)
     if selectedId == -1:
@@ -36,9 +36,9 @@ proc platformMultiSelectElementBorders * =
 
       let indexLabel = document.createElement("span")
       indexLabel.innerText = cstring $selectedId
-      indexLabel.setAttr("style", "color: blue; font-size: 12px")
+      indexLabel.setAttr("style", "color: blue; font-size: 12px; float: left")
       indexLabel.class = "kkleeMultiSelectPlatformIndexLabel"
-      be.insertBefore(indexLabel, be.children[0])
+      be.appendChild(indexLabel)
 
 proc platformMultiSelectDelete: VNode =
   buildHtml bonkButton "Delete platforms", proc =
