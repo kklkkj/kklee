@@ -273,6 +273,7 @@ proc restoreChat(e: Event) =
 
 docElemById("newbonklobby_editorbutton")
   .addEventListener("click", moveChatToEditor)
+mapEditorDiv.addEventListener("mouseover", moveChatToEditor)
 
 docElemById("mapeditor_close")
   .addEventListener("click", restoreChat)
