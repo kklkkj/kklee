@@ -72,15 +72,16 @@ proc platformMultiSelectSelectAll: VNode = buildHtml tdiv:
     selectedBodies.reverse()
     platformMultiSelectElementBorders()
 
-  var searchString {.global.} = ""
-  bonkInput(searchString, s => s, nil, s => s)
-  bonkButton "Select names starting with", proc =
-    selectedBodies = collect(newSeq):
-      for bId in moph.bro:
-        let b = bId.getBody
-        if b.n.`$`.startsWith(searchString):
-          b
-    platformMultiSelectElementBorders()
+  tdiv(style = "margin: 5px 0px".toCss):
+    var searchString {.global.} = ""
+    prop "Start of name", bonkInput(searchString, s => s, nil, s => s)
+    bonkButton "Select by name", proc =
+      selectedBodies = collect(newSeq):
+        for bId in moph.bro:
+          let b = bId.getBody
+          if b.n.`$`.startsWith(searchString):
+            b
+      platformMultiSelectElementBorders()
 
 proc platformMultiSelectEdit: VNode = buildHtml tdiv(
     style = "display: flex; flex-flow: column".toCss):

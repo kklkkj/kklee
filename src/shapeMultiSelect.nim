@@ -1,5 +1,5 @@
 import
-  std/[sugar, strutils, sequtils, algorithm, dom, math, options],
+  std/[sugar, strutils, sequtils, algorithm, dom, math, options, strformat],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
@@ -260,6 +260,12 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     updateLeftBox()
 
 proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
+  tdiv text &"{selectedFixtures.len} shapes selected"
+  if selectedFixtures.anyIt (let fxId = moph.fixtures.find(it);
+      fxId != -1 and fxId notin fixturesBody.fx):
+    tdiv(style = "color: red".toCss):
+      text &"Shapes from multiple platforms are selected"
+
   bonkButton "Select all", proc =
     shapeMultiSelectSwitchPlatform()
     selectedFixtures = collect(newSeq):
@@ -281,16 +287,32 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
     selectedFixtures.reverse()
     shapeMultiSelectElementBorders()
 
-  var searchString {.global.} = ""
-  bonkInput(searchString, s => s, nil, s => s)
-  bonkButton "Select names starting with", proc =
-    shapeMultiSelectSwitchPlatform()
-    selectedFixtures = collect(newSeq):
-      for fxId in fixturesBody.fx:
-        let fx = fxId.getFx
-        if fx.n.`$`.startsWith(searchString):
-          fx
-    shapeMultiSelectElementBorders()
+  tdiv(style = "margin: 5px 0px".toCss):
+    var searchString {.global.} = ""
+    prop "Start of name", bonkInput(searchString, s => s, nil, s => s)
+    bonkButton "Select by name", proc =
+      shapeMultiSelectSwitchPlatform()
+      selectedFixtures = collect(newSeq):
+        for fxId in fixturesBody.fx:
+          let fx = fxId.getFx
+          if fx.n.`$`.startsWith(searchString):
+            fx
+      shapeMultiSelectElementBorders()
+  
+  tdiv(style = "margin: 5px 0px".toCss):
+    var
+      searchColour {.global.}: int = 0
+      searchOtherPlatforms {.global.} = false
+    
+    prop "All platforms?", checkbox(searchOtherPlatforms)
+    prop "Colour", colourInput(searchColour)
+    bonkButton "Select by colour", proc = 
+      selectedFixtures = collect(newSeq): 
+        for fx in (if searchOtherPlatforms: moph.fixtures 
+            else: fixturesBody.fx.mapIt it.getFx):
+          if fx.f == searchColour:
+            fx
+      shapeMultiSelectElementBorders()
 
 proc shapeMultiSelectDelete: VNode =
   buildHtml bonkButton "Delete shapes", proc =

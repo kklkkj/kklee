@@ -196,6 +196,7 @@ rightBoxShapeTableContainer
     else:
       selectedFixtures.delete(selectedFixtures.find fx)
     shapeMultiSelectElementBorders()
+    rerender()
   )
 
 # Total mass of platform value textbox
