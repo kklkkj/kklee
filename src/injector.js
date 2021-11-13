@@ -307,7 +307,6 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     if (fullPage) setTimeout(a, 50);
   });
 
-
   /*
   Map editor rectangle overlay drawing
     if (C3V[22]) {
@@ -410,7 +409,6 @@ function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};`
     // Load the image from file picker to the <Image> element
     img.src = URL.createObjectURL(target.files[0]);
   };
-
 
   window.addEventListener("resize", function () {
     if (fullPage) setTimeout(a, 50);
