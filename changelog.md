@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.23
+- Some minor UI improvements and bug fixes
+- Pasting platforms in multiselect will paste them in the opposite order to
+  to how they were pasted previously
+- Added a way to multi-select shapes by colour
+- Colour pickers in kklee will use Bonk's colour picker
+- Added another copy & paste option to platform multi-select in which joints
+  on pasted platforms will be attached to the original platforms
+
 ## v0.22
 
 - Added a way to overlay an image over the editor preview

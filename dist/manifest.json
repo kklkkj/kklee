@@ -4,7 +4,7 @@
   "description": "A browser extension that extends the functionality of the map editor in Bonk.io.",
   "author": "kklkkj",
   "homepage_url": "https://github.com/kklkkj/kklee/",
-  "version": "0.22",
+  "version": "0.23",
   "permissions": ["webRequest", "webRequestBlocking", "*://bonk.io/*"],
   "background": {
     "scripts": ["./background.js"]
