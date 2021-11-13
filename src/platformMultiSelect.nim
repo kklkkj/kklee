@@ -29,9 +29,10 @@ proc platformMultiSelectElementBorders * =
 
     let selectedId = selectedBodies.find(moph.bro[i].getBody)
     if selectedId == -1:
-      be.style.border = ""
+      be.style.outline = ""
     else:
-      be.style.border = "4px solid blue"
+      be.style.outline = "2px solid blue"
+      be.style.outlineOffset = "-1px"
 
       let indexLabel = document.createElement("span")
       indexLabel.innerText = cstring $selectedId
