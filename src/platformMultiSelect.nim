@@ -296,7 +296,7 @@ proc platformMultiSelectCopy: VNode = buildHtml tdiv(
               if t != -1:
                 b2Id = some t
             (j: j.copyObject(), b2Id: b2Id)
-      copyPlats.add (b: copyB, shapes: copyShapes, joints: copyJoints)
+      copyPlats.insert (b: copyB, shapes: copyShapes, joints: copyJoints), 0
 
   prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
   bonkButton "Paste platforms", proc =
