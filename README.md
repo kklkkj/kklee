@@ -37,7 +37,7 @@ editor.
 
 ## Installing as an extension
 
-Download the latest kklee-`[version]`**.zip** file from [Releases](https://github.com/kklkkj/kklee/releases)
+Download the latest kklee-(version)**_.zip_** file from [Releases](https://github.com/kklkkj/kklee/releases)
 
 <details>
 <summary>In Firefox</summary>
@@ -60,9 +60,9 @@ Download the latest kklee-`[version]`**.zip** file from [Releases](https://githu
 
 ## Installing as a userscript (for Tampermonkey, Violentmonkey, etc)
 
-Userscripts require a userscript manager such as Violentmonkey or Tampermonkey, and [Excigma's code injector userscript](<https://greasyfork.org/en/scripts/433861-code-injector-bonk-io>).
+Userscripts require a userscript manager such as Violentmonkey or Tampermonkey, and [Excigma's code injector userscript](https://greasyfork.org/en/scripts/433861-code-injector-bonk-io).
 
-The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases) as kklee-`[version]`**.user.js**.
+The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases) as kklee-(version)**_.user.js_**.
 
 ## It doesn't work
 
