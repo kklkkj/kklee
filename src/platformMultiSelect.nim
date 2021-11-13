@@ -270,11 +270,66 @@ proc platformMultiSelectCopy: VNode = buildHtml tdiv(
       joints: seq[tuple[j: MapJoint; b2Id: Option[int]]];
     ]]
     pasteAmount {.global.} = 1
-  bonkButton "Copy platforms", proc =
+  prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
+  bonkButton ("Instant copy&paste (joints will be attached to original " &
+    "platforms)"), proc =
+    removeDeletedBodies()
+
+    let sblen = selectedBodies.len
+    for _ in 1..pasteAmount:
+      var sbi = sbLen
+      while sbi > 0:
+        dec sbi
+        let b = selectedBodies[sbi]
+        let bId = moph.bodies.find(b)
+        let newB = b.copyObject()
+        newB.fx = @[]
+        moph.bodies.add newB
+        moph.bro.insert(moph.bodies.high, 0)
+        selectedBodies.add newB
+
+        for fxId in b.fx:
+          let
+            newFx = fxId.getFx.copyObject()
+            newSh = fxId.getFx.fxShape.copyObject()
+          moph.shapes.add newSh
+          newFx.sh = moph.shapes.high
+          moph.fixtures.add newFx
+          newB.fx.add moph.fixtures.high
+
+          var czi = 0
+          let czlen = mapObject.capZones.len
+          while czi < czlen:
+            let cz = mapObject.capZones[czi]
+            if cz.i != fxId:
+              inc czi
+              continue
+            let newCz = cz.copyObject()
+            newCz.i = moph.fixtures.high
+            mapObject.capZones.add newCz
+            break
+
+          var ji = 0
+          var jlen = moph.joints.len
+          while ji < jlen:
+            let j = moph.joints[ji]
+            if j.ba != bId:
+              inc ji
+              continue
+            let newJ = j.copyObject
+            newJ.ba = moph.bodies.high
+            moph.joints.add newJ
+            inc ji
+
+    saveToUndoHistory()
+    updateRenderer(true)
+    updateLeftBox()
+  bonkButton "Copy (joints will be attached to new pasted platforms)", proc =
     removeDeletedBodies()
     copyPlats = @[]
     for b in selectedBodies:
       let
+        bId = moph.bodies.find(b)
         copyB = b.copyObject()
         copyShapes = b.fx.mapIt (
           fx: it.getFx.copyObject(),
@@ -289,7 +344,7 @@ proc platformMultiSelectCopy: VNode = buildHtml tdiv(
         )
         copyJoints = collect(newSeq):
           for j in moph.joints:
-            if j.ba != moph.bodies.find(b):
+            if j.ba != bId:
               continue
             var b2Id = none int
             if j.bb != -1:
@@ -297,17 +352,17 @@ proc platformMultiSelectCopy: VNode = buildHtml tdiv(
               if t != -1:
                 b2Id = some t
             (j: j.copyObject(), b2Id: b2Id)
-      copyPlats.insert (b: copyB, shapes: copyShapes, joints: copyJoints), 0
+      copyPlats.add (b: copyB, shapes: copyShapes, joints: copyJoints)
 
-  prop "Paste amount", bonkInput(pasteAmount, parseInt, nil, i => $i)
   bonkButton "Paste platforms", proc =
     let ogBodiesLen = moph.bodies.len
+    var i = 0
     for _ in 1..pasteAmount:
       for cp in copyPlats:
         let newB = cp.b.copyObject()
         newB.fx = @[]
         moph.bodies.add newB
-        moph.bro.insert(moph.bodies.high, 0)
+        moph.bro.insert(moph.bodies.high, i)
         selectedBodies.add newB
         for cs in cp.shapes:
           let
@@ -327,6 +382,7 @@ proc platformMultiSelectCopy: VNode = buildHtml tdiv(
           newJ.bb = if cj.b2Id.isNone: -1
             else: cj.b2Id.get + ogBodiesLen
           moph.joints.add newJ
+        inc i
 
     saveToUndoHistory()
     updateRenderer(true)
