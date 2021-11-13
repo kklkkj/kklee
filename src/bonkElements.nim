@@ -34,14 +34,16 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
           e.target.style.color = "rgb(204, 68, 68)"
 
 proc colourInput*(variable: var int; afterInput: proc(): void = nil): VNode =
+  let hexColour = "#" & variable.toHex(6)
   buildHtml:
-    input(`type` = "color",
-        style = "width: 30px; height: 20px; border: none".toCss):
-      proc onInput(e: Event; n: VNode) =
-        let v = $n.value
-        variable = v[1..^1].parseHexInt
-        if not afterInput.isNil:
-          afterInput()
+    tdiv(style =
+      ("width: 18px; height: 13px; display: inline-block; cursor: pointer; " &
+      "border: 1px solid #ddd; outline: 1px solid black; margin: auto 5px;" &
+       "background-color: " & hexColour).toCss
+    ):
+      proc onClick =
+        bonkShowColorPicker(variable, moph.fixtures,
+          proc (c: int) = variable = c, nil)
 
 func prsFLimited*(s: string): float =
   result = s.parseFloat

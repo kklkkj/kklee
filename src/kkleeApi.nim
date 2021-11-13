@@ -1,7 +1,7 @@
 when not defined js:
   {.error: "This module only works on the JavaScipt platform".}
 
-import std/[strutils, sequtils, dom, math]
+import std/[strutils, sequtils, dom, math, sugar]
 
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =
@@ -224,3 +224,7 @@ func getBackupLabel*(b: MapBackupObject): cstring
 proc loadBackup*(b: MapBackupObject) {.importc: "window.kklee.loadBackup".}
 
 proc dispatchInputEvent*(n: Node) {.importc: "window.kklee.dispatchInputEvent".}
+
+proc bonkShowColorPicker*(firstColour: int; fixtureSeq: seq[MapFixture];
+  onInput: int -> void; onSave: int -> void
+) {.importc: "window.kklee.bonkShowColorPicker".} # onSave can be nil
