@@ -44,9 +44,8 @@ proc shapeMultiSelectElementBorders* =
 
 proc shapeMultiSelectSwitchPlatform* =
   if getCurrentBody() == -1: return
-  if getCurrentBody().getBody != fixturesBody:
-    selectedFixtures = @[]
-    shapeMultiSelectElementBorders()
+  removeDeletedFixtures()
+  shapeMultiSelectElementBorders()
   fixturesBody = getCurrentBody().getBody
 
 
@@ -260,27 +259,48 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
 
 proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
   tdiv text &"{selectedFixtures.len} shapes selected"
-  if selectedFixtures.anyIt (let fxId = moph.fixtures.find(it);
+  block:
+    let warningColour = if selectedFixtures.anyIt (let fxId = moph.fixtures.find(it);
       fxId != -1 and fxId notin fixturesBody.fx):
-    tdiv(style = "color: var(--kkleeErrorColour)".toCss):
+        "var(--kkleeErrorColour)" else: "transparent"
+    tdiv(style = "color: {warningColour}; font-weight: bold".fmt.toCss):
       text &"Shapes from multiple platforms are selected"
 
-  bonkButton "Select all", proc =
+  bonkButton "Select all from current platform", proc =
     shapeMultiSelectSwitchPlatform()
-    selectedFixtures = collect(newSeq):
-      for fxId in fixturesBody.fx: fxId.getFx
+    for fx in fixturesBody.fx.mapIt(it.getFx):
+      if fx notin selectedFixtures:
+        selectedFixtures.add fx
     shapeMultiSelectElementBorders()
-  bonkButton "Deselect all", proc =
+  bonkButton "Select all from all platforms", proc =
     shapeMultiSelectSwitchPlatform()
-    selectedFixtures = @[]
+    selectedFixtures = moph.fixtures
     shapeMultiSelectElementBorders()
-  bonkButton "Invert selection", proc =
+  bonkButton "Deselect all from current platform", proc =
     shapeMultiSelectSwitchPlatform()
-    selectedFixtures = collect(newSeq):
-      for fxId in fixturesBody.fx:
-        let fx = fxId.getFx
-        if fx notin selectedFixtures:
-          fx
+    for fx in fixturesBody.fx.mapIt(it.getFx):
+      let i = selectedFixtures.find fx
+      if i != -1:
+        selectedFixtures.delete i
+    shapeMultiSelectElementBorders()
+  bonkButton "Deselect all from other platforms", proc =
+    shapeMultiSelectSwitchPlatform()
+    var i = 0
+    while i < selectedFixtures.len:
+      let fxId = moph.fixtures.find(selectedFixtures[i])
+      if fxId notin fixturesBody.fx:
+        selectedFixtures.delete i
+      else:
+        inc i
+    shapeMultiSelectElementBorders()
+  bonkButton "Invert selection on current platform", proc =
+    shapeMultiSelectSwitchPlatform()
+    for fx in fixturesBody.fx.mapIt(it.getFx):
+      let i = selectedFixtures.find fx
+      if i != -1:
+        selectedFixtures.delete i
+      else:
+        selectedFixtures.add fx
     shapeMultiSelectElementBorders()
   bonkButton "Reverse selection order", proc =
     selectedFixtures.reverse()
