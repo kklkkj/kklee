@@ -178,6 +178,46 @@ Additional function: rand() - random number between 0 and 1
         scale != 1.0
       prop "Around point", pointInput, false
 
+  template editCapZone: untyped =
+    var
+      canChange {.global.} = false
+      capZoneType {.global.}: Option[MapCapZoneType]
+      capZoneTime {.global.}: float = 10.0
+      capZoneTimeCanChange {.global.} = false
+    once: appliers.add proc(i: int; fx: MapFixture) =
+      if not canChange:
+        return
+      let fxId = moph.fixtures.find fx
+      var cz: MapCapZone
+      for ocz in mapObject.capZones:
+        if ocz.i == fxId:
+          cz = ocz
+          break
+
+      if cz.isNil and capZoneType.isNone or not capZoneTimeCanChange:
+        return
+      if cz.isNil:
+        mapObject.capZones.add MapCapZone(
+          n: "Cap Zone", ty: capZoneType.get, l: capZoneTime, i: fxId)
+      else:
+        if capZoneType.isSome:
+          cz.ty = capZoneType.get
+        if capZoneTimeCanChange:
+          cz.l = capZoneTime
+
+    buildHtml tdiv:
+      prop "Capzone", checkbox(canChange), canChange
+      if canChange:
+        let typeDropdown = buildHtml dropDownPropSelect(capZoneType, @[
+          ("Normal", cztNormal), ("Red", cztRed), ("Blue", cztBlue),
+          ("Green", cztGreen), ("Yellow", cztYellow)
+        ])
+        prop "Cz. Type", typeDropdown, capZoneType.isSome
+        let timeInput = buildHtml tdiv:
+          checkbox(capZoneTimeCanChange)
+          bonkInput(capZoneTime, prsFLimited, nil, niceFormatFloat)
+        prop "Cz. time", timeInput, capZoneTimeCanChange 
+
   nameChanger()
   floatProp("x", fx.fxShape.c.x)
   floatProp("y", fx.fxShape.c.y)
@@ -202,6 +242,7 @@ Additional function: rand() - random number between 0 and 1
 
   colourChanger()
   rotateAndScale()
+  editCapZone()
 
   bonkButton "Apply", proc =
     removeDeletedFixtures()
@@ -210,6 +251,7 @@ Additional function: rand() - random number between 0 and 1
     saveToUndoHistory()
     updateRenderer(true)
     updateRightBoxBody(-1)
+    updateLeftBox()
 
 
 proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
@@ -260,9 +302,10 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
 proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
   tdiv text &"{selectedFixtures.len} shapes selected"
   block:
-    let warningColour = if selectedFixtures.anyIt (let fxId = moph.fixtures.find(it);
-      fxId != -1 and fxId notin fixturesBody.fx):
-        "var(--kkleeErrorColour)" else: "transparent"
+    let warningColour =
+      if selectedFixtures.anyIt (let fxId = moph.fixtures.find(it);
+        fxId != -1 and fxId notin fixturesBody.fx):
+          "var(--kkleeErrorColour)" else: "transparent"
     tdiv(style = "color: {warningColour}; font-weight: bold".fmt.toCss):
       text &"Shapes from multiple platforms are selected"
 
