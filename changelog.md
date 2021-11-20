@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.24
+- Some minor UI improvements
+- Added more buttons for multiselecting shapes, such as selecting all shapes
+  from all platforms
+- Added capture zone settings to shape multiselect
+- Changed the default capture zone type to Instant Red Win when pressing the
+  "Capzone" button in shape properties
+
 ## v0.23
 - Some minor UI improvements and bug fixes
 - Pasting platforms in multiselect will paste them in the opposite order to
