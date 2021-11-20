@@ -64,7 +64,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
             break
         if shapeCzId == -1:
           mapObject.capZones.add MapCapZone(
-            n: "Cap Zone", ty: cztNormal, l: 10, i: fxId)
+            n: "Cap Zone", ty: cztRed, l: 10, i: fxId)
           shapeCzId = mapObject.capZones.high
           updateLeftBox()
           updateRenderer(true)
