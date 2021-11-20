@@ -21,7 +21,7 @@ proc platformMultiSelectElementBorders * =
   let platformElements = platformsContainer.children[0].children
 
   for i, bodyElementParent in platformElements:
-    let be = bodyElementParent.children[0]
+    let be = bodyElementParent.children[0].Element
 
     if be.children.len >= 2 and
         be.children[1].class == "kkleeMultiSelectPlatformIndexLabel":
@@ -29,14 +29,12 @@ proc platformMultiSelectElementBorders * =
 
     let selectedId = selectedBodies.find(moph.bro[i].getBody)
     if selectedId == -1:
-      be.style.outline = ""
+      be.classList.remove("kkleeMultiSelectPlatform")
     else:
-      be.style.outline = "2px solid blue"
-      be.style.outlineOffset = "-1px"
+      be.classList.add("kkleeMultiSelectPlatform")
 
       let indexLabel = document.createElement("span")
       indexLabel.innerText = cstring $selectedId
-      indexLabel.setAttr("style", "color: blue; font-size: 12px; float: left")
       indexLabel.class = "kkleeMultiSelectPlatformIndexLabel"
       be.appendChild(indexLabel)
 

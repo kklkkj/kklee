@@ -353,7 +353,7 @@ proc shapeGenerator*(body: MapBody): VNode =
                   if not afterInput.isNil:
                     afterInput()
                 except CatchableError:
-                  e.target.style.color = "rgb(204, 68, 68)"
+                  e.target.style.color = "var(--kkleeErrorColour)"
         template eqInp(va): untyped =
           bonkInputWide(va, proc(s: string): string =
             # Check for error

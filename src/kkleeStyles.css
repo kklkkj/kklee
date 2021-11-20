@@ -1,0 +1,65 @@
+:root {
+  --kkleeMultiSelectColour: blue;
+  --kkleeErrorColour: rgb(204, 68, 68);
+  --kkleeMultiSelectPropHighlightColour: blueviolet;
+
+  --kkleeCheckboxUnchecked: #586e77;
+  --kkleeCheckboxChecked: #59b0d6;
+  --kkleeCheckboxTfsTrue: #59d65e;
+  --kkleeCheckboxTfsFalse: #d65959;
+  --kkleeCheckboxTfsSame: #d6bd59;
+
+  --kkleePreviewSliderDefaultMarkerColour: #431;
+  --kkleePreviewSliderMarkerBackground: linear-gradient(
+    90deg,
+    transparent 36%,
+    var(--kkleePreviewSliderDefaultMarkerColour),
+    transparent 42%
+  );
+}
+.kkleeCheckbox {
+  width: 12px;
+  height: 12px;
+  text-align: center;
+  border: 2px solid #111;
+  margin: auto 3px;
+  color: black;
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.kkleeCheckbox:hover {
+  filter: brightness(1.4);
+}
+
+.kkleeMultiSelectPlatformIndexLabel {
+  color: var(--kkleeMultiSelectColour);
+  font-size: 12px;
+  float: left;
+}
+.kkleeMultiSelectShapeIndexLabel {
+  color: var(--kkleeMultiSelectColour);
+  font-size: 12px;
+}
+.kkleeMultiSelectShapeTextBox {
+  border: 3px solid var(--kkleeMultiSelectColour) !important;
+}
+.kkleeMultiSelectPlatform {
+  outline: 2px solid var(--kkleeMultiSelectColour) !important;
+  outline-offset: -1px;
+}
+
+.kkleeColourInput {
+  width: 18px;
+  height: 13px;
+  display: inline-block;
+  cursor: pointer;
+  border: 1px solid white;
+  outline: 2px solid black;
+  margin: auto 3px;
+}
+
+.kkleeMultiSelectPropHighlight {
+  color: var(--kkleeMultiSelectPropHighlightColour);
+  font-weight: bold;
+}

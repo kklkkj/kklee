@@ -6,9 +6,9 @@ import
 
 proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
   let disabledClass = if disabled: "brownButtonDisabled" else: ""
-  buildHtml(tdiv(
-    class = cstring &"brownButton brownButton_classic buttonShadow {disabledClass}")
-  ):
+  buildHtml(tdiv(class =
+    cstring &"brownButton brownButton_classic buttonShadow {disabledClass}"
+  )):
     text label
     if not disabled:
       proc onClick = onClick()
@@ -31,15 +31,13 @@ proc bonkInput*[T](variable: var T; parser: string -> T;
           if not afterInput.isNil:
             afterInput()
         except CatchableError:
-          e.target.style.color = "rgb(204, 68, 68)"
+          e.target.style.color = "var(--kkleeErrorColour)"
 
 proc colourInput*(variable: var int; afterInput: proc(): void = nil): VNode =
   let hexColour = "#" & variable.toHex(6)
   buildHtml:
-    tdiv(style =
-      ("width: 18px; height: 13px; display: inline-block; cursor: pointer; " &
-      "border: 1px solid #ddd; outline: 1px solid black; margin: auto 5px;" &
-       "background-color: " & hexColour).toCss
+    tdiv(class = "kkleeColourInput",
+      style = "background-color: {hexColour}".fmt.toCss
     ):
       proc onClick =
         bonkShowColorPicker(variable, moph.fixtures,
@@ -58,31 +56,23 @@ type boolPropValue* = enum
 
 proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
   let things =
-    if variable: ("#59b0d6", "✔")
-    else: ("#586e77", "")
-  buildHtml tdiv(style = ("width: 12px; height: 12px; text-align: center; " &
-    "border: 2px solid #111111; background-color: {things[0]}; margin: 3px;")
-    .fmt.toCss
+    if variable: ("Checked", "✔")
+    else: ("Unchecked", "")
+  buildHtml tdiv(class = "kkleeCheckbox",
+    style = "background-color: var(--kkleeCheckbox{things[0]})".fmt.toCss
   ):
-    span(style = ("color: black; font-size: 12px; text-align: center; " &
-      "top: -2px; position: relative").toCss
-    ):
-      text things[1]
+    text things[1]
     proc onClick = variable = not variable
 
 proc tfsCheckbox*(inp: var boolPropValue): VNode =
   let things = case inp
-    of tfsTrue: ("#59d65e", "✔")
-    of tfsFalse: ("#d65959", "✖")
-    of tfsSame: ("#d6bd59", "━")
-  buildHtml tdiv(style = ("width: 12px; height: 12px; text-align: center; " &
-    "border: 2px solid #111111; background-color: {things[0]}; margin: 3px;")
-    .fmt.toCss
+    of tfsTrue: ("True", "✔")
+    of tfsFalse: ("False", "✖")
+    of tfsSame: ("Same", "━")
+  buildHtml tdiv(class = "kkleeCheckbox",
+    style = "background-color: var(--kkleeCheckboxTfs{things[0]})".fmt.toCss
   ):
-    span(style = ("color: black; font-size: 12px; " &
-      "top: -2px; position: relative").toCss
-    ):
-      text things[1]
+    text things[1]
     proc onClick =
       inp = case inp
         of tfsSame: tfsTrue
@@ -93,9 +83,9 @@ func prop*(name: string; field: VNode; highlight = false): VNode =
   buildHtml: tdiv(style =
     "display:flex; flex-flow: row wrap; justify-content: space-between"
     .toCss):
-    span(style = (
-      if highlight: "color: blueviolet; font-weight: bold" else: ""
-    ).toCss):
+    span(class = (
+      if highlight: cstring "kkleeMultiSelectPropHighlight" else: ""
+    )):
       text name
     field
 

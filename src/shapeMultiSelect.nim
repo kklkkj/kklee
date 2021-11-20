@@ -33,13 +33,12 @@ proc shapeMultiSelectElementBorders* =
 
     let selectedId = selectedFixtures.find(body.fx[i].getFx)
     if selectedId == -1:
-      se.style.border = ""
+      se.classList.remove("kkleeMultiSelectShapeTextBox")
     else:
-      se.style.border = "4px solid blue"
+      se.classList.add("kkleeMultiSelectShapeTextBox")
 
       let indexLabel = document.createElement("span")
       indexLabel.innerText = cstring $selectedId
-      indexLabel.setAttr("style", "color: blue; font-size: 12px")
       indexLabel.class = "kkleeMultiSelectShapeIndexLabel"
       se.parentNode.insertBefore(indexLabel, se)
 
@@ -263,7 +262,7 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
   tdiv text &"{selectedFixtures.len} shapes selected"
   if selectedFixtures.anyIt (let fxId = moph.fixtures.find(it);
       fxId != -1 and fxId notin fixturesBody.fx):
-    tdiv(style = "color: red".toCss):
+    tdiv(style = "color: var(--kkleeErrorColour)".toCss):
       text &"Shapes from multiple platforms are selected"
 
   bonkButton "Select all", proc =
@@ -298,18 +297,20 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
           if fx.n.`$`.startsWith(searchString):
             fx
       shapeMultiSelectElementBorders()
-  
+
   tdiv(style = "margin: 5px 0px".toCss):
     var
       searchColour {.global.}: int = 0
       searchOtherPlatforms {.global.} = false
-    
+
     prop "All platforms?", checkbox(searchOtherPlatforms)
     prop "Colour", colourInput(searchColour)
-    bonkButton "Select by colour", proc = 
-      selectedFixtures = collect(newSeq): 
-        for fx in (if searchOtherPlatforms: moph.fixtures 
-            else: fixturesBody.fx.mapIt it.getFx):
+    bonkButton "Select by colour", proc =
+      selectedFixtures = collect(newSeq):
+        for fx in (
+          if searchOtherPlatforms: moph.fixtures
+          else: fixturesBody.fx.mapIt it.getFx
+        ):
           if fx.f == searchColour:
             fx
       shapeMultiSelectElementBorders()

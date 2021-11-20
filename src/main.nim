@@ -345,8 +345,7 @@ speedSlider.step = "1"
 speedSlider.value = "3"
 speedSlider.class = "compactSlider compactSlider_classic"
 speedSlider.style.width = "100px"
-speedSlider.style.background =
-  "linear-gradient(90deg, transparent 36%, #431, transparent 42%)"
+speedSlider.style.background = "var(--kkleePreviewSliderMarkerBackground)"
 speedSlider.setAttr("title", "Preview speed")
 speedSlider.addEventListener("input", proc(e: Event) =
   # Default is 30
@@ -490,3 +489,10 @@ let existingColoursContainer =
   docElemById("mapeditor_colorpicker_existingcontainer")
 existingColoursContainer.style.maxHeight = "150px"
 existingColoursContainer.style.overflowY = "scroll"
+
+
+# CSS style
+
+let styleSheet = document.createElement("style")
+styleSheet.innerText = static: cstring staticRead("./kkleeStyles.css")
+document.head.appendChild(styleSheet)
