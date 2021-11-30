@@ -273,41 +273,6 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     "window.kklee.editorPreviewTimeMs"
   );
 
-  const mgfs = parent.document.getElementById("maingameframe").style;
-  const bcs = document.getElementById("bonkiocontainer").style;
-  const me = document.getElementById("mapeditor").style;
-  const xpb = document.getElementById("xpbarcontainer").style;
-  document.getElementById("prettymenu").style.boxShadow = "none";
-
-  let fullPage = false;
-  let a = () => {
-    mgfs.position = "fixed";
-    mgfs.zIndex = "10000";
-    mgfs.marginTop = "";
-    const s = Math.min(innerWidth / 730, innerHeight / 500);
-    bcs.width = `${s * 730}px`;
-    bcs.height = `${s * 500}px`;
-    bcs.border = "none";
-    xpb.visibility = "hidden";
-    me.maxWidth = `${s * 730 * 0.9}px`;
-    me.maxHeight = `${s * 500 * 0.9}px`;
-    parent.document.body.style.overflowY = "hidden";
-  };
-  kklee.toggleFullPage = () => {
-    fullPage = !fullPage;
-    if (fullPage) a();
-    else {
-      mgfs.position = "";
-      mgfs.zIndex = "";
-      bcs.border = "";
-      xpb.visibility = "inherit";
-      parent.document.body.style.overflowY = "";
-    }
-  };
-  window.addEventListener("resize", function () {
-    if (fullPage) setTimeout(a, 50);
-  });
-
   /*
   Map editor rectangle overlay drawing
     if (C3V[22]) {
@@ -410,10 +375,6 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     // Load the image from file picker to the <Image> element
     img.src = URL.createObjectURL(target.files[0]);
   };
-
-  window.addEventListener("resize", function () {
-    if (fullPage) setTimeout(a, 50);
-  });
 
   kklee.dataLimitInfo = () => {
     try {

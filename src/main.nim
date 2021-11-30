@@ -467,13 +467,6 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
 
-# Fullscreen button
-let fullscreenButton = document.createElement("div")
-fullscreenButton.onclick = proc(e: Event) = toggleFullPage()
-fullscreenButton.class = "pretty_top_button niceborderleft"
-fullscreenButton.id = "pretty_top_kklee_fullscreen"
-docElemById("pretty_top_bar").appendChild(fullscreenButton)
-
 # Fix chat box autofill
 docElemById("newbonklobby_chat_input").setAttr("autocomplete", "off")
 docElemById("ingamechatinputtext").setAttr("autocomplete", "off")

@@ -188,8 +188,6 @@ proc setEditorExplanation*(text: string) =
 
 proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
 
-proc toggleFullPage* {.importc: "window.kklee.toggleFullPage".}
-
 type
   EasingType* = enum
     easeNone = "None", easeInSine = "Sine in", easeOutSine = "Sine out",
