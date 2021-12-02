@@ -322,7 +322,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
  window.kklee.editorPreviewFocused = () => document.getElementById("mapeditor").matches(":focus")
  src = src.replace(
    new RegExp(
-     "(.{3}\\[.{1,3}\\]=new .\\(document)"
+     "(.{3}\\[.{1,3}\\]=new .{1,3}\\(document)"
     ),
     "window.kklee.stageRenderer=$1"
  );
