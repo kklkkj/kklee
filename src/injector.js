@@ -273,6 +273,24 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     "window.kklee.editorPreviewTimeMs"
   );
 
+  /* 
+  Stage renderer that contains methods that is used for the
+  Map editor preview, tutorial, replays etc..
+  - panStage(-xDelta, yDelta) // (Positive xDelta will move left)
+  - scaleStage(scale) // Scales the stage by scale
+  - resetStage() // Resets the stage zoom
+  - getCanvas() // Returns the HTMLCanvas element
+  - ...and more
+  */
+  // TODO: Convert this to nim
+  // mapeditorcontainer.querySelector("#mapeditor:focus") also works
+  window.kklee.editorPreviewFocused = () =>
+    document.getElementById("mapeditor").matches(":focus");
+  src = src.replace(
+    new RegExp("(.{3}\\[.{1,3}\\]=new .{1,3}\\(document)"),
+    "window.kklee.stageRenderer=$1"
+  );
+
   /*
   Map editor rectangle overlay drawing
     if (C3V[22]) {

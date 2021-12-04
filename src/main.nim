@@ -419,6 +419,25 @@ mapEditorDiv.addEventListener("keydown", proc(e: Event) =
     elif e.key == "ArrowDown":
       e.target.value = cstring $(val - amount)
     dispatchInputEvent(e.target)
+  block:
+    if not editorPreviewFocused():
+      break
+    let amount =
+      if e.ctrlKey and e.shiftKey: 10
+      elif e.shiftKey: 25
+      elif e.ctrlKey: 150
+      else: 50
+    if e.key == "ArrowLeft":
+      panStage(amount, 0)
+    elif e.key == "ArrowRight":
+      panStage(-amount, 0)
+    elif e.key == "ArrowUp":
+      panStage(0, amount)
+    elif e.key == "ArrowDown":
+      panStage(0, -amount)
+    else:
+      break
+    updateRenderer(true)
 )
 
 # Return to map editor after clicking play
