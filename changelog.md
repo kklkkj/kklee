@@ -1,6 +1,13 @@
 # Changelog
 
+## v0.25
+
+- Added arrow key shortcuts to pan the camera in the editor preview
+- Removed the fullscreen button, use
+  <https://greasyfork.org/en/scripts/436028-fullscreen-bonk-io> instead
+
 ## v0.24
+
 - Some minor UI improvements
 - Added more buttons for multiselecting shapes, such as selecting all shapes
   from all platforms
@@ -9,6 +16,7 @@
   "Capzone" button in shape properties
 
 ## v0.23
+
 - Some minor UI improvements and bug fixes
 - Pasting platforms in multiselect will paste them in the opposite order to
   to how they were pasted previously
