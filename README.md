@@ -18,6 +18,8 @@ editor.
 - Change the speed of map testing in the editor
 - The chat is visible in the map editor
 - Ability to transfer map ownership
+- Automatic backups of maps to the browser's offline storage
+- Image overlay in the editor preview
 - Keyboard shortcuts:
   - Save: `Ctrl + S`
   - Preview: `Space`
@@ -29,9 +31,12 @@ editor.
     - Shift + Arrow: `1`
     - Ctrl + Arrow: `100`
     - Ctrl + Shift + Arrow: `0.1`
-- A button in the top bar that makes the game frame fill the entire page
-- Automatic backups of maps to the browser's offline storage
-- Image overlay in the editor preview
+  - Up/down/left/right arrow to pan the editor preview when it is focused.
+    Shortcut modifiers for changing pan amount:
+    - Just Arrow: `50`
+    - Shift + Arrow: `25`
+    - Ctrl + Arrow: `150`
+    - Ctrl + Shift + Arrow: `10`
 
 </details>
 
