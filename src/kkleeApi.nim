@@ -28,7 +28,6 @@ importCurrentThing(CapZone)
 
 proc setColourPickerColour*(colour: int) {.importc: "window.kklee.$1".}
 proc dataLimitInfo*: cstring {.importc: "kklee.dataLimitInfo".}
-proc editorPreviewFocused*(): bool {.importc: "kklee.editorPreviewFocused".}
 proc panStage*(deltaX, deltaY: int) {.importc: "kklee.stageRenderer.panStage".}
 proc scaleStage*(scale: float) {.importc: "kklee.stageRenderer.scaleStage".}
 

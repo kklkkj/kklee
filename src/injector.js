@@ -282,10 +282,6 @@ window.kklee.bonkShowColorPicker=Kscpa;`
   - getCanvas() // Returns the HTMLCanvas element
   - ...and more
   */
-  // TODO: Convert this to nim
-  // mapeditorcontainer.querySelector("#mapeditor:focus") also works
-  window.kklee.editorPreviewFocused = () =>
-    document.getElementById("mapeditor").matches(":focus");
   src = src.replace(
     new RegExp("(.{3}\\[.{1,3}\\]=new .{1,3}\\(document)"),
     "window.kklee.stageRenderer=$1"

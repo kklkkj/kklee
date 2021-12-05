@@ -387,6 +387,16 @@ docElemById("mapeditor_rightbox_platformparams").appendChild(tipsList)
 
 # Keyboard shortcuts
 
+var mouseIsOverPreview = false
+let previewContainer = docElemById("mapeditor_midbox_previewcontainer")
+
+previewContainer.addEventListener("mouseenter", proc(ev: Event) =
+  mouseIsOverPreview = true
+)
+previewContainer.addEventListener("mouseleave", proc(ev: Event) =
+  mouseIsOverPreview = false
+)
+
 mapEditorDiv.setAttr("tabindex", "0")
 mapEditorDiv.addEventListener("keydown", proc(e: Event) =
   let e = e.KeyboardEvent
@@ -420,7 +430,7 @@ mapEditorDiv.addEventListener("keydown", proc(e: Event) =
       e.target.value = cstring $(val - amount)
     dispatchInputEvent(e.target)
   block:
-    if not editorPreviewFocused():
+    if not mouseIsOverPreview:
       break
     let amount =
       if e.ctrlKey and e.shiftKey: 10
@@ -437,6 +447,7 @@ mapEditorDiv.addEventListener("keydown", proc(e: Event) =
       panStage(0, -amount)
     else:
       break
+    e.preventDefault()
     updateRenderer(true)
 )
 
