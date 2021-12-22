@@ -5,6 +5,12 @@ function injector(bonkCode) {
 
   const kklee = {};
   window.kklee = kklee;
+  kklee.polyDecomp = require("poly-decomp");
+  kklee.splitConcaveIntoConvex = (v) => {
+    kklee.polyDecomp.makeCCW(v);
+    // Normal decomp is VERY slow with a high amount of vertices
+    return kklee.polyDecomp.quickDecomp(v);
+  };
   let src = bonkCode;
 
   const mapObjectName = src

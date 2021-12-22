@@ -3,6 +3,25 @@ import
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   kkleeApi, bonkElements
 
+proc splitIntoConvex(b: MapBody; veFx: MapFixture; veSh: MapShape) =
+  let newPolygons = splitConcaveIntoConvex(veSh.poV)
+  veFx.np = false
+  for i, v in newPolygons:
+    if i == 0:
+      veSh.poV = v
+      continue
+    let
+      newSh = copyObject(veSh)
+      newFx = copyObject(veFx)
+      insertIndex = b.fx.find(moph.fixtures.find(veFx))
+    newSh.poV = v
+    moph.shapes.add newSh
+    newFx.sh = moph.shapes.high
+    moph.fixtures.add newFx
+    b.fx.insert moph.fixtures.high, insertIndex
+
+  saveToUndoHistory()
+
 proc mergeShapes(b: MapBody; veFx: MapFixture; veSh: MapShape) =
   # This is buggy because the output vertices might be ordered in a way
   # that causes it to be not rendered correctly...
@@ -269,6 +288,9 @@ proc vertexEditor*(veB: MapBody; veFx: MapFixture): VNode =
     )
     bonkButton("(BUGGY!) Merge with no-physics shapes of same colour", () =>
       mergeShapes(veB, veFx, veSh))
+
+    bonkButton("Split into convex polygons", () =>
+      splitIntoConvex(veB, veFx, veSh))
 
     tdiv(style = "padding: 5px 0px".toCss):
       var

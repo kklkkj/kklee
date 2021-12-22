@@ -1,6 +1,7 @@
 {
   "name": "kklee",
   "dependencies": {
+    "poly-decomp": "^0.3.0",
     "webextension-polyfill": "^0.8.0"
   },
   "devDependencies": {

@@ -228,3 +228,6 @@ proc dispatchInputEvent*(n: Node) {.importc: "window.kklee.dispatchInputEvent".}
 proc bonkShowColorPicker*(firstColour: int; fixtureSeq: seq[MapFixture];
   onInput: int -> void; onSave: int -> void
 ) {.importc: "window.kklee.bonkShowColorPicker".} # onSave can be nil
+
+proc splitConcaveIntoConvex*(v: seq[MapPosition]): seq[seq[MapPosition]]
+  {.importc: "window.kklee.splitConcaveIntoConvex".}
