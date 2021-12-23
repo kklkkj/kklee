@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.26
+
+- Prevented arrow keys from scrolling page while panning editor preview
+- Added a button that splits a concave polygon into convex polygons
+
 ## v0.25
 
 - Added arrow key shortcuts to pan the camera in the editor preview

@@ -9,7 +9,8 @@ editor.
 <summary>Features</summary>
 
 - Multi-select for platforms and shapes
-- Vertex editor with ability to round corners and (buggy) ability to merge
+- Vertex editor with ability to round corners, split concave polygons
+  and (buggy) ability to merge
   multiple polygons into one
 - Easily generate ellipses, spirals, sine waves, gradients and custom equations
 - Ability to use your browser's colour picker for changing colours
