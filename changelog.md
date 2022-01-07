@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.27
+- Fixed colour picker and image overlay after being broken by bonk.io update
+- Minor improvements
+- Name property in multiselect will now evaluate arithmetic
+
 ## v0.26
 
 - Prevented arrow keys from scrolling page while panning editor preview
