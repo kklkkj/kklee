@@ -13,6 +13,19 @@ function injector(bonkCode) {
   };
   let src = bonkCode;
 
+  let prevSrc = src;
+  function checkSrcChange() {
+    if (prevSrc == src) throw new Error("src didn't change");
+    prevSrc = src;
+  }
+  function replace() {
+    src = src.replace(...arguments);
+    checkSrcChange();
+  }
+  function assert(condition) {
+    if (!condition) throw new Error("assertion failed");
+  }
+
   const mapObjectName = src
     .match(/rxid:[a-zA-Z0-9]{3}\[\d+\]/)[0]
     .split(":")[1];
@@ -21,7 +34,7 @@ function injector(bonkCode) {
   const varArrName = mapObjectName.split("[")[0];
 
   // When a new map object is created, also assign it to a global variable
-  src = src.replace(
+  replace(
     new RegExp(`(${monEsc}=[^;]+;)`, "g"),
     `$1window.kklee.mapObject=${mapObjectName};\
 if(window.kklee.afterNewMapObject)window.kklee.afterNewMapObject();`
@@ -31,7 +44,7 @@ if(window.kklee.afterNewMapObject)window.kklee.afterNewMapObject();`
     new RegExp(`${monEsc}=(.)\\[.{1,25}\\]\\(\\);`)
   )[1];
 
-  src = src.replace(
+  replace(
     new RegExp(`function ${mapEncoderName}\\(\\)\\{\\}`, "g"),
     `function ${mapEncoderName}(){};\
 window.kklee.mapEncoder=${mapEncoderName};`
@@ -71,8 +84,7 @@ window.kklee.mapEncoder=${mapEncoderName};`
   const currentlySelectedNames = resetFunctionNames
     .slice(0, 3)
     .map((s) => s.split("=")[0]);
-  if (resetFunctionNames.length !== 9)
-    throw "resetFunctionNames length is not 9";
+  assert(resetFunctionNames.length == 9);
 
   let ufInj = "";
 
@@ -102,7 +114,7 @@ window.kklee.update${nn}=${on};`;
 window.kklee.setCurrent${nn}=function(v){return ${on}=v;};`;
   }
 
-  src = src.replace(theResetFunction, `${theResetFunction};{${ufInj}};`);
+  replace(theResetFunction, `${theResetFunction};{${ufInj}};`);
 
   // Only part of the function body
   const saveHistoryFunction = src.match(
@@ -118,7 +130,7 @@ ${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
     new RegExp("(function ...\\(\\)\\{)"),
     "$1window.kklee.afterSaveHistory();"
   );
-  src = src.replace(
+  replace(
     saveHistoryFunction,
     `;window.kklee.setMapObject=\
 function(m){${mapObjectName}=m;window.kklee.mapObject=m;};\
@@ -227,7 +239,7 @@ ${newSaveHistoryFunction}`
     Prevent removal of event listener for activating chat with enter key when
     lobby is hidden
   */
-  src = src.replace(
+  replace(
     new RegExp(
       "(?<=this\\[.{10,20}\\]=function\\(\\)\\{.{20,40}\
 this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
@@ -254,11 +266,11 @@ this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
         j8D[1]["style"]["display"] = "block";
     }
   */
-  src = src.replace(
+  replace(
     new RegExp(
       "((?<=this\\[.{10,25}\\]=function\\(.{3,4},.{3,4}\
 ,.{3,4},.{3,4}\\)\\{).{50,250}(.{3,4}\\[.{0,25}\\]=.{3,4}\\[.{0,30}\\];){3}\
-.{0,75}.{3,4}\\(false\\).{0,75};\\};(?=.{0,200000}return \\{hue))",
+.{0,75}.{3,4}\\(false\\).{0,75};\\};)",
       "g"
     ),
     `window.kklee.showColourPickerArguments=[...arguments];\
@@ -270,7 +282,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
   );
   // Map editor test TimeMS
   window.kklee.editorPreviewTimeMs = 30;
-  src = src.replace(
+  replace(
     new RegExp(
       "(?<=(?<!Infinity.{0,300});.{3,4}\\[.{1,20}\\]\\=)30\
 (?=;.{0,30}while.{10,150}Date.{0,5000})",
@@ -288,7 +300,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
   - getCanvas() // Returns the HTMLCanvas element
   - ...and more
   */
-  src = src.replace(
+  replace(
     new RegExp("(.{3}\\[.{1,3}\\]=new .{1,3}\\(document)"),
     "window.kklee.stageRenderer=$1"
   );
@@ -320,10 +332,10 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     sprite: null,
     imageState: "none",
   };
-  src = src.replace(
+  replace(
     new RegExp(
-      "(...\\[.{1,3}\\]=new PIXI\\[...\\[.{1,3}\\]\\[.{1,3}\\]\\]\
-\\(\\);...\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"
+      "(.{1,3}\\[.{1,3}\\]=new PIXI\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\
+\\(\\);.{0,500}.{1,3}\\[.{1,3}\\]\\[.{1,3}\\[.{1,3}\\]\\[.{1,3}\\]\\]\\(4,0xffff00\\);)"
     ),
     "window.kklee.editorImageOverlay.background=$1"
   );
