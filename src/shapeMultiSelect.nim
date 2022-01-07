@@ -216,7 +216,7 @@ Additional function: rand() - random number between 0 and 1
         let timeInput = buildHtml tdiv:
           checkbox(capZoneTimeCanChange)
           bonkInput(capZoneTime, prsFLimited, nil, niceFormatFloat)
-        prop "Cz. time", timeInput, capZoneTimeCanChange 
+        prop "Cz. time", timeInput, capZoneTimeCanChange
 
   nameChanger()
   floatProp("x", fx.fxShape.c.x)
@@ -299,7 +299,9 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     updateRightBoxBody(-1)
     updateLeftBox()
 
-proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv:
+proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
+  style = "font-size: 13px".toCss
+):
   tdiv text &"{selectedFixtures.len} shapes selected"
   block:
     let warningColour =
