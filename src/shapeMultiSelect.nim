@@ -302,6 +302,7 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
 proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
   style = "font-size: 13px".toCss
 ):
+  tdiv text &"Shapes in platform: {fixturesBody.fx.len}/100"
   tdiv text &"{selectedFixtures.len} shapes selected"
   block:
     let warningColour =

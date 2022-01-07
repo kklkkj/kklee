@@ -223,7 +223,7 @@ proc generateGradient: int =
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
     tdiv(style = "font-size:12px".toCss):
-      text "Note that platforms can't have more than 100 shapes!"
+      text &"Shapes in platform: {body.fx.len}/100"
     var generateProc: void -> int
     if body != gs.body:
       selecting = true
