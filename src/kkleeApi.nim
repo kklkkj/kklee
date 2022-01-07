@@ -1,7 +1,9 @@
 when not defined js:
   {.error: "This module only works on the JavaScipt platform".}
 
-import std/[strutils, sequtils, dom, math, sugar]
+import
+  std/[strutils, sequtils, dom, math, sugar],
+  pkg/[mathexpr]
 
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =
@@ -231,3 +233,18 @@ proc bonkShowColorPicker*(firstColour: int; fixtureSeq: seq[MapFixture];
 
 proc splitConcaveIntoConvex*(v: seq[MapPosition]): seq[seq[MapPosition]]
   {.importc: "window.kklee.splitConcaveIntoConvex".}
+
+proc multiSelectNameChanger*(input: string; thingIndex: int): string =
+  let evtor = newEvaluator()
+  evtor.addVar("i", thingIndex.float)
+  var nameParts = input.split("||")
+  if nameParts.len mod 2 == 0:
+    raise CatchableError.newException(
+      "multiSelectNameChanger nameParts.len is even")
+  for i in countup(1, nameParts.high, 2):
+    nameParts[i] = evtor.eval(nameParts[i]).formatFloat(precision = -1)
+  return nameParts.join("")
+
+proc multiSelectNameChangerCheck*(input: string): string =
+  discard multiSelectNameChanger(input, 0)
+  input

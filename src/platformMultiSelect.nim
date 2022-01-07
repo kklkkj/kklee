@@ -144,14 +144,14 @@ Additional function: rand() - random number between 0 and 1
   template nameChanger: untyped =
     var
       canChange {.global.} = false
-      inp {.global.}: string = "Platform %i%"
+      inp {.global.}: string = "Platform ||i||"
     once: appliers.add proc(i: int; b: MapBody) =
       if canChange:
-        b.n = inp.replace("%i%", $i).cstring
+        b.n = cstring multiSelectNameChanger(inp, i)
     buildHtml:
       let field = buildHtml tdiv(style = "display: flex".toCss):
         checkbox(canChange)
-        bonkInput(inp, s => s, nil, s => s)
+        bonkInput(inp, multiSelectNameChangerCheck, nil, s => s)
       prop "Name", field, canChange
 
   dropDownProp("Type", b.btype, [
