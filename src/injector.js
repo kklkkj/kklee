@@ -291,6 +291,21 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     "window.kklee.editorPreviewTimeMs"
   );
 
+  // An object that contains many things, including username
+  // userName and guest properties are used in the transfer ownership feature
+  const scopedDataObjectName = src.match(
+    new RegExp(",dbid:(.{2,4}\\[\\d{1,3}\\]).{1,30},guest")
+  )[1];
+  replace(
+    `${scopedDataObjectName}={};`,
+    `$& window.kklee.scopedData=${scopedDataObjectName};`
+  );
+
+  kklee.canTransferOwnership = () =>
+    !kklee.scopedData.guest &&
+    (kklee.mapObject.m.rxa == "" ||
+      kklee.mapObject.m.rxa == kklee.scopedData.userName);
+
   /* 
   Stage renderer that contains methods that is used for the
   Map editor preview, tutorial, replays etc..

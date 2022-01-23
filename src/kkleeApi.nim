@@ -248,3 +248,6 @@ proc multiSelectNameChanger*(input: string; thingIndex: int): string =
 proc multiSelectNameChangerCheck*(input: string): string =
   discard multiSelectNameChanger(input, 0)
   input
+
+proc canTransferOwnership*: bool
+  {.importc: "window.kklee.canTransferOwnership".}
