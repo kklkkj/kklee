@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.28
+- Improved verification of being the original map author in the transfer
+  ownership feature
+- Made selection buttons in shape multiselect simpler by adding a dropdown for
+  specifying whether to include shapes from the current, all or multiselected
+  platforms
+- Added a button in shape multiselect that selects physics shapes
+
 ## v0.27
 - Fixed colour picker and image overlay after being broken by bonk.io update
 - Minor improvements
