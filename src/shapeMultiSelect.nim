@@ -312,44 +312,43 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     tdiv(style = "color: {warningColour}; font-weight: bold".fmt.toCss):
       text &"Shapes from multiple platforms are selected"
 
-  bonkButton "Select all from current platform", proc =
-    shapeMultiSelectSwitchPlatform()
-    for fx in fixturesBody.fx.mapIt(it.getFx):
-      if fx notin selectedFixtures:
-        selectedFixtures.add fx
-    shapeMultiSelectElementBorders()
-  bonkButton "Select all from all platforms", proc =
-    shapeMultiSelectSwitchPlatform()
-    selectedFixtures = moph.fixtures
-    shapeMultiSelectElementBorders()
-  bonkButton "Deselect all from current platform", proc =
-    shapeMultiSelectSwitchPlatform()
-    for fx in fixturesBody.fx.mapIt(it.getFx):
-      let i = selectedFixtures.find fx
-      if i != -1:
-        selectedFixtures.delete i
-    shapeMultiSelectElementBorders()
-  bonkButton "Deselect all from other platforms", proc =
-    shapeMultiSelectSwitchPlatform()
-    var i = 0
-    while i < selectedFixtures.len:
-      let fxId = moph.fixtures.find(selectedFixtures[i])
-      if fxId notin fixturesBody.fx:
-        selectedFixtures.delete i
-      else:
-        inc i
-    shapeMultiSelectElementBorders()
-  bonkButton "Invert selection on current platform", proc =
-    shapeMultiSelectSwitchPlatform()
-    for fx in fixturesBody.fx.mapIt(it.getFx):
-      let i = selectedFixtures.find fx
-      if i != -1:
-        selectedFixtures.delete i
-      else:
-        selectedFixtures.add fx
-    shapeMultiSelectElementBorders()
   bonkButton "Reverse selection order", proc =
     selectedFixtures.reverse()
+    shapeMultiSelectElementBorders()
+
+  var useAllPlatforms {.global.} = false
+  prop "Include other platforms?", checkbox(useAllPlatforms)
+  proc includedFixtures: seq[MapFixture] =
+    if useAllPlatforms: moph.fixtures
+    else: fixturesBody.fx.mapIt it.getFx
+
+  bonkButton "Select all", proc =
+    shapeMultiSelectSwitchPlatform()
+    if useAllPlatforms:
+      selectedFixtures = moph.fixtures
+    else:
+      for fx in includedFixtures():
+        if fx notin selectedFixtures:
+          selectedFixtures.add fx
+    shapeMultiSelectElementBorders()
+  bonkButton "Deselect all", proc =
+    shapeMultiSelectSwitchPlatform()
+    if useAllPlatforms:
+      selectedFixtures = @[]
+    else:
+      for fx in includedFixtures():
+        let i = selectedFixtures.find fx
+        if i != -1:
+          selectedFixtures.delete i
+    shapeMultiSelectElementBorders()
+  bonkButton "Invert selection", proc =
+    shapeMultiSelectSwitchPlatform()
+    for fx in includedFixtures():
+      let i = selectedFixtures.find fx
+      if i != -1:
+        selectedFixtures.delete i
+      else:
+        selectedFixtures.add fx
     shapeMultiSelectElementBorders()
 
   tdiv(style = "margin: 5px 0px".toCss):
@@ -357,8 +356,7 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     prop "Start of name", bonkInput(searchString, s => s, nil, s => s)
     bonkButton "Select by name", proc =
       shapeMultiSelectSwitchPlatform()
-      for fxId in fixturesBody.fx:
-        let fx = fxId.getFx
+      for fx in includedFixtures():
         if fx.n.`$`.startsWith(searchString) and fx notin selectedFixtures:
           selectedFixtures.add fx
       shapeMultiSelectElementBorders()
@@ -366,15 +364,9 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
   tdiv(style = "margin: 5px 0px".toCss):
     var
       searchColour {.global.}: int = 0
-      searchOtherPlatforms {.global.} = false
-
-    prop "All platforms?", checkbox(searchOtherPlatforms)
     prop "Colour", colourInput(searchColour)
     bonkButton "Select by colour", proc =
-      for fx in (
-        if searchOtherPlatforms: moph.fixtures
-        else: fixturesBody.fx.mapIt it.getFx
-      ):
+      for fx in includedFixtures():
         if fx.f == searchColour and fx notin selectedFixtures:
           selectedFixtures.add fx
       shapeMultiSelectElementBorders()
