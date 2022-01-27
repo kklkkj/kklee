@@ -365,6 +365,12 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
       else:
         selectedFixtures.add fx
     shapeMultiSelectElementBorders()
+  bonkButton "Select physics shapes", proc =
+    shapeMultiSelectSwitchPlatform()
+    for fx in includedFixtures():
+      if not fx.np and fx notin selectedFixtures:
+        selectedFixtures.add fx
+    shapeMultiSelectElementBorders()
 
   tdiv(style = "margin: 5px 0px".toCss):
     var searchString {.global.} = ""
