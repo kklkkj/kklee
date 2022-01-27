@@ -107,6 +107,7 @@ proc floatPropApplier*(inp: string; i: int; n: int; prop: float): float =
   result = evtor.eval(inp).clamp(-1e6, 1e6)
   if result.isNaN: result = 0
 
+# Optional input
 proc dropDownPropSelect*[T](
   inp: var Option[T];
   options: seq[tuple[label: string; value: T]]
@@ -130,3 +131,20 @@ proc dropDownPropSelect*[T](
         inp =
           if i == 0: none T.typedesc
           else: some options[i - 1][1]
+
+# Not optional
+proc dropDownPropSelect*[T](
+  inp: var T;
+  options: seq[tuple[label: string; value: T]]
+): VNode =
+  buildHtml:
+    select(style = "width: 80px".toCss):
+      for o in options:
+        if inp == o[1]:
+          option(selected = ""): text o[0]
+        else:
+          option: text o[0]
+
+      proc onInput(e: Event; n: VNode) =
+        let i = e.target.OptionElement.selectedIndex
+        inp = options[i][1]

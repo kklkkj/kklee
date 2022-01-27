@@ -1,7 +1,7 @@
 import
   std/[sugar, strutils, sequtils, algorithm, dom, math, options, strformat],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  kkleeApi, bonkElements
+  kkleeApi, bonkElements, platformMultiSelect
 
 var
   selectedFixtures*: seq[MapFixture]
@@ -316,15 +316,30 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     selectedFixtures.reverse()
     shapeMultiSelectElementBorders()
 
-  var useAllPlatforms {.global.} = false
-  prop "Include other platforms?", checkbox(useAllPlatforms)
+  type IncludedPlatforms = enum
+    IncludeCurrent, IncludeAll, IncludeMultiSelected
+  var includedPlatforms {.global.} = IncludeCurrent
+
+  span text "Include shapes from:"
+  let includedPlatformsDropdown = dropDownPropSelect(includedPlatforms, @[
+    ("Current platform", IncludeCurrent),
+    ("All platforms", IncludeAll),
+    ("Multiselected platforms", IncludeMultiSelected)
+  ])
+
+  discard (includedPlatformsDropdown.style.setAttr("width", "100%"); 0) # >:(
+  includedPlatformsDropdown
+
   proc includedFixtures: seq[MapFixture] =
-    if useAllPlatforms: moph.fixtures
-    else: fixturesBody.fx.mapIt it.getFx
+    case includedPlatforms
+    of IncludeAll: moph.fixtures
+    of IncludeCurrent: fixturesBody.fx.mapIt it.getFx
+    of IncludeMultiSelected:
+      selectedBodies.mapIt(it.fx).concat().mapIt(it.getFx)
 
   bonkButton "Select all", proc =
     shapeMultiSelectSwitchPlatform()
-    if useAllPlatforms:
+    if includedPlatforms == IncludeAll:
       selectedFixtures = moph.fixtures
     else:
       for fx in includedFixtures():
@@ -333,7 +348,7 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     shapeMultiSelectElementBorders()
   bonkButton "Deselect all", proc =
     shapeMultiSelectSwitchPlatform()
-    if useAllPlatforms:
+    if includedPlatforms == IncludeAll:
       selectedFixtures = @[]
     else:
       for fx in includedFixtures():
