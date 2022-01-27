@@ -357,11 +357,10 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     prop "Start of name", bonkInput(searchString, s => s, nil, s => s)
     bonkButton "Select by name", proc =
       shapeMultiSelectSwitchPlatform()
-      selectedFixtures = collect(newSeq):
-        for fxId in fixturesBody.fx:
-          let fx = fxId.getFx
-          if fx.n.`$`.startsWith(searchString):
-            fx
+      for fxId in fixturesBody.fx:
+        let fx = fxId.getFx
+        if fx.n.`$`.startsWith(searchString) and fx notin selectedFixtures:
+          selectedFixtures.add fx
       shapeMultiSelectElementBorders()
 
   tdiv(style = "margin: 5px 0px".toCss):
@@ -372,13 +371,12 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     prop "All platforms?", checkbox(searchOtherPlatforms)
     prop "Colour", colourInput(searchColour)
     bonkButton "Select by colour", proc =
-      selectedFixtures = collect(newSeq):
-        for fx in (
-          if searchOtherPlatforms: moph.fixtures
-          else: fixturesBody.fx.mapIt it.getFx
-        ):
-          if fx.f == searchColour:
-            fx
+      for fx in (
+        if searchOtherPlatforms: moph.fixtures
+        else: fixturesBody.fx.mapIt it.getFx
+      ):
+        if fx.f == searchColour and fx notin selectedFixtures:
+          selectedFixtures.add fx
       shapeMultiSelectElementBorders()
 
 proc shapeMultiSelectDelete: VNode =
