@@ -97,7 +97,7 @@ needs to be fixed.
 4. Run `npm run build`.
 5. Either:
    - Run `npm run test` to open a temporary browser session with the extension.
-   - Run `npm run build-extension` to build the zip file.
-     The file will be in `web-ext-artifacts`.
+   - Run `npm run build-extension` to build the zip file and userscript.
+     The file will be in the `build` directory.
 
 </details>

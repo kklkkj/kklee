@@ -437,7 +437,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
   };
   kklee.dispatchInputEvent = (el) => el.dispatchEvent(new InputEvent("input"));
 
-  require("./nimBuild.js");
+  require("./___nimBuild___.js");
   console.log("kklee injector run");
   return src;
 }

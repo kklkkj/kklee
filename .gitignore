@@ -1,7 +1,7 @@
 node_modules/
-src/nimBuild.js
+src/___nimBuild___.js
 dist/*
 !dist/manifest.json
 !dist/icons
-web-ext-artifacts/
+build/
 mylist.txt

@@ -16,12 +16,13 @@ let
 // ==/UserScript==
 
 /*
-  Usable with:
+  This userscript requires:
   https://greasyfork.org/en/scripts/433861-code-injector-bonk-io
+  (or another browser extension mod)
 */
 {readFile("./dist/injector.js")}
 """
 
 let version = manifest["version"].getStr()
-writeFile(&"./web-ext-artifacts/kklee-{version}.user.js",
+writeFile(&"./build/kklee-{version}.user.js",
   userScriptSrc)

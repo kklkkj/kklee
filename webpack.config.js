@@ -4,7 +4,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 console.log(
   child_process.execSync(
-    "nim js -d:release -o:./src/nimBuild.js ./src/main.nim"
+    "nim js -d:release -o:./src/___nimBuild___.js ./src/main.nim"
   )
 );
 
