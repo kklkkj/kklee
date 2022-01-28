@@ -12,6 +12,8 @@ proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
     text label
     if not disabled:
       proc onClick = onClick()
+      proc onMouseDown = playBonkButtonClickSound()
+      proc onMouseEnter = playBonkButtonHoverSound()
 
 
 func defaultFormat*[T](v: T) = $v

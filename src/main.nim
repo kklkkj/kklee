@@ -20,6 +20,8 @@ proc createBonkButton(label: string; onclick: proc: void): Element =
   result.innerText = label
   result.class = "brownButton brownButton_classic buttonShadow"
   result.onclick = proc(e: Event) = onclick()
+  result.onmousedown = proc(e: Event) = playBonkButtonClickSound()
+  result.onmouseover = proc(e: Event) = playBonkButtonHoverSound()
 
 afterNewMapObject = hide
 

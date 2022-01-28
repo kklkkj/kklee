@@ -251,3 +251,6 @@ proc multiSelectNameChangerCheck*(input: string): string =
 
 proc canTransferOwnership*: bool
   {.importc: "window.kklee.canTransferOwnership".}
+
+proc playBonkButtonClickSound* {.importc: "window.kklee.scopedData.bcs".}
+proc playBonkButtonHoverSound* {.importc: "window.kklee.scopedData.bhs".}
