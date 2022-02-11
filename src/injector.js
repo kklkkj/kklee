@@ -469,39 +469,48 @@ const currentVersion = require("../dist/manifest.json")
   .map(Number); // "0.10" --> [0,10]
 
 (async () => {
-  const req = await fetch("https://api.github.com/repos/kklkkj/kklee/releases");
-  const releases = await req.json();
-  let outdated = false;
-  for (const r of releases) {
-    // "v0.10" --> [0,10]
-    const version = r.tag_name.substr(1).split(".").map(Number);
-    if (version.length != 2 || isNaN(version[0]) || isNaN(version[1])) continue;
-    if (
-      version[0] > currentVersion[0] ||
-      (version[0] == currentVersion[0] && version[1] > currentVersion[1])
-    ) {
-      outdated = true;
-      break;
+  if (window.kkleeDisableUpdateChecks) return;
+
+  let message = null;
+
+  try {
+    const req = await fetch(
+      "https://api.github.com/repos/kklkkj/kklee/releases"
+    );
+    const releases = await req.json();
+    for (const r of releases) {
+      // "v0.10" --> [0,10]
+      const version = r.tag_name.substr(1).split(".").map(Number);
+      if (version.length != 2 || isNaN(version[0]) || isNaN(version[1]))
+        continue;
+      if (
+        version[0] > currentVersion[0] ||
+        (version[0] == currentVersion[0] && version[1] > currentVersion[1])
+      ) {
+        message = "A new version of kklee is available! Click this";
+        break;
+      }
     }
+  } catch (error) {
+    console.error(error);
+    message = "Something went wrong with checking for new versions of kklee.";
   }
-  if (!outdated) return;
+  if (message === null) return;
 
   try {
     const el = document.createElement("span");
-    el.textContent = "A new version of kklee is available! Click this";
+    el.textContent = message;
     el.style =
       "position: absolute; background: linear-gradient(#33a, #d53);\
-line-height: normal;";
+line-height: normal; cursor: pointer;";
     el.onclick = () => window.open("https://github.com/kklkkj/kklee");
     parent.document.getElementById("bonkioheader").appendChild(el);
   } catch (error) {
     console.error(error);
-    alert("A new version of kklee is available!");
+    alert(
+      `Something went wrong with displaying this message normally:
+${message}
+https://github.com/kklkkj/kklee`
+    );
   }
-})().catch((err) => {
-  console.error(err);
-  alert(
-    "Something went wrong with checking if the current version of kklee is \
-outdated"
-  );
-});
+})();
