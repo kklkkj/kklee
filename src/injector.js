@@ -241,7 +241,7 @@ ${newSaveHistoryFunction}`
   */
   replace(
     new RegExp(
-      "(?<=this\\[.{10,20}\\]=function\\(\\)\\{.{20,40}\
+      "(?<=this\\[.{10,20}\\]=function\\(\\)\\{.{20,90}\
 this\\[.{10,20}\\]=false;.{0,11})\\$\\(document\\)\\[.{10,20}\\]\\(.{10,20},\
 .{3,4}\\);"
     ),
