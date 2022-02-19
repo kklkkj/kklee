@@ -254,3 +254,8 @@ proc canTransferOwnership*: bool
 
 proc playBonkButtonClickSound* {.importc: "window.kklee.scopedData.bcs".}
 proc playBonkButtonHoverSound* {.importc: "window.kklee.scopedData.bhs".}
+
+proc setEnableUpdateChecks*(enable: bool)
+  {.importc: "window.kklee.setEnableUpdateChecks".}
+func areUpdateChecksEnabled*: bool
+  {.importc: "window.kklee.areUpdateChecksEnabled".}

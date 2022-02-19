@@ -436,6 +436,15 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     }
   };
   kklee.dispatchInputEvent = (el) => el.dispatchEvent(new InputEvent("input"));
+  kklee.setEnableUpdateChecks = (enable) => {
+    if (enable) {
+      window.localStorage["kkleeEnableUpdateChecks"] = true;
+    } else {
+      delete window.localStorage["kkleeEnableUpdateChecks"];
+    }
+  };
+  kklee.areUpdateChecksEnabled = () =>
+    Boolean(window.localStorage["kkleeEnableUpdateChecks"]);
 
   require("./___nimBuild___.js");
   console.log("kklee injector run");
@@ -469,7 +478,16 @@ const currentVersion = require("../dist/manifest.json")
   .map(Number); // "0.10" --> [0,10]
 
 (async () => {
-  if (window.kkleeDisableUpdateChecks) return;
+  if (
+    !window.localStorage["kkleeEnableUpdateChecks"] ||
+    Date.now() -
+      (Number(window.localStorage["kkleeLastUpdateCheckTimestamp"]) || 0) <
+      1000 * 60 * 60 * 1
+  ) {
+    return;
+  }
+  console.log("Checking for new kklee updates");
+  window.localStorage["kkleeLastUpdateCheckTimestamp"] = Date.now();
 
   let message = null;
 

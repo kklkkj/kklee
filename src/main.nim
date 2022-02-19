@@ -496,6 +496,14 @@ docElemById("mapeditor_rightbox_mapparams").appendChild(
   shapeTableCell("", createBonkButton("Image overlay",
       openEditorImageOverlay)))
 
+# kklee settings button
+proc openKkleeSettings =
+  state = StateObject(kind: seKkleeSettings)
+  rerender()
+docElemById("mapeditor_rightbox_mapparams").appendChild(
+  shapeTableCell("", createBonkButton("kklee settings",
+      openKkleeSettings)))
+
 # Make map editor explanation text selectable
 docElemById("mapeditor_midbox_explain").setAttr("style", "user-select: text")
 
