@@ -64,9 +64,14 @@ proc checkbox*(variable: var bool; afterInput: proc(): void = nil): VNode =
     style = "background-color: var(--kkleeCheckbox{things[0]})".fmt.toCss
   ):
     text things[1]
-    proc onClick = variable = not variable
+    proc onClick =
+      variable = not variable
+      if not afterInput.isNil:
+        afterInput()
 
-proc tfsCheckbox*(inp: var boolPropValue): VNode =
+proc tfsCheckbox*(
+    inp: var boolPropValue; afterInput: proc(): void = nil
+): VNode =
   let things = case inp
     of tfsTrue: ("True", "✔")
     of tfsFalse: ("False", "✖")
@@ -80,6 +85,8 @@ proc tfsCheckbox*(inp: var boolPropValue): VNode =
         of tfsSame: tfsTrue
         of tfsTrue: tfsFalse
         of tfsFalse: tfsSame
+      if not afterInput.isNil:
+        afterInput()
 
 func prop*(name: string; field: VNode; highlight = false): VNode =
   buildHtml: tdiv(style =
