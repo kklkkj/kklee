@@ -76,7 +76,7 @@ etc buttons will act on.
 
 ### Mathematical expression evaluation in multiselect
 
-[(More info about mathematical experssion evaluation)](#mathematical-expression-evaluator)
+[(More info about mathematical expression evaluation)](#mathematical-expression-evaluator)
 
 `x` is equal to the property's current value.
 
