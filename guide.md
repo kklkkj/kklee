@@ -168,6 +168,7 @@ Predefined constants: `pi`, `tau`, `e`
 
 <details>
 <summary>Implemented functions:</summary>
+
 **Note:** angles are in radians
 
 - `rand()` - a random number in the range 0 to less than 1
