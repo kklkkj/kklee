@@ -5,45 +5,12 @@ editor.
 
 [Discord server](https://discord.gg/kW389FqMz2)
 
-<details>
-<summary>Features</summary>
-
-- Multi-select for platforms and shapes
-- Vertex editor with ability to round corners, split concave polygons
-  and (buggy) ability to merge
-  multiple polygons into one
-- Easily generate ellipses, spirals, sine waves, gradients and custom equations
-- Ability to use your browser's colour picker for changing colours
-- Evaluate arithmetic in number fields by pressing Shift+Enter
-  (example: type `100*2+50` into X position field and press Shift+Enter)
-- Change the speed of map testing in the editor
-- The chat is visible in the map editor
-- Ability to transfer map ownership
-- Automatic backups of maps to the browser's offline storage
-- Image overlay in the editor preview
-- Keyboard shortcuts:
-  - Save: `Ctrl + S`
-  - Preview: `Space`
-  - Play: `Shift + Space`,
-  - Exit game: `Shift + Esc`
-  - Up/down arrow to increase or decrease number input fields. Shortcut
-    modifiers for changing increase amount:
-    - Just Arrow: `10`
-    - Shift + Arrow: `1`
-    - Ctrl + Arrow: `100`
-    - Ctrl + Shift + Arrow: `0.1`
-  - Up/down/left/right arrow to pan the editor preview when it is focused.
-    Shortcut modifiers for changing pan amount:
-    - Just Arrow: `50`
-    - Shift + Arrow: `25`
-    - Ctrl + Arrow: `150`
-    - Ctrl + Shift + Arrow: `10`
-
-</details>
+[Guide](./guide.md)
 
 ## Installing as an extension
 
-Download the latest kklee-(version)**_.zip_** file from [Releases](https://github.com/kklkkj/kklee/releases)
+Download the latest kklee-(version)**_.zip_** file from
+[Releases](https://github.com/kklkkj/kklee/releases).
 
 <details>
 <summary>In Firefox</summary>
@@ -66,11 +33,13 @@ Download the latest kklee-(version)**_.zip_** file from [Releases](https://githu
 
 ## Installing as a userscript (for Tampermonkey, Violentmonkey, etc)
 
-Userscripts require a userscript manager such as Violentmonkey or Tampermonkey, and [Excigma's code injector userscript](https://greasyfork.org/en/scripts/433861-code-injector-bonk-io).
+Userscripts require a userscript manager such as Violentmonkey or Tampermonkey,
+and [Excigma's code injector userscript](https://greasyfork.org/en/scripts/433861-code-injector-bonk-io).
 
-The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases) as kklee-(version)**_.user.js_**.
+The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases)
+as kklee-(version)**_.user.js_**.
 
-## It doesn't work
+## "It doesn't work"
 
 Did you:
 
