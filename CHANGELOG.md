@@ -1,6 +1,15 @@
 # Changelog
 
+## v0.29
+
+- Added sounds of clicking and hovering over buttons.
+- Automatic update checking is now an option that can be enabled in
+  map settings (gear icon) -> "kklee settings".
+- Multiple colours can now be specified in gradients.
+- Made a kklee guide that is available on the GitHub page.
+
 ## v0.28
+
 - Improved verification of being the original map author in the transfer
   ownership feature
 - Made selection buttons in shape multiselect simpler by adding a dropdown for
@@ -9,6 +18,7 @@
 - Added a button in shape multiselect that selects physics shapes
 
 ## v0.27
+
 - Fixed colour picker and image overlay after being broken by bonk.io update
 - Minor improvements
 - Name property in multiselect will now evaluate arithmetic
