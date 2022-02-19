@@ -2,7 +2,7 @@ import
   std/[dom, strutils, math, sugar, strformat],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
-  kkleeApi, bonkElements, shapeMultiSelect
+  kkleeApi, bonkElements, shapeMultiSelect, colours
 
 type
   ShapeGeneratorKind = enum
@@ -28,11 +28,9 @@ type
     swidth, sheight, sosc, sstart: float
 
     # Gradients
-    colour2: int
-
     gwidth, gheight: float
     grad1, grad2: float
-    gease: EasingType
+    gdata: MultiColourGradient
 
     # Parametric equation
     eqInpX, eqInpY: string
@@ -52,8 +50,8 @@ var
 
     swidth: 300.0, sheight: 75.0, sosc: 2, sstart: 0.0,
 
-    gwidth: 200.0, gheight: 150.0, grad1: 30.0, grad2: 150.0, colour2: 0x0000ff,
-    gease: easeNone,
+    gwidth: 200.0, gheight: 150.0, grad1: 30.0, grad2: 150.0,
+    gdata: defaultMultiColourGradient(),
 
     eqInpX: "(t-0.5)*100", eqInpY: "-((t*2-1)^2)*100"
   )
@@ -211,9 +209,7 @@ proc generateGradient: int =
 
     moph.shapes.add shape
     let
-      colour = getGradientColourAt(
-        gs.colour, gs.colour2, i / (gs.prec - 1), gs.gease
-      )
+      colour = getColourAt(gs.gdata, GradientPos(i / (gs.prec - 1))).int
       fixture = MapFixture(n: cstring &"gradient{i}", de: jsNull, re: jsNull,
         fr: jsNull, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
     moph.fixtures.add fixture
@@ -308,8 +304,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         generateProc = generateGradient
         prop("x", pbi gs.x)
         prop("y", pbi gs.y)
-        prop("Colour 1", colourInput(gs.colour))
-        prop("Colour 2", colourInput(gs.colour2))
+        gradientProp(gs.gdata)
         prop("Shapes", precInput)
         case gs.kind
         of sgsLinearGradient:
@@ -321,13 +316,6 @@ proc shapeGenerator*(body: MapBody): VNode =
           prop("Outer circle radius", pbi gs.grad2)
         else: discard
 
-        template easingTypeSelection: untyped = buildHtml:
-          select:
-            for e in EasingType:
-              option: text $e
-            proc onInput(e: Event; n: VNode) =
-              gs.gease = e.target.OptionElement.selectedIndex.EasingType
-        prop("Easing", easingTypeSelection())
       of sgsEquation:
         generateProc = generateEquation
         prop("x", pbi gs.x)

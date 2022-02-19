@@ -193,31 +193,6 @@ proc setEditorExplanation*(text: string) =
 proc mathExprJsRandom*(_: seq[float]): float {.importc: "window.Math.random".}
 
 type
-  EasingType* = enum
-    easeNone = "None", easeInSine = "Sine in", easeOutSine = "Sine out",
-    easeInOutSine = "Sine in out"
-func getGradientColourAt*(
-  colour1, colour2: int; pos: float; ease: EasingType
-): int =
-  proc getRGB(colour: int): array[3, int] =
-    [colour shr 16 and 255, colour shr 8 and 255, colour and 255]
-  let
-    colour1 = getRGB(colour1)
-    colour2 = getRGB(colour2)
-    pos =
-      case ease
-      of easeNone: pos
-      of easeInSine: 1 - cos(pos * PI / 2)
-      of easeOutSine: sin(pos * PI / 2)
-      of easeInOutSine: -0.5 * (cos(pos * PI) - 1)
-  var rc: array[3, int]
-  for i in 0..2:
-    rc[i] =
-      int(colour1[i].float * (1.0 - pos) +
-          colour2[i].float * pos)
-  return rc[0] shl 16 or rc[1] shl 8 or rc[2]
-
-type
   MapBackupObject* = ref object
 
 let mapBackups* {.importc: "window.kklee.backups".}: seq[MapBackupObject]

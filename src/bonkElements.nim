@@ -1,8 +1,8 @@
 import
-  std/[strformat, dom, sugar, options, strutils],
+  std/[strformat, dom, sugar, options, strutils, sequtils],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/mathexpr,
-  kkleeApi
+  kkleeApi, colours
 
 proc bonkButton*(label: string; onClick: proc; disabled: bool = false): VNode =
   let disabledClass = if disabled: "brownButtonDisabled" else: ""
@@ -42,8 +42,11 @@ proc colourInput*(variable: var int; afterInput: proc(): void = nil): VNode =
       style = "background-color: {hexColour}".fmt.toCss
     ):
       proc onClick =
-        bonkShowColorPicker(variable, moph.fixtures,
-          proc (c: int) = variable = c, nil)
+        bonkShowColorPicker(variable, moph.fixtures, proc (c: int) =
+          variable = c
+          if not afterInput.isNil:
+            afterInput()
+        , nil)
 
 func prsFLimited*(s: string): float =
   result = s.parseFloat
@@ -157,3 +160,82 @@ proc dropDownPropSelect*[T](
       proc onInput(e: Event; n: VNode) =
         let i = e.target.OptionElement.selectedIndex
         inp = options[i][1]
+
+
+proc gradientPropImpl(
+  gradient: var MultiColourGradient; selectedIndex: var int
+): VNode =
+  buildHtml tdiv(style = "display: flex; flex-flow: column".toCss):
+    let cssGradient = "linear-gradient(90deg," &
+      gradient.colours.mapIt(
+        "#" & it.colour.int.toHex(6) & " " & $(it.pos * 100) & "%"
+      ).join(",") & ")"
+    tdiv(style = ("width: 100%; height: 15px; background:" & cssGradient).toCss)
+
+    var inputPos = gradient.colours[selectedIndex].pos
+
+    prop "Easing", dropDownPropSelect(gradient.easing, @[
+      ($easeNone, easeNone), ($easeInSine, easeInSine),
+      ($easeOutSine, easeOutSine), ($easeInOutSine, easeInOutSine)
+    ])
+
+    tdiv(style = "display: flex; flex-flow: row wrap;".toCss):
+      bonkButton("Delete", proc =
+        gradient.colours.delete(selectedIndex)
+        selectedIndex = 0
+      , gradient.colours.len < 2)
+
+      span(style = "margin-left: 10px".toCss): text "Pos:"
+      bonkInput(inputPos, proc(s: string): GradientPos =
+        let n = parseFloat(s)
+        if n notin 0.0..1.0:
+          raise ValueError.newException("n notin 0.0..1.0")
+        n.GradientPos
+      , proc() =
+        var movingColour = gradient.colours[selectedIndex]
+        if movingColour.pos == inputPos:
+          return
+        movingColour.pos = inputPos
+        gradient.colours.delete selectedIndex
+        var newIndex = gradient.colours.len
+        for i, gradientColour in gradient.colours.pairs:
+          if gradientColour.pos > movingColour.pos:
+            newIndex = i
+            break
+        gradient.colours.insert(movingColour, newIndex)
+        selectedIndex = newIndex
+      , g => g.float.niceFormatFloat)
+
+    # ugh
+    proc colourProp(
+      selected: bool; gradientColour: var MultiColourGradientColour
+    ): VNode =
+      buildHtml tdiv(style = "display: flex; flex-flow: row wrap;".toCss):
+        block:
+          # bug: sometimes the colour can't be changed until element is rerendered
+          var ic = gradientColour.colour.int
+          colourInput(ic, proc = gradientColour.colour = ic.Colour)
+        let fontCss = if selected:
+          "color: var(--kkleeMultiSelectPropHighlightColour);"
+          else: ""
+        span(style = fontCss.toCss, class = "kkleeMultiColourGradientSpan"):
+          text $gradientColour.pos
+
+    tdiv:
+      for i, gradientColour in gradient.colours.mpairs:
+        # Smh, I can't use capture
+        colourProp(i == selectedIndex, gradientColour)
+      proc onClick(e: Event; n: VNode) =
+        let t = e.target
+        if t.isNil:
+          return
+        if t.class == "kkleeMultiColourGradientSpan":
+          let i = t.parentNode.parentNode.children.find t.parentNode
+          selectedIndex = i
+
+    bonkButton "Add colour", proc =
+      gradient.colours.add (Colour 0, GradientPos 1.0)
+
+template gradientProp*(gradient: var MultiColourGradient): VNode =
+  var selectedIndex {.global.} = 0
+  gradientPropImpl(gradient, selectedIndex)

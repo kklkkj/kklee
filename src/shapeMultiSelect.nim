@@ -1,7 +1,7 @@
 import
   std/[sugar, strutils, sequtils, algorithm, dom, math, options, strformat],
   pkg/karax/[karax, karaxdsl, vdom, vstyles],
-  kkleeApi, bonkElements, platformMultiSelect
+  kkleeApi, bonkElements, platformMultiSelect, colours
 
 var
   selectedFixtures*: seq[MapFixture]
@@ -96,38 +96,35 @@ Additional function: rand() - random number between 0 and 1
       prop name, tfsCheckbox(inp), inp != tfsSame
 
   template colourChanger: untyped =
+    type InputType = enum
+      Unchanged, OneColour, Gradient
     var
-      canChange {.global.} = false
-      inp {.global.}: int = 0
-      isGradient {.global.} = false
-      inp2 {.global.}: int = 0
-      easingType {.global.} = easeNone
+      inputType {.global.} = Unchanged
+      oneColourInp {.global.}: int = 0
+      multiColourGradientInp {.global.} = defaultMultiColourGradient()
     once: appliers.add proc(i: int; fx: MapFixture) =
-      if not canChange: return
-      fx.f =
-        if not isGradient: inp
-        else:
-          getGradientColourAt(inp, inp2, i / selectedFixtures.high, easingType)
+      case inputType
+      of Unchanged: return
+      of OneColour: fx.f = oneColourInp
+      of Gradient:
+        fx.f = getColourAt(
+          multiColourGradientInp,
+          GradientPos(i / selectedFixtures.high)
+        ).int
 
     let
-      colour1Field = buildHtml tdiv(style = "display: flex".toCss):
-        checkbox(canChange)
-        colourInput(inp)
-      colour2Field = buildHtml tdiv(style = "display: flex".toCss):
-        checkbox(isGradient)
-        colourInput(inp2)
-      easeTypeField = buildHtml tdiv(style = "display: flex".toCss):
-        select:
-          for e in EasingType:
-            option: text $e
-          proc onInput(e: Event; n: VNode) =
-            easingType = e.target.OptionElement.selectedIndex.EasingType
+      dropdown = dropDownPropSelect(inputType, @[
+        ("Unchanged", Unchanged), ("One colour", OneColour),
+        ("Gradient", Gradient)
+      ])
     buildHtml tdiv:
-      prop "Colour", colour1Field, canChange
-      if canChange:
-        prop "Grad. Colour 2", colour2Field, isGradient
-        if isGradient:
-          prop "Grad. ease", easeTypeField, isGradient
+      prop "Colour", dropdown, inputType != Unchanged
+      case inputType
+      of Unchanged: discard
+      of OneColour:
+        colourInput(oneColourInp)
+      of Gradient:
+        gradientProp(multiColourGradientInp)
 
   template nameChanger: untyped =
     var
