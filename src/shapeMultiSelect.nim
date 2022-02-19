@@ -59,11 +59,10 @@ Shift+click shape name fields to select shapes
 Variables:
  - x is the current value
  - i is the index in list of selected shapes (the first shape you selected will have i=0, the next one i=1, i=2, etc)
-Arithmetic, such as x*2+50, will be evaluated
+Mathematical expressions, such as x*2+50, will be evaluated
  - n is number of shapes selected
 List of supported functions:
-https://yardanico.github.io/nim-mathexpr/mathexpr.html#what-is-supportedqmark
-Additional function: rand() - random number between 0 and 1
+https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-evaluator
     """)
 
   var appliers {.global.}: seq[(int, MapFixture) -> void]
