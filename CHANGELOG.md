@@ -2,8 +2,8 @@
 
 ## v0.29
 
-- Added sounds of clicking and hovering over buttons.
-- Automatic update checking is now an option that can be enabled in
+- Added sounds for clicking and hovering over buttons.
+- Automatic update checking is now an option that can be toggled in
   map settings (gear icon) -> "kklee settings".
 - Multiple colours can now be specified in gradients.
 - Made a kklee guide that is available on the GitHub page.
