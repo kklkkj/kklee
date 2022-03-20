@@ -3,9 +3,17 @@
 A [bonk.io](https://bonk.io) mod that extends the functionality of the map
 editor.
 
-[Discord server](https://discord.gg/kW389FqMz2)
-
 [Guide](./guide.md)
+
+[Bonk.io Modding Discord server](https://discord.gg/PHtG6qN3qj)
+
+## Installing as a userscript
+
+Userscripts require a userscript manager such as Violentmonkey or Tampermonkey,
+and [Excigma's code injector userscript](https://greasyfork.org/en/scripts/433861-code-injector-bonk-io).
+
+The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases)
+as kklee-(version)**_.user.js_**.
 
 ## Installing as an extension
 
@@ -31,32 +39,24 @@ Download the latest kklee-(version)**_.zip_** file from
 
 </details>
 
-## Installing as a userscript (for Tampermonkey, Violentmonkey, etc)
-
-Userscripts require a userscript manager such as Violentmonkey or Tampermonkey,
-and [Excigma's code injector userscript](https://greasyfork.org/en/scripts/433861-code-injector-bonk-io).
-
-The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases)
-as kklee-(version)**_.user.js_**.
-
 ## "It doesn't work"
 
 Did you:
 
-- Disable any extensions that are incompatible with kklee, such as
+- Disable any mods that are incompatible with kklee, such as
   Bonk Leagues Client
 - Refresh Bonk.io after installing
 - Download the correct file from Releases?
 
-It is also possible that a recent bonk.io update broke the extension and it
-needs to be fixed.
+It is also possible that a recent bonk.io update broke the mod and it needs to
+be fixed.
 
 ---
 
 ## Building
 
 <details>
-<summary>Ignore this if you just want to install the extension</summary>
+<summary>Ignore this if you just want to install the mod</summary>
 
 1. Install the following:
    - [Node.js](https://nodejs.org/) (v16.3.0)
@@ -67,6 +67,6 @@ needs to be fixed.
 5. Either:
    - Run `npm run test` to open a temporary browser session with the extension.
    - Run `npm run build-extension` to build the zip file and userscript.
-     The file will be in the `build` directory.
+     The files will be in the `build` directory.
 
 </details>
