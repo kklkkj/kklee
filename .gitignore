@@ -4,4 +4,3 @@ dist/*
 !dist/manifest.json
 !dist/icons
 build/
-mylist.txt
