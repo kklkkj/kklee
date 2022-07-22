@@ -27,7 +27,7 @@ function injector(bonkCode) {
   }
 
   const mapObjectName = src
-    .match(/rxid:[a-zA-Z0-9]{3}\[\d+\]/)[0]
+    .match(/rxid:.{3}\[\d+\]/)[0]
     .split(":")[1];
   // Escape regex special characters
   const monEsc = mapObjectName.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
