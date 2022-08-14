@@ -122,7 +122,8 @@ proc floatPropApplier*(inp: string; i: int; n: int; prop: float): float =
 # Optional input
 proc dropDownPropSelect*[T](
   inp: var Option[T];
-  options: seq[tuple[label: string; value: T]]
+  options: seq[tuple[label: string; value: T]];
+  afterInput: proc(): void = nil
 ): VNode =
   buildHtml:
     select(style = "width: 80px".toCss):
@@ -143,11 +144,14 @@ proc dropDownPropSelect*[T](
         inp =
           if i == 0: none T.typedesc
           else: some options[i - 1][1]
+        if not afterInput.isNil:
+          afterInput()
 
 # Not optional
 proc dropDownPropSelect*[T](
   inp: var T;
-  options: seq[tuple[label: string; value: T]]
+  options: seq[tuple[label: string; value: T]];
+  afterInput: proc(): void = nil
 ): VNode =
   buildHtml:
     select(style = "width: 80px".toCss):
@@ -160,12 +164,17 @@ proc dropDownPropSelect*[T](
       proc onInput(e: Event; n: VNode) =
         let i = e.target.OptionElement.selectedIndex
         inp = options[i][1]
-
+        if not afterInput.isNil:
+          afterInput()
 
 proc gradientPropImpl(
-  gradient: var MultiColourGradient; selectedIndex: var int
+  gradient: var MultiColourGradient; selectedIndex: var int;
+  afterInput: proc(): void = nil
 ): VNode =
   buildHtml tdiv(style = "display: flex; flex-flow: column".toCss):
+    let runAfterInput = proc = 
+      if not afterInput.isNil:
+        afterInput()
     let cssGradient = "linear-gradient(90deg," &
       gradient.colours.mapIt(
         "#" & it.colour.int.toHex(6) & " " & $(it.pos * 100) & "%"
@@ -177,12 +186,13 @@ proc gradientPropImpl(
     prop "Easing", dropDownPropSelect(gradient.easing, @[
       ($easeNone, easeNone), ($easeInSine, easeInSine),
       ($easeOutSine, easeOutSine), ($easeInOutSine, easeInOutSine)
-    ])
+    ], afterInput)
 
     tdiv(style = "display: flex; flex-flow: row wrap;".toCss):
       bonkButton("Delete", proc =
         gradient.colours.delete(selectedIndex)
         selectedIndex = 0
+        runAfterInput()
       , gradient.colours.len < 2)
 
       span(style = "margin-left: 10px".toCss): text "Pos:"
@@ -204,6 +214,7 @@ proc gradientPropImpl(
             break
         gradient.colours.insert(movingColour, newIndex)
         selectedIndex = newIndex
+        runAfterInput()
       , g => g.float.niceFormatFloat)
 
     # ugh
@@ -214,7 +225,10 @@ proc gradientPropImpl(
         block:
           # bug: sometimes the colour can't be changed until element is rerendered
           var ic = gradientColour.colour.int
-          colourInput(ic, proc = gradientColour.colour = ic.Colour)
+          colourInput(ic, proc =
+            gradientColour.colour = ic.Colour
+            runAfterInput()
+          )
         let fontCss = if selected:
           "color: var(--kkleeMultiSelectPropHighlightColour);"
           else: ""
@@ -235,7 +249,10 @@ proc gradientPropImpl(
 
     bonkButton "Add colour", proc =
       gradient.colours.add (Colour 0, GradientPos 1.0)
+      runAfterInput()
 
-template gradientProp*(gradient: var MultiColourGradient): VNode =
+template gradientProp*(
+  gradient: var MultiColourGradient; afterInput: proc(): void = nil
+): VNode =
   var selectedIndex {.global.} = 0
-  gradientPropImpl(gradient, selectedIndex)
+  gradientPropImpl(gradient, selectedIndex, afterInput)
