@@ -108,7 +108,10 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
       of Gradient:
         fx.f = getColourAt(
           multiColourGradientInp,
-          GradientPos(i / selectedFixtures.high)
+          GradientPos(
+            if selectedFixtures.high == 0: 1.0
+            else: i / selectedFixtures.high
+          )
         ).int
 
     let
