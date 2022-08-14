@@ -5,81 +5,10 @@ import
   kkleeApi, bonkElements, shapeMultiSelect, colours
 
 type
-  ShapeGeneratorKind = enum
+  ShapeGeneratorType = enum
     sgsEllipse = "Polygon/Ellipse/Spiral", sgsSine = "Sine wave",
     sgsLinearGradient = "Linear gradient",
     sgsRadialGradient = "Radial gradient", sgsEquation = "Parametric equation"
-  ShapeGeneratorState = ref object
-    kind: ShapeGeneratorKind
-    body: MapBody
-    multiSelect: bool
-
-    x, y, angle: float
-    colour: int
-    prec: int
-    noPhysics: bool
-    rectHeight: float
-
-    # Ellipse
-    ewr, ehr, eaStart, eaEnd, espiralStart: float
-    ehollow: bool
-
-    # Sine wave
-    swidth, sheight, sosc, sstart: float
-
-    # Gradients
-    gwidth, gheight: float
-    grad1, grad2: float
-    gdata: MultiColourGradient
-
-    # Parametric equation
-    eqInpX, eqInpY: string
-
-var
-  gs = ShapeGeneratorState(
-    kind: sgsEllipse,
-    multiSelect: false,
-    x: 0.0, y: 0.0, angle: 0.0,
-    colour: 0xffffff,
-    prec: 16,
-    noPhysics: false,
-    rectHeight: 1.0,
-
-    ewr: 100.0, ehr: 100.0, eaStart: 0.0, eaEnd: 360.0, ehollow: false,
-    espiralStart: 1.0,
-
-    swidth: 300.0, sheight: 75.0, sosc: 2, sstart: 0.0,
-
-    gwidth: 200.0, gheight: 150.0, grad1: 30.0, grad2: 150.0,
-    gdata: defaultMultiColourGradient(),
-
-    eqInpX: "(t-0.5)*100", eqInpY: "-((t*2-1)^2)*100"
-  )
-  nShapes: int
-  selecting: bool = true
-
-proc setGs(kind: ShapeGeneratorKind) =
-  case kind
-  of sgsEllipse:
-    gs.kind = sgsEllipse
-    gs.noPhysics = false
-    gs.prec = 16
-  of sgsSine:
-    gs.kind = sgsSine
-    gs.noPhysics = false
-    gs.prec = 30
-  of sgsLinearGradient:
-    gs.kind = sgsLinearGradient
-    gs.noPhysics = true
-    gs.prec = 12
-  of sgsRadialGradient:
-    gs.kind = sgsRadialGradient
-    gs.noPhysics = true
-    gs.prec = 12
-  of sgsEquation:
-    gs.kind = sgsEquation
-    gs.noPhysics = false
-    gs.prec = 20
 
 func dtr(f: float): float = f.degToRad
 
@@ -91,149 +20,199 @@ func safeFloat(n: float): float =
 func safePos(p: MapPosition): MapPosition =
   [p.x.safeFloat, p.y.safeFloat].MapPosition
 
-proc genLinesShape(getPos: float -> MapPosition) =
+type LinesShapeSettings = ref object
+  body: MapBody
+  x, y, angle: float
+  colour: int
+  precision: int
+  noPhysics: bool
+  rectHeight: float
+
+proc genLinesShape(settings: LinesShapeSettings, getPos: float -> MapPosition) =
   proc getPosAdj(x: float): MapPosition =
-    let sa = gs.angle.dtr
+    let sa = settings.angle.dtr
     var r = getPos(x)
     r = r.rotatePoint(sa)
-    r.x += gs.x
-    r.y += gs.y
+    r.x += settings.x
+    r.y += settings.y
     return r
 
-  for n in 0..gs.prec-1:
+  for n in 0..settings.precision-1:
     let
-      p1 = getPosAdj(n / gs.prec).safePos
-      p2 = getPosAdj((n + 1) / gs.prec).safePos
+      p1 = getPosAdj(n / settings.precision).safePos
+      p2 = getPosAdj((n + 1) / settings.precision).safePos
 
     let shape = MapShape(
       stype: "bx",
       c: [(p1.x + p2.x) / 2, (p1.y + p2.y) / 2].MapPosition,
-      bxH: gs.rectHeight,
+      bxH: settings.rectHeight,
       bxW: sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2),
       a: arctan((p1.y - p2.y) / (p1.x - p2.x)).safeFloat
     )
     moph.shapes.add shape
 
     let fixture = MapFixture(n: cstring &"rect{n}", de: jsNull, re: jsNull,
-      fr: jsNull, f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
+      fr: jsNull, f: settings.colour, sh: moph.shapes.high, np: settings.noPhysics
     )
     moph.fixtures.add fixture
-    gs.body.fx.add moph.fixtures.high
+    settings.body.fx.add moph.fixtures.high
 
+type EllipseSettings = ref object
+  linesShape: LinesShapeSettings
+  widthRadius, heightRadius, angleStart, angleEnd, spiralStart: float
+  hollow: bool
 
-proc generateEllipse: int =
-  if gs.ehollow:
+proc generateEllipse(settings: EllipseSettings): int =
+  if settings.hollow:
     proc getPos(x: float): MapPosition =
       let
-        a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) * x
-        s = gs.espiralStart + (1 - gs.espiralStart) * x
-      return [gs.ewr * sin(a) * s, gs.ehr * cos(a) * s]
+        a = settings.angleEnd.dtr -
+          (settings.angleEnd.dtr - settings.angleStart.dtr) * x
+        s = settings.spiralStart + (1 - settings.spiralStart) * x
+      return [
+        settings.widthRadius * sin(a) * s,
+        settings.heightRadius * cos(a) * s
+      ]
 
-    genLinesShape(getPos)
+    genLinesShape(settings.linesShape, getPos)
 
-    result = gs.prec
+    result = settings.linesShape.precision
 
   else:
     let shape = MapShape(
-      stype: "po", poS: 1.0, a: gs.angle.dtr,
-      c: [gs.x, gs.y].MapPosition
+      stype: "po", poS: 1.0, a: settings.linesShape.angle.dtr,
+      c: [settings.linesShape.x, settings.linesShape.y].MapPosition
     )
 
-    for n in 0..gs.prec:
-      let a = gs.eaEnd.dtr - (gs.eaEnd.dtr - gs.eaStart.dtr) /
-        gs.prec.float * n.float
+    for n in 0..settings.linesShape.precision:
+      let a = settings.angleEnd.dtr -
+        (settings.angleEnd.dtr - settings.angleStart.dtr) /
+        settings.linesShape.precision.float * n.float
       shape.poV.add [
-        sin(a) * gs.ewr, cos(a) * gs.ehr
+        sin(a) * settings.widthRadius, cos(a) * settings.heightRadius
       ].MapPosition
-    if abs(gs.eaEnd - gs.eaStart) == 360:
+    # Delete superfluous shape
+    if abs(settings.angleEnd - settings.angleStart) == 360:
       shape.poV.delete shape.poV.high
 
     moph.shapes.add shape
     let fixture = MapFixture(n: "ellipse", de: jsNull, re: jsNull, fr: jsNull,
-        f: gs.colour, sh: moph.shapes.high, np: gs.noPhysics
+        f: settings.linesShape.colour, sh: moph.shapes.high,
+        np: settings.linesShape.noPhysics
     )
     moph.fixtures.add fixture
-    gs.body.fx.add moph.fixtures.high
+    settings.linesShape.body.fx.add moph.fixtures.high
     result = 1
 
-  updateRenderer(true)
-  updateRightBoxBody(-1)
+type SineSettings = ref object
+  linesShape: LinesShapeSettings
+  width, height, oscillations, start: float
 
-proc generateSine: int =
+proc generateSine(settings: SineSettings): int =
   proc getPos(x: float): MapPosition =
     let
-      sx = x * 2 * PI * gs.sosc + gs.sstart
+      sx = x * 2 * PI * settings.oscillations + settings.start
       asx = sx + sin(2 * sx) / 2.7
-    return [gs.swidth * (asx - gs.sstart) / gs.sosc / 2 / PI,
-      sin(asx) * gs.sheight]
+    return [
+      settings.width * (asx - settings.start) / settings.oscillations / 2 / PI,
+      sin(asx) * settings.height
+    ]
 
-  genLinesShape(getPos)
+  genLinesShape(settings.linesShape, getPos)
 
-  result = gs.prec
+  result = settings.linesShape.precision
 
-proc generateEquation: int =
+type EquationSettings = ref object
+  linesShape: LinesShapeSettings
+  inputX, inputY: string
+
+proc generateEquation(settings: EquationSettings): int =
   proc getPos(x: float): MapPosition =
     let ev = newEvaluator()
     ev.addVar("t", x)
-    return [ev.eval gs.eqInpX, ev.eval gs.eqInpY]
+    return [ev.eval settings.inputX, ev.eval settings.inputY]
 
-  genLinesShape(getPos)
+  genLinesShape(settings.linesShape, getPos)
 
-  result = gs.prec
+  result = settings.linesShape.precision
 
-proc generateGradient: int =
-  for i in 0..gs.prec-1:
+type
+  GradientSettings = ref object
+    body: MapBody
+    x, y: float
+    precision: int
+    # Linear if true, radial if false. I should improve this code later.
+    linear: bool
+    rectWidth, rectHeight, rectAngle: float
+    circleRadius1, circleRadius2: float
+    gradient: MultiColourGradient
+
+proc generateGradient(settings: GradientSettings): int =
+  for i in 0..settings.precision-1:
     var shape: MapShape
 
-    case gs.kind
-    of sgsLinearGradient:
+    if settings.linear:
       shape = MapShape(
-        stype: "bx", bxW: gs.gwidth / gs.prec.float, bxH: gs.gheight,
-        a: gs.angle.dtr,
-        c: [gs.gwidth * i.float / gs.prec.float - gs.gwidth / 2.0 +
-          gs.gwidth / gs.prec.float / 2, 0].MapPosition
+        stype: "bx", bxW: settings.rectWidth / settings.precision.float,
+        bxH: settings.rectHeight,
+        a: settings.rectAngle.dtr,
+        c: [
+            settings.rectWidth * i.float / settings.precision.float -
+              settings.rectWidth / 2.0 + settings.rectWidth /
+              settings.precision.float / 2,
+            0
+          ].MapPosition
         )
 
       block:
-        let sa = gs.angle.dtr
+        let sa = settings.rectAngle.dtr
         shape.c = shape.c.rotatePoint(sa)
-        shape.c.x += gs.x
-        shape.c.y += gs.y
-    of sgsRadialGradient:
-      let crm = i.float / (gs.prec.float - 1)
+        shape.c.x += settings.x
+        shape.c.y += settings.y
+    else:
+      let crm = i.float / (settings.precision.float - 1)
       shape = MapShape(
-        stype: "ci", ciR: gs.grad1 * crm + gs.grad2 * (1.0 - crm),
-        c: [gs.x, gs.y]
+        stype: "ci", ciR: settings.circleRadius1 * crm +
+          settings.circleRadius2 * (1.0 - crm),
+        c: [settings.x, settings.y]
       )
-    else: raise CatchableError.newException("gs.kind not gradient")
 
     moph.shapes.add shape
     let
-      colour = getColourAt(gs.gdata, GradientPos(i / (gs.prec - 1))).int
+      colour = getColourAt(
+        settings.gradient, GradientPos(i / (settings.precision - 1))).int
       fixture = MapFixture(n: cstring &"gradient{i}", de: jsNull, re: jsNull,
-        fr: jsNull, f: colour, sh: moph.shapes.high, np: gs.noPhysics)
+        fr: jsNull, f: colour, sh: moph.shapes.high, np: true)
     moph.fixtures.add fixture
-    gs.body.fx.add moph.fixtures.high
-  return gs.prec
+    settings.body.fx.add moph.fixtures.high
+  return settings.precision
 
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
     tdiv(style = "font-size:12px".toCss):
       text &"Shapes in platform: {body.fx.len}/100"
     var generateProc: void -> int
-    if body != gs.body:
+    
+    var
+      previewShapesCount {.global.}: int
+      selecting {.global.}: bool = true
+      previousBody {.global.}: MapBody
+      generatorType {.global.}: ShapeGeneratorType
+      multiSelectShapes {.global.}: bool
+    if body != previousBody:
       selecting = true
-    gs.body = body
+    previousBody = body
+
     let
       generate = proc =
-        nShapes = generateProc()
+        previewShapesCount = generateProc()
         updateRenderer(true)
         updateRightBoxBody(-1)
       remove = proc =
-        body.fx.setLen body.fx.len - nShapes
-        moph.fixtures.setLen moph.fixtures.len - nShapes
-        moph.shapes.setLen moph.shapes.len - nShapes
-        nShapes = 0
+        body.fx.setLen body.fx.len - previewShapesCount
+        moph.fixtures.setLen moph.fixtures.len - previewShapesCount
+        moph.shapes.setLen moph.shapes.len - previewShapesCount
+        previewShapesCount = 0
         updateRenderer(true)
         updateRightBoxBody(-1)
       update = proc =
@@ -246,8 +225,8 @@ proc shapeGenerator*(body: MapBody): VNode =
     if selecting:
       template sb(s): untyped =
         bonkButton($s, proc =
-          setGs s
           selecting = false
+          generatorType = s
         )
       sb sgsEllipse
       sb sgsSine
@@ -261,69 +240,108 @@ proc shapeGenerator*(body: MapBody): VNode =
         remove()
       )
 
-      let precInput =
-        bonkInput(gs.prec, proc(s: string): int =
-          result = s.parseInt
-          if result notin 1..999:
-            raise newException(ValueError, "prec notin 1.999")
+      template precisionInput(va): untyped =
+        bonkInput(va, proc(s: string): int =
+          let res = s.parseInt
+          if res notin 1..999:
+            raise newException(ValueError, "prec notin 1..999")
+          res
         , update, i => $i)
 
-      prop("No physics", checkbox(gs.noPhysics))
-      prop("Multi-select", checkbox(gs.multiSelect))
+      prop("Multi-select", checkbox(multiSelectShapes))
 
-      case gs.kind
+      case generatorType
       of sgsEllipse:
-        generateProc = generateEllipse
-        prop("x", pbi gs.x)
-        prop("y", pbi gs.y)
-        prop("Colour", colourInput(gs.colour))
-        prop("Angle", pbi gs.angle)
-        prop("Shapes/vertices", precInput)
-        prop("Width radius", pbi gs.ewr)
-        prop("Height radius", pbi gs.ehr)
-        prop("Angle start", pbi gs.eaStart)
-        prop("Angle end", pbi gs.eaEnd)
-        prop("Hollow", checkbox(gs.ehollow))
+        var settings {.global.} = EllipseSettings(
+          linesShape: LinesShapeSettings(
+            x: 0, y: 0, angle: 0,
+            colour: 0xffffff, precision: 20, noPhysics: false, rectHeight: 1
+          ),
+          widthRadius: 100, heightRadius: 100, angleStart: 0, angleEnd: 360,
+          spiralStart: 1, hollow: false
+        )
+        settings.linesShape.body = body
+        
+        generateProc = () => generateEllipse(settings)
+        prop("x", pbi settings.linesShape.x)
+        prop("y", pbi settings.linesShape.y)
+        prop("Colour", colourInput(settings.linesShape.colour))
+        prop("No physics", checkbox(settings.linesShape.noPhysics))
+        prop("Angle", pbi settings.linesShape.angle)
+        prop("Shapes/vertices", precisionInput settings.linesShape.precision)
+        prop("Width radius", pbi settings.widthRadius)
+        prop("Height radius", pbi settings.heightRadius)
+        prop("Angle start", pbi settings.angleStart)
+        prop("Angle end", pbi settings.angleEnd)
+        prop("Hollow", checkbox(settings.hollow))
 
-        if gs.ehollow:
-          prop("Spiral start", pbi gs.espiralStart)
-          prop("Rect height", pbi gs.rectHeight)
+        if settings.hollow:
+          prop("Spiral start", pbi settings.spiralStart)
+          prop("Rect height", pbi settings.linesShape.rectHeight)
 
       of sgsSine:
-        generateProc = generateSine
-        prop("x", pbi gs.x)
-        prop("y", pbi gs.y)
-        prop("Colour", colourInput(gs.colour))
-        prop("Angle", pbi gs.angle)
-        prop("Shapes", precInput)
-        prop("Width", pbi gs.swidth)
-        prop("Height", pbi gs.sheight)
-        prop("Oscillations", pbi gs.sosc)
-        prop("Rect height", pbi gs.rectHeight)
+        var settings {.global.} = SineSettings(
+          linesShape: LinesShapeSettings(
+            x: 0, y: 0, angle: 0,
+            colour: 0xffffff, precision: 20, noPhysics: false, rectHeight: 1
+          ),
+          width: 300, height: 75, oscillations: 2, start: 0
+        )
+        settings.linesShape.body = body
+
+        generateProc = () => generateSine(settings)
+        prop("x", pbi settings.linesShape.x)
+        prop("y", pbi settings.linesShape.y)
+        prop("Colour", colourInput(settings.linesShape.colour))
+        prop("Angle", pbi settings.linesShape.angle)
+        prop("Shapes", precisionInput settings.linesShape.precision)
+        prop("Width", pbi settings.width)
+        prop("Height", pbi settings.height)
+        prop("Oscillations", pbi settings.oscillations)
+        prop("Rect height", pbi settings.linesShape.rectHeight)
       of sgsLinearGradient, sgsRadialGradient:
-        generateProc = generateGradient
-        prop("x", pbi gs.x)
-        prop("y", pbi gs.y)
-        gradientProp(gs.gdata)
-        prop("Shapes", precInput)
-        case gs.kind
+        var settings {.global.} = GradientSettings(
+          x: 0, y: 0, precision: 16,
+          rectWidth: 150, rectHeight: 150, rectAngle: 0,
+          circleRadius1: 30, circleRadius2: 150,
+          gradient: defaultMultiColourGradient()
+        )
+        settings.body = body
+
+        generateProc = () => generateGradient(settings)
+        prop("x", pbi settings.x)
+        prop("y", pbi settings.y)
+        gradientProp(settings.gradient)
+        prop("Shapes", precisionInput settings.precision)
+        case generatorType
         of sgsLinearGradient:
-          prop("Angle", pbi gs.angle)
-          prop("Width", pbi gs.gwidth)
-          prop("Height", pbi gs.gheight)
+          settings.linear = true
+          prop("Angle", pbi settings.rectAngle)
+          prop("Width", pbi settings.rectWidth)
+          prop("Height", pbi settings.rectHeight)
         of sgsRadialGradient:
-          prop("Inner circle radius", pbi gs.grad1)
-          prop("Outer circle radius", pbi gs.grad2)
+          settings.linear = false
+          prop("Inner circle radius", pbi settings.circleRadius1)
+          prop("Outer circle radius", pbi settings.circleRadius2)
         else: discard
 
       of sgsEquation:
-        generateProc = generateEquation
-        prop("x", pbi gs.x)
-        prop("y", pbi gs.y)
-        prop("Colour", colourInput(gs.colour))
-        prop("Angle", pbi gs.angle)
-        prop("Shapes", precInput)
-        prop("Rect height", pbi gs.rectHeight)
+        var settings {.global.} = EquationSettings(
+          linesShape: LinesShapeSettings(
+            x: 0, y: 0, angle: 0,
+            colour: 0xffffff, precision: 20, noPhysics: false, rectHeight: 1
+          ),
+          inputX: "(t-0.5)*100", inputY: "-((t*2-1)^2)*100"
+        )
+        settings.linesShape.body = body
+        
+        generateProc = () => generateEquation(settings)
+        prop("x", pbi settings.linesShape.x)
+        prop("y", pbi settings.linesShape.y)
+        prop("Colour", colourInput(settings.linesShape.colour))
+        prop("Angle", pbi settings.linesShape.angle)
+        prop("Shapes", precisionInput settings.linesShape.precision)
+        prop("Rect height", pbi settings.linesShape.rectHeight)
 
         # bonkInput but with a width of 150px
         proc bonkInputWide[T](variable: var T; parser: string -> T;
@@ -350,23 +368,23 @@ proc shapeGenerator*(body: MapBody): VNode =
             discard ev.eval s
             return s
           , update, s=>s)
-        prop("X", eqInp(gs.eqInpX))
-        prop("Y", eqInp(gs.eqInpY))
+        prop("X", eqInp(settings.inputX))
+        prop("Y", eqInp(settings.inputY))
 
         ul(style = "font-size:11px; padding-left: 10px; margin: 3px".toCss):
           li text (
             "It is recommended that you experiment with equations on " &
-            "something like Desmos before adding them here")
+            "a graphing calculator like Desmos before using them here")
 
 
-      bonkButton(&"Save {$gs.kind}", proc =
+      bonkButton(&"Save {$generatorType}", proc =
         update()
-        if gs.multiSelect:
+        if multiSelectShapes:
           shapeMultiSelectSwitchPlatform()
-          for fxId in moph.fixtures.len-nShapes..moph.fixtures.high:
+          for fxId in moph.fixtures.len-previewShapesCount..moph.fixtures.high:
             selectedFixtures.add fxId.getFx
           shapeMultiSelectElementBorders()
-        nShapes = 0
+        previewShapesCount = 0
         saveToUndoHistory()
       )
 
