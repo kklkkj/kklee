@@ -125,6 +125,7 @@ proc generateSine(settings: SineSettings): int =
 type EquationSettings = ref object
   linesShape: LinesShapeSettings
   inputX, inputY: string
+  polygon: bool
 
 proc generateEquation(settings: EquationSettings): int =
   proc getPos(x: float): MapPosition =
@@ -132,9 +133,32 @@ proc generateEquation(settings: EquationSettings): int =
     ev.addVar("t", x)
     return [ev.eval settings.inputX, ev.eval settings.inputY]
 
-  genLinesShape(settings.linesShape, getPos)
+  if settings.polygon:
+    let shape = MapShape(
+      stype: "po", poS: 1.0, a: settings.linesShape.angle.dtr,
+      c: [settings.linesShape.x, settings.linesShape.y].MapPosition
+    )
 
-  result = settings.linesShape.precision
+    for n in 0..settings.linesShape.precision:
+      let
+        ev = newEvaluator()
+        x = n / settings.linesShape.precision * 0.999999999
+      ev.addVar("t", x)
+      shape.poV.add [
+        ev.eval settings.inputX, ev.eval settings.inputY
+      ].MapPosition
+
+    moph.shapes.add shape
+    let fixture = MapFixture(n: "equation", de: jsNull, re: jsNull, fr: jsNull,
+        f: settings.linesShape.colour, sh: moph.shapes.high,
+        np: settings.linesShape.noPhysics
+    )
+    moph.fixtures.add fixture
+    settings.linesShape.body.fx.add moph.fixtures.high
+    return 1
+  else:
+    genLinesShape(settings.linesShape, getPos)
+    return settings.linesShape.precision
 
 type
   GradientSettings = ref object
@@ -331,7 +355,8 @@ proc shapeGenerator*(body: MapBody): VNode =
             x: 0, y: 0, angle: 0,
             colour: 0xffffff, precision: 20, noPhysics: false, rectHeight: 1
           ),
-          inputX: "(t-0.5)*100", inputY: "-((t*2-1)^2)*100"
+          inputX: "(t-0.5)*100", inputY: "-((t*2-1)^2)*100",
+          polygon: false
         )
         settings.linesShape.body = body
         
@@ -342,6 +367,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         prop("Angle", pbi settings.linesShape.angle)
         prop("Shapes", precisionInput settings.linesShape.precision)
         prop("Rect height", pbi settings.linesShape.rectHeight)
+        prop("Polygon", checkbox(settings.polygon))
 
         # bonkInput but with a width of 150px
         proc bonkInputWide[T](variable: var T; parser: string -> T;
