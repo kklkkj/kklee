@@ -193,7 +193,7 @@ Predefined constants: `pi`, `tau`, `e`
 - `log2(x)` - the binary logarithm (base 2) of `x`
 - `max(x, y, z, ...)` - biggest argument from any number of arguments
 - `min(x, y, z, ...)` - smallest argument from any number of arguments
-- `ncr(x, y)` or `binom(x, y)` - the the number of ways a sample of \
+- `ncr(x, y)` or `binom(x, y)` - the number of ways a sample of \
   `y` elements can be obtained from a larger set of `x` distinguishable \
   objects where order does not matter and repetitions are not allowed
 - `npr(x, y)` - the number of ways of obtaining an ordered subset of `y` \
