@@ -1,5 +1,5 @@
 import
-  std/[dom, algorithm, sugar, strutils, math],
+  std/[dom, algorithm, sugar, strutils, math, strformat],
   kkleeApi, kkleeMain, bonkElements, shapeMultiSelect, platformMultiSelect
 
 proc shapeTableCell(label: string; cell: Element): Element =
@@ -31,6 +31,13 @@ let
   mapEditorDiv =
     docElemById("mapeditor")
 
+# Shape count indicator on platform
+
+let shapeCount = document.createElement("span")
+rightBoxShapeTableContainer.insertBefore(
+  shapeCount, docElemById("mapeditor_rightbox_shapeaddcontainer")
+)
+
 var
   bi: int
   body: MapBody
@@ -43,6 +50,16 @@ afterUpdateRightBoxBody = proc(fx: int) =
 
   bi = getCurrentBody()
   body = bi.getBody
+
+  # Update shape count indicator
+  var shapeCountText = &"{body.fx.len}/100 shapes"
+  if body.fx.len > 100:
+    shapeCountText &=
+      "\nWARNING: shapes will be deleted when you save the map!"
+    shapeCount.style.color = "var(--kkleeErrorColour)"
+  else:
+    shapeCount.style.color = ""
+  shapeCount.innerText = cstring shapeCountText
 
   for i, se in shapeElements.reversed:
     let
@@ -58,6 +75,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
           rerender()
         se.appendChild shapeTableCell("",
             createBonkButton("Edit vertices", editVerticies))
+
       proc editCapZone =
         var shapeCzId = -1
         for i, cz in mapObject.capZones:
@@ -75,6 +93,7 @@ afterUpdateRightBoxBody = proc(fx: int) =
           .children[0].children[shapeCzId].Element.click()
       se.appendChild shapeTableCell("",
         createBonkButton("Capzone", editCapZone))
+
       if fixture.fxShape.shapeType == stypeBx:
         proc rectToPoly =
           let bx = fixture.fxShape

@@ -188,9 +188,6 @@ proc generateGradient(settings: GradientSettings): GeneratedShapes =
 
 proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
-    tdiv(style = "font-size:12px".toCss):
-      text &"Shapes in platform: {body.fx.len}/100"
-
     var
       inFocus {.global.}: bool
       generatedShapes {.global.}: GeneratedShapes
