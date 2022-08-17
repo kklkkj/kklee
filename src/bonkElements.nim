@@ -172,7 +172,7 @@ proc gradientPropImpl(
   afterInput: proc(): void = nil
 ): VNode =
   buildHtml tdiv(style = "display: flex; flex-flow: column".toCss):
-    let runAfterInput = proc = 
+    let runAfterInput = proc =
       if not afterInput.isNil:
         afterInput()
     let cssGradient = "linear-gradient(90deg," &

@@ -161,8 +161,8 @@ proc generateGradient(settings: GradientSettings): GeneratedShapes =
               settings.rectWidth / 2.0 + settings.rectWidth /
               settings.precision.float / 2,
             0
-          ].MapPosition
-        )
+        ].MapPosition
+      )
     else:
       let crm =
         if settings.precision == 1: 1.0
@@ -190,7 +190,7 @@ proc shapeGenerator*(body: MapBody): VNode =
   buildHtml(tdiv(style = "display: flex; flex-flow: column".toCss)):
     tdiv(style = "font-size:12px".toCss):
       text &"Shapes in platform: {body.fx.len}/100"
-    
+
     var
       inFocus {.global.}: bool
       generatedShapes {.global.}: GeneratedShapes
@@ -219,23 +219,25 @@ proc shapeGenerator*(body: MapBody): VNode =
           shape.c.y += shapesY
           shape.a += shapesAngle.dtr
           fixture.np = shapesNoPhysics
-          
+
           moph.shapes.add shape
           fixture.sh = moph.shapes.high
           moph.fixtures.add fixture
           body.fx.add moph.fixtures.high
-          
+
         updateRenderer(true)
         updateRightBoxBody(-1)
       remove = proc =
         if not inFocus:
           return
+        # Remove shapes from map
         body.fx.setLen(body.fx.len - generatedShapes.len)
         moph.fixtures.setLen(moph.fixtures.len - generatedShapes.len)
         moph.shapes.setLen(moph.shapes.len - generatedShapes.len)
         updateRenderer(true)
         updateRightBoxBody(-1)
       updateWithoutRegenerating = proc =
+        # Regeneration is not needed when X, Y, angle or no physics is changed
         remove()
         addShapesToMap()
       update = proc =
@@ -266,7 +268,7 @@ proc shapeGenerator*(body: MapBody): VNode =
         bonkInput(va, prsFLimited, update, niceFormatFloat)
       template pbiWithoutRegenerating(va): untyped =
         bonkInput(va, prsFLimited, updateWithoutRegenerating, niceFormatFloat)
-      
+
       template precisionInput(va): untyped =
         bonkInput(va, proc(s: string): int =
           let res = s.parseInt
@@ -289,7 +291,7 @@ proc shapeGenerator*(body: MapBody): VNode =
           widthRadius: 100, heightRadius: 100, angleStart: 0, angleEnd: 360,
           spiralStart: 1, hollow: false
         )
-        
+
         generateProc = () => generateEllipse(settings)
         prop("Colour", colourInput(settings.linesShape.colour, update))
         prop("Shapes/vertices", precisionInput settings.linesShape.precision)
@@ -348,7 +350,7 @@ proc shapeGenerator*(body: MapBody): VNode =
           inputX: "(t-0.5)*100", inputY: "-((t*2-1)^2)*100",
           polygon: false
         )
-        
+
         generateProc = () => generateEquation(settings)
         prop("Colour", colourInput(settings.linesShape.colour, update))
         prop("Shapes", precisionInput settings.linesShape.precision)
@@ -389,11 +391,10 @@ proc shapeGenerator*(body: MapBody): VNode =
             "a graphing calculator like Desmos before using them here")
 
       # Workaround to avoid errors from karax
-      discard (
-        proc: int =
-          if generatedShapes.len == 0:
-            update()
-          1
+      discard (proc: int =
+        if generatedShapes.len == 0:
+          update()
+        1
       )()
 
       bonkButton(&"Save {$generatorType}", proc =
