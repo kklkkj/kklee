@@ -179,34 +179,45 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
 
   template editCapZone: untyped =
     var
-      canChange {.global.} = false
+      tfsCheckboxValue {.global.} = tfsSame
       capZoneType {.global.}: Option[MapCapZoneType]
       capZoneTime {.global.}: float = 10.0
       capZoneTimeCanChange {.global.} = false
     once: appliers.add proc(i: int; fx: MapFixture) =
-      if not canChange:
-        return
-      let fxId = moph.fixtures.find fx
-      var cz: MapCapZone
-      for ocz in mapObject.capZones:
-        if ocz.i == fxId:
-          cz = ocz
-          break
+      case tfsCheckboxValue
+      of tfsSame:
+        discard
+      of tfsTrue:
+        let fxId = moph.fixtures.find fx
+        var cz: MapCapZone
+        for ocz in mapObject.capZones:
+          if ocz.i == fxId:
+            cz = ocz
+            break
 
-      if cz.isNil and capZoneType.isNone or not capZoneTimeCanChange:
-        return
-      if cz.isNil:
-        mapObject.capZones.add MapCapZone(
-          n: "Cap Zone", ty: capZoneType.get, l: capZoneTime, i: fxId)
-      else:
-        if capZoneType.isSome:
-          cz.ty = capZoneType.get
-        if capZoneTimeCanChange:
-          cz.l = capZoneTime
+        if cz.isNil and capZoneType.isNone or not capZoneTimeCanChange:
+          return
+        if cz.isNil:
+          mapObject.capZones.add MapCapZone(
+            n: "Cap Zone", ty: capZoneType.get, l: capZoneTime, i: fxId)
+        else:
+          if capZoneType.isSome:
+            cz.ty = capZoneType.get
+          if capZoneTimeCanChange:
+            cz.l = capZoneTime
+      of tfsFalse:
+        let fxId = moph.fixtures.find fx
+        var i = 0
+        while i < mapObject.capZones.len:
+          let cz = mapObject.capZones[i]
+          if cz.i == fxId:
+            mapObject.capZones.del i
+          else:
+            inc i
 
     buildHtml tdiv:
-      prop "Capzone", checkbox(canChange), canChange
-      if canChange:
+      prop "Capzone", tfsCheckbox(tfsCheckboxValue), tfsCheckboxValue != tfsSame
+      if tfsCheckboxValue == tfsTrue:
         let typeDropdown = buildHtml dropDownPropSelect(capZoneType, @[
           ("Normal", cztNormal), ("Red", cztRed), ("Blue", cztBlue),
           ("Green", cztGreen), ("Yellow", cztYellow)
@@ -367,6 +378,13 @@ proc shapeMultiSelectSelectAll: VNode = buildHtml tdiv(
     shapeMultiSelectSwitchPlatform()
     for fx in includedFixtures():
       if not fx.np and fx notin selectedFixtures:
+        selectedFixtures.add fx
+    shapeMultiSelectElementBorders()
+  bonkButton "Select shapes with capzone", proc =
+    shapeMultiSelectSwitchPlatform()
+    for cz in mapObject.capZones:
+      let fx = cz.i.getFx
+      if fx in includedFixtures() and fx notin selectedFixtures:
         selectedFixtures.add fx
     shapeMultiSelectElementBorders()
 
