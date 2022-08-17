@@ -5,12 +5,15 @@ function injector(bonkCode) {
 
   const kklee = {};
   window.kklee = kklee;
+
   kklee.polyDecomp = require("poly-decomp");
   kklee.splitConcaveIntoConvex = (v) => {
     kklee.polyDecomp.makeCCW(v);
-    // Normal decomp is VERY slow with a high amount of vertices
+    // Normal .decomp is VERY slow with a high amount of vertices so
+    // .quickDecomp is used
     return kklee.polyDecomp.quickDecomp(v);
   };
+
   let src = bonkCode;
 
   let prevSrc = src;
@@ -26,10 +29,9 @@ function injector(bonkCode) {
     if (!condition) throw new Error("assertion failed");
   }
 
-  const mapObjectName = src
-    .match(/rxid:.{3}\[\d+\]/)[0]
-    .split(":")[1];
-  // Escape regex special characters
+  // Variable that stores map object, such as abc[123]
+  const mapObjectName = src.match(/rxid:.{3}\[\d+\]/)[0].split(":")[1];
+  // Escape regex special characters for use in regexes
   const monEsc = mapObjectName.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
   const varArrName = mapObjectName.split("[")[0];
 
@@ -40,6 +42,8 @@ function injector(bonkCode) {
 if(window.kklee.afterNewMapObject)window.kklee.afterNewMapObject();`
   );
 
+  // MapEncoder object that contains methods such as
+  // .getBlankMap and .decodeFromDatabase
   const mapEncoderName = src.match(
     new RegExp(`${monEsc}=(.)\\[.{1,25}\\]\\(\\);`)
   )[1];
@@ -51,6 +55,7 @@ window.kklee.mapEncoder=${mapEncoderName};`
   );
 
   /*
+  Map editor reset function
   This function contains some useful stuff
     function j0Z() {
         z5i[977] = -1; // selected body
@@ -96,6 +101,7 @@ window.kklee.mapEncoder=${mapEncoderName};`
     "UndoButtons",
     "ModeDropdown",
   ];
+  // Create functions that update or check for updates
   for (const i in updateFunctionNames) {
     const on = updateFunctionNames[i],
       nn = apiUpdateFunctionNames[i];
@@ -105,6 +111,7 @@ if(window.kklee.afterUpdate${nn})window.kklee.afterUpdate${nn}(...arguments);};\
 window.kklee.update${nn}=${on};`;
   }
 
+  // Creates functions to get or set these variables
   const apiCurrentlySelectedNames = ["Body", "Spawn", "CapZone"];
   for (const i in currentlySelectedNames) {
     const on = currentlySelectedNames[i],
@@ -116,7 +123,23 @@ window.kklee.setCurrent${nn}=function(v){return ${on}=v;};`;
 
   replace(theResetFunction, `${theResetFunction};{${ufInj}};`);
 
-  // Only part of the function body
+  /*
+  Function that saves map to undo history
+        function t$S() {
+            var H$l = [arguments];
+          H$l[7] = r8no$;
+          while (Q6N[84] > 0) {
+              Q6N[45]["shift"]();
+            Q6N[84]--;
+          }
+          U3ndn.Y$U();
+          Q6N[45]["unshift"](JSON["stringify"](Q6N[22]));
+          while (Q6N[45]["length"] > Q6N[61]) {
+              Q6N[45]["pop"]();
+          }
+          s7e();
+        }
+  */
   const saveHistoryFunction = src.match(
     new RegExp(
       `function ...\\(\\)\\{.{1,170}${varArrName}\\[\\d{1,3}\\]--;\\}\
@@ -131,6 +154,8 @@ JSON\\[.{1,40}\\]\\(${monEsc}\\)`
     new RegExp("(function ...\\(\\)\\{)"),
     "$1window.kklee.afterSaveHistory();"
   );
+  // Add function that sets new map object and make function that saves map to
+  // undo history accessible
   replace(
     saveHistoryFunction,
     `;window.kklee.setMapObject=\
@@ -139,6 +164,8 @@ window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
 ${newSaveHistoryFunction}`
   );
 
+  // Backups are stored in IndexedDB rather than localStorage because
+  // localStorage has a size limit of 5MB while IndexedDB doesn't
   const dbOpenRequest = window.indexedDB.open("kkleeStorage_347859220", 1);
   let db;
   kklee.backups = [];
@@ -169,6 +196,7 @@ ${newSaveHistoryFunction}`
   dbOpenRequest.onupgradeneeded = (event) => {
     const db = event.target.result;
     const b = db.createObjectStore("backups");
+    // Previous versions of kklee stored backups in localStorage
     b.put(JSON.parse(localStorage.kkleeMapBackups || "[]"), 1);
     delete localStorage.kkleeMapBackups;
   };
@@ -224,7 +252,8 @@ ${newSaveHistoryFunction}`
     backUpMap();
   };
 
-  // Replace Float64Array instances with normal arrays
+  // Replace Float64Array instances with normal arrays because Nim does some
+  // weird stuff when storing arrays of numbers
   window.kklee.saveToUndoHistory = () => {
     function fix(obj) {
       for (const k of Object.keys(obj)) {
@@ -238,7 +267,7 @@ ${newSaveHistoryFunction}`
 
   /*
     Prevent removal of event listener for activating chat with enter key when
-    lobby is hidden
+    lobby is hidden. This allows the chat to be used in the editor.
   */
   replace(
     new RegExp(
@@ -292,7 +321,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     "window.kklee.editorPreviewTimeMs"
   );
 
-  // An object that contains many things, including username
+  // An object that contains many things, including username.
   // userName and guest properties are used in the transfer ownership feature
   const scopedDataObjectName = src.match(
     new RegExp(",dbid:(.{2,4}\\[\\d{1,3}\\]).{1,30},guest")
@@ -481,6 +510,7 @@ const currentVersion = require("../dist/manifest.json")
 (async () => {
   if (
     !window.localStorage["kkleeEnableUpdateChecks"] ||
+    // Check if there already was a check within the last hour
     Date.now() -
       (Number(window.localStorage["kkleeLastUpdateCheckTimestamp"]) || 0) <
       1000 * 60 * 60 * 1
@@ -517,6 +547,7 @@ const currentVersion = require("../dist/manifest.json")
   if (message === null) return;
 
   try {
+    // Add update notification at the top of the page
     const el = document.createElement("span");
     el.textContent = message;
     el.style =
