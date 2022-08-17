@@ -120,7 +120,8 @@ window.kklee.setCurrent${nn}=function(v){return ${on}=v;};`;
   const saveHistoryFunction = src.match(
     new RegExp(
       `function ...\\(\\)\\{.{1,170}${varArrName}\\[\\d{1,3}\\]--;\\}\
-${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(JSON\\[.{1,40}\\]\\(${monEsc}\\)`
+.{0,100}${varArrName}\\[\\d{1,3}\\].{1,40}\\]\\(\
+JSON\\[.{1,40}\\]\\(${monEsc}\\)`
     )
   )[0];
   const saveHistoryFunctionName = saveHistoryFunction.match(
