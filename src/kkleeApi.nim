@@ -212,6 +212,7 @@ proc splitConcaveIntoConvex*(v: seq[MapPosition]): seq[seq[MapPosition]]
 proc multiSelectNameChanger*(input: string; thingIndex: int): string =
   let evtor = newEvaluator()
   evtor.addVar("i", thingIndex.float)
+  evtor.addFunc("rand", mathExprJsRandom, 0)
   var nameParts = input.split("||")
   if nameParts.len mod 2 == 0:
     raise CatchableError.newException(
