@@ -524,3 +524,16 @@ existingColoursContainer.style.overflowY = "scroll"
 let styleSheet = document.createElement("style")
 styleSheet.innerText = static: cstring staticRead("./kkleeStyles.css")
 document.head.appendChild(styleSheet)
+
+# Info about arrow shortcuts when hovering over map preview
+
+docElemById("mapeditor_midbox_previewcontainer").addEventListener(
+  "mouseenter", (proc(e: Event) =
+  setEditorExplanation(
+    "[kklee]\n" &
+    "You can use arrow keys to pan around the editor preview.\n" &
+    "Shortcut modified to change pan amount:\nJust Arrow: 50\n" &
+    "Shift + Arrow: 25\nCtrl + Arrow: 150\nCtrl + Shift + Arrow: 10"
+  )
+)
+)

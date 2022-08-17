@@ -19,3 +19,8 @@ proc mapBackupLoader*: VNode = buildHtml tdiv(
 
   for i in countdown(kkleeApi.mapBackups.high, 0):
     backupOption(kkleeApi.mapBackups[i])
+
+  proc onMouseEnter =
+    setEditorExplanation(
+      "[kklee]\nMaps are automatically backed up to your browser's storage."
+    )
