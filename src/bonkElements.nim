@@ -171,7 +171,9 @@ proc gradientPropImpl(
   gradient: var MultiColourGradient; selectedIndex: var int;
   afterInput: proc(): void = nil
 ): VNode =
-  buildHtml tdiv(style = "display: flex; flex-flow: column".toCss):
+  buildHtml tdiv(
+    style = "display: flex; flex-flow: column; margin: 10px 0px".toCss
+  ):
     let runAfterInput = proc =
       if not afterInput.isNil:
         afterInput()
