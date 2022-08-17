@@ -546,7 +546,7 @@ document.head.appendChild(styleSheet)
 
 # Info about arrow shortcuts when hovering over map preview
 
-docElemById("mapeditor_midbox_previewcontainer").addEventListener(
+previewContainer.addEventListener(
   "mouseenter", (proc(e: Event) =
   setEditorExplanation(
     "[kklee]\n" &
@@ -555,4 +555,24 @@ docElemById("mapeditor_midbox_previewcontainer").addEventListener(
     "Shift + Arrow: 25\nCtrl + Arrow: 150\nCtrl + Shift + Arrow: 10"
   )
 )
+)
+
+# Fix scroll zoom sensitivity in editor preview when using a trackpad
+
+var scrollAmount = 0.0
+previewContainer.addEventListener("wheel", proc(e: Event) =
+  var deltaY = 0.0
+  {.emit: [deltaY, "=", e, ".deltaY;"].}
+  scrollAmount += deltaY * 0.025
+  if scrollAmount < -1:
+    scaleStage(1.25)
+    updateRenderer(false)
+    scrollAmount = 0
+  elif scrollAmount > 1:
+    scaleStage(0.8)
+    updateRenderer(false)
+    scrollAmount = 0
+
+  e.preventDefault()
+  e.stopImmediatePropagation()
 )
