@@ -24,5 +24,5 @@ let
 """
 
 let version = manifest["version"].getStr()
-writeFile(&"./build/kklee-{version}.user.js",
+writeFile(&"./build/kklee.user.js",
   userScriptSrc)

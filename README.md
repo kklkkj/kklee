@@ -13,11 +13,11 @@ Userscripts require a userscript manager such as Violentmonkey or Tampermonkey,
 and [Excigma's code injector userscript](https://greasyfork.org/en/scripts/433861-code-injector-bonk-io).
 
 The userscript is available in [Releases](https://github.com/kklkkj/kklee/releases)
-as kklee-(version)**_.user.js_**.
+(the **_.user.js_** file)
 
 ## Installing as an extension
 
-Download the latest kklee-(version)**_.zip_** file from
+Download the latest **_.zip_** file from
 [Releases](https://github.com/kklkkj/kklee/releases).
 
 <details>
@@ -63,10 +63,6 @@ be fixed.
    - [Nim](https://nim-lang.org/) (v1.6.4)
 2. Run `npm ci` to install npm dependecies.
 3. Run `nimble install -d` to install nimble dependencies.
-4. Run `npm run build`.
-5. Either:
-   - Run `npm run test` to open a temporary browser session with the extension.
-   - Run `npm run build-extension` to build the zip file and userscript.
-     The files will be in the `build` directory.
+4. Run `npm run build`. The files will be saved in the `build` directory.
 
 </details>
