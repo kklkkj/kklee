@@ -1,8 +1,9 @@
 version = "0.0.0"
-author = "k"
-description = "Why am I forced to add this information"
+author = "."
+description = "."
 license = "MIT"
+skipDirs = @["src"]
 
 requires "nim >= 1.6.0"
-requires "karax == 1.2.2"
-requires "mathexpr == 1.3.2"
+requires "karax#aab6357cd5b6c7c9588e0097616a5a2a339e7f37" # 1.2.2
+requires "mathexpr#90e6e026bdbe84f2ab622d86eb024e0e749640a1" # 1.3.2
