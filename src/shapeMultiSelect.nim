@@ -292,7 +292,7 @@ proc shapeMultiSelectCopy: VNode = buildHtml tdiv(
     block outer:
       for _ in 1..pasteAmount:
         for (fx, sh, cz) in copyShapes.mitems:
-          if fixturesBody.fx.len > 100:
+          if fixturesBody.fx.len > 1000:
             break outer
           moph.shapes.add sh.copyObject()
           let newFx = fx.copyObject()
