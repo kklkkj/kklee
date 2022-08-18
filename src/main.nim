@@ -34,6 +34,7 @@ let
 # Shape count indicator on platform
 
 let shapeCount = document.createElement("span")
+shapeCount.style.margin = cstring "10px 10px"
 rightBoxShapeTableContainer.insertBefore(
   shapeCount, docElemById("mapeditor_rightbox_shapeaddcontainer")
 )
