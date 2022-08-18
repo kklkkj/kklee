@@ -114,6 +114,82 @@ afterUpdateRightBoxBody = proc(fx: int) =
 
   shapeMultiSelectElementBorders()
 
+# Dragging shapes in shapes list
+
+var draggedShapeElement: Element = nil
+
+proc styleDraggedShapeElement =
+  draggedShapeElement.style.boxShadow = "0px 0px 50px 1px"
+  draggedShapeElement.style.zIndex = "99"
+  draggedShapeElement.style.backdropFilter = "blur(10px)"
+
+if not draggedShapeElement.isNil:
+  styleDraggedShapeElement()
+
+rightBoxShapeTableContainer.addEventListener("mousedown", proc(e: Event) =
+  let e = e.MouseEvent
+  if e.target.parentElement.classList.contains(
+    "mapeditor_rightbox_table_shape_container"
+  ):
+    draggedShapeElement = e.target.parentElement
+)
+
+document.addEventListener("mousemove", proc(e: Event) =
+  if draggedShapeElement.isNil:
+    return
+  let e = e.MouseEvent
+  draggedShapeElement.style.translate = ""
+
+  var rect = draggedShapeElement.getBoundingClientRect()
+  let translateY = e.clientY.float - rect.y
+  if abs(translateY) < 20:
+    return
+  styleDraggedShapeElement()
+  draggedShapeElement.style.translate = cstring &"0px {translateY}px"
+
+  # Collapse all shape elements so that they all have the same height
+  for node in rightBoxShapeTableContainer.children:
+    let classList = node.Element.classList
+    if (classList.contains("mapeditor_rightbox_table_shape_container") and
+        not classList.contains(
+        "mapeditor_rightbox_table_shape_container_collapsed")):
+      for childNode in node.children:
+        if childNode.class == "mapeditor_rightbox_table_shape_pm":
+          childNode.Element.click()
+  rect = draggedShapeElement.getBoundingClientRect()
+
+  if abs(translateY) > rect.height:
+    let body = getCurrentBody().getBody
+
+    # Shapes list is .fx reversed
+    let moveCount = -int(translateY / rect.height)
+    # Index in .fx, not .fixtures
+    let fxIndex = rightBoxShapeTableContainer.children.reversed.find(
+        draggedShapeElement)
+    let newFxIndex = fxIndex + moveCount
+    if newFxIndex notin 0..body.fx.high:
+      return
+
+    let fxId = body.fx[fxIndex]
+
+    body.fx.delete(fxIndex)
+    body.fx.insert(fxId, newFxIndex)
+
+    updateRightBoxBody(-1)
+
+    draggedShapeElement = rightBoxShapeTableContainer.children[
+        rightBoxShapeTableContainer.children.high - newFxIndex].Element
+    styleDraggedShapeElement()
+)
+document.addEventListener("mouseup", proc(e: Event) =
+  if draggedShapeElement.isNil:
+    return
+  draggedShapeElement.style.translate = ""
+  draggedShapeElement.style.boxShadow = ""
+  draggedShapeElement = nil
+)
+
+
 # Platform multiselect
 
 let platformMultiSelectButton = createBonkButton("Multiselect", proc =
@@ -147,6 +223,62 @@ proc initPlatformMultiSelect =
     platformMultiSelectElementBorders()
   )
 
+# Dragging platforms in platform list
+
+var draggedPlatformElement: Element = nil
+
+proc initPlatformDragging =
+  let platformsContainer = docElemById("mapeditor_leftbox_platformtable")
+  if platformsContainer.isNil: return
+  if not draggedPlatformElement.isNil:
+    draggedPlatformElement.style.boxShadow = "0px 0px 50px 1px"
+
+  platformsContainer.addEventListener("mousedown", proc(e: Event) =
+    let e = e.MouseEvent
+    if e.target.nodeName == "TD":
+      draggedPlatformElement = e.target.parentElement
+  )
+
+document.addEventListener("mousemove", proc(e: Event) =
+  if draggedPlatformElement.isNil:
+    return
+  let e = e.MouseEvent
+  draggedPlatformElement.style.translate = ""
+
+  let rect = draggedPlatformElement.getBoundingClientRect()
+  let translateY = e.clientY.float - rect.y
+  if abs(translateY) < 3:
+    return
+  draggedPlatformElement.style.boxShadow = "0px 0px 50px 1px"
+  draggedPlatformElement.style.translate = cstring &"0px {translateY}px"
+
+  if abs(translateY) > rect.height:
+    let moveCount = int(translateY / rect.height)
+    # Index in .bro, not .bodies
+    let bodyIndex = docElemById("mapeditor_leftbox_platformtable").children[0]
+      .children.find(draggedPlatformElement)
+
+    let newBodyIndex = bodyIndex + moveCount
+    if newBodyIndex notin 0..moph.bro.high:
+      return
+
+    let bodyId = moph.bro[bodyIndex]
+
+    moph.bro.delete(bodyIndex)
+    moph.bro.insert(bodyId, newBodyIndex)
+
+    updateLeftBox()
+    draggedPlatformElement = docElemById("mapeditor_leftbox_platformtable")
+      .children[0].children[newBodyIndex].Element
+)
+document.addEventListener("mouseup", proc(e: Event) =
+  if draggedPlatformElement.isNil:
+    return
+  draggedPlatformElement.style.translate = ""
+  draggedPlatformElement.style.boxShadow = ""
+  draggedPlatformElement = nil
+)
+
 afterUpdateLeftBox = proc =
   # This fixes the bug where shapeMultiSelectElementBorders would throw an
   # error when the right box was not updated to show the currently selected
@@ -159,6 +291,8 @@ afterUpdateLeftBox = proc =
     updateRightBoxBody(-1)
 
   initPlatformMultiSelect()
+  initPlatformDragging()
+
 
 # Generate shape button
 
