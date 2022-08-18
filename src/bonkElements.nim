@@ -177,10 +177,13 @@ proc gradientPropImpl(
     let runAfterInput = proc =
       if not afterInput.isNil:
         afterInput()
-    let cssGradient = "linear-gradient(90deg," &
-      gradient.colours.mapIt(
-        "#" & it.colour.int.toHex(6) & " " & $(it.pos * 100) & "%"
-      ).join(",") & ")"
+    let cssGradient = block:
+      var r = "linear-gradient(90deg"
+      for i in 0..10:
+        r &= ", #" & gradient.getColourAt(i.float / 10.0).int.toHex(6) &
+          " " & $(i * 10) & "%"
+      r &= ")"
+      r
     tdiv(style = ("width: 100%; height: 15px; background:" & cssGradient).toCss)
 
     var inputPos = gradient.colours[selectedIndex].pos
@@ -188,6 +191,11 @@ proc gradientPropImpl(
     prop "Easing", dropDownPropSelect(gradient.easing, @[
       ($easeNone, easeNone), ($easeInSine, easeInSine),
       ($easeOutSine, easeOutSine), ($easeInOutSine, easeInOutSine)
+    ], afterInput)
+
+    prop "Colour space", dropDownPropSelect(gradient.colourSpace, @[
+      ("RGB", ColourSpace.RGB), ("HSL", ColourSpace.HSL),
+      ("HCL (CIELUV)", ColourSpace.HCL)
     ], afterInput)
 
     tdiv(style = "display: flex; flex-flow: row wrap;".toCss):
