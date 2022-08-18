@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1
+
+- Made the mod work on the latest bonk.io update
+- Added polygon option in the parametric equation generator
+- Fixed some bugs in the shape generator and gradient pickers
+- Added a shape count indicator at the top of the shapes list
+- Added a button that selects shapes with capture zones in shape multiselect
+- Added a way to delete capture zones in shape multiselect
+- Increased the shape pasting limit from 100 to 1000
+- Fixed scroll zoom sensitivity on trackpads (taken from Excigma's userscript)
+- Added a button that resets multiselect properties
+- Added a colour space option in gradient pickers with options for
+  RGB, HSL and HCL
+- Shapes and platforms can be dragged in their list to move them
+
 ## v1.0
 
 - Made the mod work on the new bonk.io update
