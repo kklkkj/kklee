@@ -63,6 +63,11 @@ be fixed.
    - [Nim](https://nim-lang.org/) (v1.6.4)
 2. Run `npm ci` to install npm dependecies.
 3. Run `nimble install -d` to install nimble dependencies.
-4. Run `npm run build`. The files will be saved in the `build` directory.
+4. Run either:
+
+   - `npm run buildDev` (no minfication so build is quicker)
+   - `npm run buildRelease` (minified)
+
+   The files will be saved in the `build` directory.
 
 </details>

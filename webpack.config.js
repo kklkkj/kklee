@@ -2,6 +2,7 @@ const path = require("path");
 const child_process = require("child_process");
 const TerserPlugin = require("terser-webpack-plugin");
 
+console.log("Building");
 console.log(
   child_process.execSync(
     "nim js -d:release -o:./src/___nimBuild___.js ./src/main.nim"
@@ -21,7 +22,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
   },
   optimization: {
-    minimize: true,
+    minimize: Boolean(process.env.WEBPACK_MINIMIZE),
     minimizer: [
       new TerserPlugin({
         terserOptions: {

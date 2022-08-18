@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "web-ext run -s ./dist",
-    "build": "webpack && web-ext build -s ./dist -a ./build --overwrite-dest -n kklee.zip && nim e generateUserscript.nims"
+    "buildDev": "webpack && web-ext build -s ./dist -a ./build --overwrite-dest -n kklee.zip && nim e generateUserscript.nims",
+    "buildRelease": "WEBPACK_MINIMIZE=1 npm run buildDev"
   }
 }
