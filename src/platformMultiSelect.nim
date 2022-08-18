@@ -98,6 +98,11 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
     """)
 
   var appliers {.global.}: seq[(int, MapBody) -> void]
+  var resetters {.global.}: seq[() -> void]
+
+  bonkButton "Reset", proc =
+    for fn in resetters:
+      fn()
 
   template floatProp(
     name: string; mapBProp: untyped;
@@ -109,20 +114,27 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
       propToInpF = propToInp
     var inp {.global.}: string = "x"
 
-    once: appliers.add proc (i: int; b {.inject.}: MapBody) =
-      mapBProp = inpToPropF floatPropApplier(inp, i, selectedBodies.len,
-          propToInpF mapBProp)
+    once:
+      appliers.add proc (i: int; b {.inject.}: MapBody) =
+        mapBProp = inpToPropF floatPropApplier(
+          inp, i, selectedBodies.len, propToInpF mapBProp
+        )
+      resetters.add proc =
+        inp = "x"
 
     buildHtml:
       prop name, floatPropInput(inp), inp != "x"
 
   template boolProp(name: string; mapBProp: untyped): untyped =
     var inp {.global.}: boolPropValue
-    once: appliers.add proc(i: int; b {.inject.}: MapBody) =
-      case inp
-      of tfsFalse: mapBProp = false
-      of tfsTrue: mapBProp = true
-      of tfsSame: discard
+    once:
+      appliers.add proc(i: int; b {.inject.}: MapBody) =
+        case inp
+        of tfsFalse: mapBProp = false
+        of tfsTrue: mapBProp = true
+        of tfsSame: discard
+      resetters.add proc =
+        inp = tfsSame
     buildHtml:
       prop name, tfsCheckbox(inp), inp != tfsSame
 
@@ -133,9 +145,12 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
   ): untyped =
     var
       inp {.global.}: Option[T]
-    once: appliers.add proc(i: int; b {.inject.}: MapBody) =
-      if inp.isSome:
-        mapBProp = inp.get
+    once:
+      appliers.add proc(i: int; b {.inject.}: MapBody) =
+        if inp.isSome:
+          mapBProp = inp.get
+      resetters.add proc =
+        inp = default Option[T]
     buildHtml:
       prop name, dropDownPropSelect(inp, @options), inp.isSome
 
@@ -144,9 +159,13 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
     var
       canChange {.global.} = false
       inp {.global.}: string = "Platform ||i||"
-    once: appliers.add proc(i: int; b: MapBody) =
-      if canChange:
-        b.n = cstring multiSelectNameChanger(inp, i)
+    once:
+      appliers.add proc(i: int; b: MapBody) =
+        if canChange:
+          b.n = cstring multiSelectNameChanger(inp, i)
+      resetters.add proc =
+        canChange = false
+        inp = "Platform ||i||"
     buildHtml:
       let field = buildHtml tdiv(style = "display: flex".toCss):
         checkbox(canChange)

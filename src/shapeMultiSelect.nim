@@ -66,6 +66,11 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
     """)
 
   var appliers {.global.}: seq[(int, MapFixture) -> void]
+  var resetters {.global.}: seq[() -> void]
+
+  bonkButton "Reset", proc =
+    for fn in resetters:
+      fn()
 
   template floatProp(
     name: string; mapFxProp: untyped;
@@ -77,20 +82,27 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
       propToInpF = propToInp
     var inp {.global.}: string = "x"
 
-    once: appliers.add proc (i: int; fx {.inject.}: MapFixture) =
-      mapFxProp = inpToPropF floatPropApplier(inp, i, selectedFixtures.len,
-          propToInpF mapFxProp)
+    once:
+      appliers.add proc (i: int; fx {.inject.}: MapFixture) =
+        mapFxProp = inpToPropF floatPropApplier(
+          inp, i, selectedFixtures.len, propToInpF mapFxProp
+        )
+      resetters.add proc =
+        inp = "x"
 
     buildHtml:
       prop name, floatPropInput(inp), inp != "x"
 
   template boolProp(name: string; mapFxProp: untyped): untyped =
     var inp {.global.}: boolPropValue
-    once: appliers.add proc(i: int; fx {.inject.}: MapFixture) =
-      case inp
-      of tfsFalse: mapFxProp = false
-      of tfsTrue: mapFxProp = true
-      of tfsSame: discard
+    once:
+      appliers.add proc(i: int; fx {.inject.}: MapFixture) =
+        case inp
+        of tfsFalse: mapFxProp = false
+        of tfsTrue: mapFxProp = true
+        of tfsSame: discard
+      resetters.add proc =
+        inp = tfsSame
     buildHtml:
       prop name, tfsCheckbox(inp), inp != tfsSame
 
@@ -101,18 +113,23 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
       inputType {.global.} = Unchanged
       oneColourInp {.global.}: int = 0
       multiColourGradientInp {.global.} = defaultMultiColourGradient()
-    once: appliers.add proc(i: int; fx: MapFixture) =
-      case inputType
-      of Unchanged: return
-      of OneColour: fx.f = oneColourInp
-      of Gradient:
-        fx.f = getColourAt(
-          multiColourGradientInp,
-          GradientPos(
-            if selectedFixtures.high == 0: 1.0
-            else: i / selectedFixtures.high
-          )
-        ).int
+    once:
+      appliers.add proc(i: int; fx: MapFixture) =
+        case inputType
+        of Unchanged: return
+        of OneColour: fx.f = oneColourInp
+        of Gradient:
+          fx.f = getColourAt(
+            multiColourGradientInp,
+            GradientPos(
+              if selectedFixtures.high == 0: 1.0
+              else: i / selectedFixtures.high
+            )
+          ).int
+      resetters.add proc =
+        inputType = Unchanged
+        oneColourInp = 0
+        multiColourGradientInp = defaultMultiColourGradient()
 
     let
       dropdown = dropDownPropSelect(inputType, @[
@@ -132,9 +149,13 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
     var
       canChange {.global.} = false
       inp {.global.}: string = "Shape ||i||"
-    once: appliers.add proc(i: int; fx: MapFixture) =
-      if canChange:
-        fx.n = cstring multiSelectNameChanger(inp, i)
+    once:
+      appliers.add proc(i: int; fx: MapFixture) =
+        if canChange:
+          fx.n = cstring multiSelectNameChanger(inp, i)
+      resetters.add proc =
+        canChange = false
+        inp = "Shape ||i||"
     buildHtml:
       let field = buildHtml tdiv(style = "display: flex".toCss):
         checkbox(canChange)
@@ -146,27 +167,32 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
       point {.global.} = [0.0, 0.0].MapPosition
       degrees {.global.} = 0.0
       scale {.global.} = 1.0
-    once: appliers.add proc(i: int; fx: MapFixture) =
-      template sh: untyped = fx.fxShape
-      var p = sh.c
-      p.x -= point.x
-      p.y -= point.y
-      if degrees != 0.0:
-        p = rotatePoint(p, degrees.degToRad)
-      sh.a += degrees.degToRad
-      p.x *= scale
-      p.y *= scale
-      p.x += point.x
-      p.y += point.y
-      sh.c = p
-      case sh.shapeType
-      of stypeBx:
-        sh.bxW *= scale
-        sh.bxH *= scale
-      of stypeCi:
-        sh.ciR *= scale
-      of stypePo:
-        sh.poS *= scale
+    once:
+      appliers.add proc(i: int; fx: MapFixture) =
+        template sh: untyped = fx.fxShape
+        var p = sh.c
+        p.x -= point.x
+        p.y -= point.y
+        if degrees != 0.0:
+          p = rotatePoint(p, degrees.degToRad)
+        sh.a += degrees.degToRad
+        p.x *= scale
+        p.y *= scale
+        p.x += point.x
+        p.y += point.y
+        sh.c = p
+        case sh.shapeType
+        of stypeBx:
+          sh.bxW *= scale
+          sh.bxH *= scale
+        of stypeCi:
+          sh.ciR *= scale
+        of stypePo:
+          sh.poS *= scale
+      resetters.add proc =
+        point = [0.0, 0.0].MapPosition
+        degrees = 0.0
+        scale = 1.0
     buildHtml tdiv:
       let pointInput = buildHtml tdiv:
         bonkInput(point[0], prsFLimited, nil, niceFormatFloat)
@@ -183,38 +209,43 @@ https://github.com/kklkkj/kklee/blob/master/guide.md#mathematical-expression-eva
       capZoneType {.global.}: Option[MapCapZoneType]
       capZoneTime {.global.}: float = 10.0
       capZoneTimeCanChange {.global.} = false
-    once: appliers.add proc(i: int; fx: MapFixture) =
-      case tfsCheckboxValue
-      of tfsSame:
-        discard
-      of tfsTrue:
-        let fxId = moph.fixtures.find fx
-        var cz: MapCapZone
-        for ocz in mapObject.capZones:
-          if ocz.i == fxId:
-            cz = ocz
-            break
+    once:
+      appliers.add proc(i: int; fx: MapFixture) =
+        case tfsCheckboxValue
+        of tfsSame:
+          discard
+        of tfsTrue:
+          let fxId = moph.fixtures.find fx
+          var cz: MapCapZone
+          for ocz in mapObject.capZones:
+            if ocz.i == fxId:
+              cz = ocz
+              break
 
-        if cz.isNil and capZoneType.isNone or not capZoneTimeCanChange:
-          return
-        if cz.isNil:
-          mapObject.capZones.add MapCapZone(
-            n: "Cap Zone", ty: capZoneType.get, l: capZoneTime, i: fxId)
-        else:
-          if capZoneType.isSome:
-            cz.ty = capZoneType.get
-          if capZoneTimeCanChange:
-            cz.l = capZoneTime
-      of tfsFalse:
-        let fxId = moph.fixtures.find fx
-        var i = 0
-        while i < mapObject.capZones.len:
-          let cz = mapObject.capZones[i]
-          if cz.i == fxId:
-            mapObject.capZones.del i
+          if cz.isNil and capZoneType.isNone or not capZoneTimeCanChange:
+            return
+          if cz.isNil:
+            mapObject.capZones.add MapCapZone(
+              n: "Cap Zone", ty: capZoneType.get, l: capZoneTime, i: fxId)
           else:
-            inc i
-
+            if capZoneType.isSome:
+              cz.ty = capZoneType.get
+            if capZoneTimeCanChange:
+              cz.l = capZoneTime
+        of tfsFalse:
+          let fxId = moph.fixtures.find fx
+          var i = 0
+          while i < mapObject.capZones.len:
+            let cz = mapObject.capZones[i]
+            if cz.i == fxId:
+              mapObject.capZones.del i
+            else:
+              inc i
+      resetters.add proc =
+        tfsCheckboxValue = tfsSame
+        capZoneType = none(MapCapZoneType)
+        capZoneTime = 10.0
+        capZoneTimeCanChange = false
     buildHtml tdiv:
       prop "Capzone", tfsCheckbox(tfsCheckboxValue), tfsCheckboxValue != tfsSame
       if tfsCheckboxValue == tfsTrue:
