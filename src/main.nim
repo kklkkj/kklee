@@ -186,6 +186,7 @@ document.addEventListener("mouseup", proc(e: Event) =
     return
   draggedShapeElement.style.translate = ""
   draggedShapeElement.style.boxShadow = ""
+  draggedShapeElement.style.zIndex = ""
   draggedShapeElement = nil
   saveToUndoHistory()
 )
@@ -233,6 +234,7 @@ proc initPlatformDragging =
   if platformsContainer.isNil: return
   if not draggedPlatformElement.isNil:
     draggedPlatformElement.style.boxShadow = "0px 0px 50px 1px"
+    draggedPlatformElement.style.zIndex = "99"
 
   platformsContainer.addEventListener("mousedown", proc(e: Event) =
     let e = e.MouseEvent
@@ -277,6 +279,7 @@ document.addEventListener("mouseup", proc(e: Event) =
     return
   draggedPlatformElement.style.translate = ""
   draggedPlatformElement.style.boxShadow = ""
+  draggedPlatformElement.style.zIndex = ""
   draggedPlatformElement = nil
   saveToUndoHistory()
 )
