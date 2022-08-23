@@ -187,6 +187,7 @@ document.addEventListener("mouseup", proc(e: Event) =
   draggedShapeElement.style.translate = ""
   draggedShapeElement.style.boxShadow = ""
   draggedShapeElement = nil
+  saveToUndoHistory()
 )
 
 
@@ -277,6 +278,7 @@ document.addEventListener("mouseup", proc(e: Event) =
   draggedPlatformElement.style.translate = ""
   draggedPlatformElement.style.boxShadow = ""
   draggedPlatformElement = nil
+  saveToUndoHistory()
 )
 
 afterUpdateLeftBox = proc =
