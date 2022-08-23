@@ -117,19 +117,36 @@ afterUpdateRightBoxBody = proc(fx: int) =
 # Dragging shapes in shapes list
 
 var draggedShapeElement: Element = nil
+var draggedShapeUpdated = false
 
 proc styleDraggedShapeElement =
+  draggedShapeUpdated = true
   draggedShapeElement.style.boxShadow = "0px 0px 50px 1px"
   draggedShapeElement.style.zIndex = "99"
   draggedShapeElement.style.backdropFilter = "blur(10px)"
+  # Prevent preview being updated due to hovering over shapes while
+  # dragging to reduce lag
+  for el in rightBoxShapeTableContainer.children:
+    if not el.Element.classList.contains(
+      "mapeditor_rightbox_table_shape_container"
+    ):
+      continue
+    for el in el.children:
+      if el.Element.classList.contains(
+        "mapeditor_rightbox_table_shape_headerfield"
+      ):
+        el.onmouseover = nil
+        el.onmouseout = nil
 
 if not draggedShapeElement.isNil:
   styleDraggedShapeElement()
 
 rightBoxShapeTableContainer.addEventListener("mousedown", proc(e: Event) =
   let e = e.MouseEvent
-  if e.target.parentElement.classList.contains(
-    "mapeditor_rightbox_table_shape_container"
+  let target = e.target.Element
+  if target.classList.contains("mapeditor_rightbox_table_shape_headerfield") and
+    target.parentElement.classList.contains(
+      "mapeditor_rightbox_table_shape_container"
   ):
     draggedShapeElement = e.target.parentElement
 )
@@ -145,7 +162,7 @@ document.addEventListener("mousemove", proc(e: Event) =
   if abs(translateY) < 20:
     return
   styleDraggedShapeElement()
-  draggedShapeElement.style.translate = cstring &"0px {translateY}px"
+  draggedShapeElement.style.translate = cstring &"0px {translateY - 6}px"
 
   # Collapse all shape elements so that they all have the same height
   for node in rightBoxShapeTableContainer.children:
@@ -182,13 +199,17 @@ document.addEventListener("mousemove", proc(e: Event) =
     styleDraggedShapeElement()
 )
 document.addEventListener("mouseup", proc(e: Event) =
-  if draggedShapeElement.isNil:
+  if not draggedShapeUpdated:
+    draggedShapeElement = nil
     return
+  draggedShapeUpdated = false
   draggedShapeElement.style.translate = ""
   draggedShapeElement.style.boxShadow = ""
   draggedShapeElement.style.zIndex = ""
   draggedShapeElement = nil
   saveToUndoHistory()
+  updateRightBoxBody(-1)
+  updateRenderer(true)
 )
 
 
@@ -227,14 +248,25 @@ proc initPlatformMultiSelect =
 
 # Dragging platforms in platform list
 
+var draggedPlatformUpdated = false
 var draggedPlatformElement: Element = nil
+
+proc styleDraggedPlatformElement =
+  draggedPlatformUpdated = true
+  draggedPlatformElement.style.boxShadow = "0px 0px 50px 1px"
+  draggedPlatformElement.style.zIndex = "99"
+  # Prevent preview being updated due to hovering over platforms while
+  # dragging to reduce lag
+  for el in docElemById(
+    "mapeditor_leftbox_platformtable"
+  ).children[0].children:
+    if el.nodeName == "TR":
+      el.onmouseover = nil
+      el.onmouseout = nil
 
 proc initPlatformDragging =
   let platformsContainer = docElemById("mapeditor_leftbox_platformtable")
   if platformsContainer.isNil: return
-  if not draggedPlatformElement.isNil:
-    draggedPlatformElement.style.boxShadow = "0px 0px 50px 1px"
-    draggedPlatformElement.style.zIndex = "99"
 
   platformsContainer.addEventListener("mousedown", proc(e: Event) =
     let e = e.MouseEvent
@@ -252,8 +284,8 @@ document.addEventListener("mousemove", proc(e: Event) =
   let translateY = e.clientY.float - rect.y
   if abs(translateY) < 3:
     return
-  draggedPlatformElement.style.boxShadow = "0px 0px 50px 1px"
-  draggedPlatformElement.style.translate = cstring &"0px {translateY}px"
+  styleDraggedPlatformElement()
+  draggedPlatformElement.style.translate = cstring &"0px {translateY - 6}px"
 
   if abs(translateY) > rect.height:
     let moveCount = int(translateY / rect.height)
@@ -271,17 +303,23 @@ document.addEventListener("mousemove", proc(e: Event) =
     moph.bro.insert(bodyId, newBodyIndex)
 
     updateLeftBox()
+
     draggedPlatformElement = docElemById("mapeditor_leftbox_platformtable")
       .children[0].children[newBodyIndex].Element
+    styleDraggedPlatformElement()
 )
 document.addEventListener("mouseup", proc(e: Event) =
-  if draggedPlatformElement.isNil:
+  if not draggedPlatformUpdated:
+    draggedPlatformElement = nil
     return
+  draggedPlatformUpdated = false
   draggedPlatformElement.style.translate = ""
   draggedPlatformElement.style.boxShadow = ""
   draggedPlatformElement.style.zIndex = ""
   draggedPlatformElement = nil
   saveToUndoHistory()
+  updateLeftBox()
+  updateRenderer(true)
 )
 
 afterUpdateLeftBox = proc =
