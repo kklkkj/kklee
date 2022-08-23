@@ -5,6 +5,9 @@ import
   std/[strutils, sequtils, dom, math, sugar],
   pkg/[mathexpr]
 
+# Import functions that update or hook into updates of parts of the map editor
+# UI
+
 template importUpdateFunction(name: untyped;
     procType: type = proc(): void) =
   let `update name`* {.importc: "window.kklee.$1"inject.}: procType
@@ -12,6 +15,8 @@ template importUpdateFunction(name: untyped;
 
 importUpdateFunction(LeftBox)
 importUpdateFunction(RightBoxBody, proc(fx: int): void)
+# Argument b: if true, rerender shapes
+# if false, only update preview position and scale
 importUpdateFunction(Renderer, proc(b: bool): void)
 importUpdateFunction(Warnings)
 importUpdateFunction(UndoButtons)
@@ -19,6 +24,8 @@ importUpdateFunction(ModeDropdown)
 
 var afterNewMapObject* {.importc: "window.kklee.$1".}: proc(): void
 let saveToUndoHistory* {.importc: "window.kklee.$1".}: proc(): void
+
+# Import getters and setters for IDs of currently selected elements
 
 template importCurrentThing(name: untyped) =
   let `getCurrent name`* {.importc: "window.kklee.$1"inject.}: proc(): int
@@ -34,89 +41,125 @@ proc panStage*(deltaX, deltaY: int) {.importc: "kklee.stageRenderer.panStage".}
 proc scaleStage*(scale: float) {.importc: "kklee.stageRenderer.scaleStage".}
 
 type
-  MapPosition* = array[2, float]
+  MapPosition* = array[2, float] # X and Y
   MapData* = ref object
-    v*: int # Version
+    v*: int # Map format version
     m*: MapMetaData
     spawns*: seq[MapSpawn]
     capZones*: seq[MapCapZone]
     physics*: MapPhysics
   MapMetaData* = ref object
-    n*, a*, date*, mo*: cstring # Name, author, date, mode
-    rxn*, rxa*: cstring         # Original name and author
-    dbid*, dbv*, authid*, rxdb*, rxid*: int
+    # Name, author, date, mode
+    n*, a*, date*, mo*: cstring
+    # Original name and author if map is an edit
+    rxn*, rxa*: cstring
+    # Database ID, bonk version (1 or 2), author's account DBID
+    dbid*, dbv*, authid*: int
+    # Original map's bonk version and ID
+    rxdb*, rxid*: int
+    # Is map public
     pub*: bool
-    cr*: seq[cstring]           # Credits
+    # List of contributors' usernames
+    cr*: seq[cstring]
 
   MapSpawn* = ref object
+    # Name
     n*: cstring
     priority*: int
+    # FFA, red, blue, green, yellow
     f*, r*, b*, gr*, ye*: bool
+    # Position and starting velocity
     x*, y*, xv*, yv*: float
   MapCapZone* = ref object
+    # Name
     n*: cstring
+    # Type
     ty*: MapCapZoneType
-    i*: int   # Fixture ID
-    l*: float # Time
+    # Fixture ID
+    i*: int
+    # Time
+    l*: float
   MapCapZoneType* = enum
     cztNormal = 1, cztRed, cztBlue, cztGreen, cztYellow
 
   MapPhysics* = ref object
-    ppm*: float    # Player radius = ppm
+    # Player radius = ppm
+    ppm*: float
     fixtures*: seq[MapFixture]
     shapes*: seq[MapShape]
     bodies*: seq[MapBody]
-    bro*: seq[int] # Array of body IDs
+    # Array of body IDs, specifies order of bodies
+    bro*: seq[int]
     joints*: seq[MapJoint]
 
   MapBody* = ref object
     n*: cstring
-    btype* {.extern: "type".}: cstring # Type is a keyword in Nim
-    a*, ad*, av*: float                # Angle, drag, velocity
-    de*, fric*, ld*, re*: float        # Density, friction, linear drag,
-                                       # bounciness
-    f_1*, f_2*, f_3*, f_4*, f_p*: bool # Collision groups enabled
-    f_c*: MapBodyCollideGroup          # Collision group
-    fr*, fricp*, bu*: bool             # Fixed rotation, fric players,
-                                       # anti-tunnel
-    p*, lv*: MapPosition               # Position, linear velocity
-    fx*: seq[int]                      # Fixture IDs
+    # Type: "s" (stationary), "d" (free-moving) or "k" (kinematic)
+    # Type is a keyword in Nim
+    btype* {.extern: "type".}: cstring
+    # Angle, angular drag and velocity
+    a*, ad*, av*: float
+    # Density, friction, linear drag, bounciness
+    de*, fric*, ld*, re*: float
+    # Collide with groups: A, B, C, D, players
+    f_1*, f_2*, f_3*, f_4*, f_p*: bool
+    # Collision group
+    f_c*: MapBodyCollideGroup
+    # Fixed rotation, fric players, anti-tunnel
+    fr*, fricp*, bu*: bool
+    # Position, starting velocity
+    p*, lv*: MapPosition
+    # Fixture IDs of shapes on platform
+    fx*: seq[int]
     cf*: MapBodyCf
-  MapBodyCf* = ref object # Constant force
-    x*, y*, ct*: float    # x, y, torque
-    w*: bool              # Force direction - true: absolute, false: relative
+  # Constant force
+  MapBodyCf* = ref object
+    # x, y, torque
+    x*, y*, ct*: float
+    # Force direction - true: absolute, false: relative
+    w*: bool
   MapBodyCollideGroup* {.pure.} = enum
     A = 1, B, C, D
   MapBodyType* = enum
     btStationary = "s", btDynamic = "d", btKinematic = "k"
 
   MapFixture* = ref object
+    # Name
     n*: cstring
-    d*, ng*, np*, fp*, ig*: bool # Death, no grapple, no physics, fric players,
-                                 # inner grapple
-    de*, re*, fr*: float         # Set to Nan for no value
-    f*: int                      # Colour
+    # Death, no grapple, no physics, fric players, inner grapple
+    d*, ng*, np*, fp*, ig*: bool
+    # Density, bounciness, friction
+    # Set to null for no value
+    de*, re*, fr*: float
+    # Colour ("fill")
+    f*: int
+    # Shape ID
     sh*: int
 
   MapShapeType* = enum
     stypeBx = "bx", stypeCi = "ci", stypePo = "po"
   MapShape* = ref object
+    # Shape type
     stype* {.exportc: "type".}: cstring
+    # Position
     c*: MapPosition
+    # Angle
     a* {.exportc: "a".}: float
-
-    sk* {.exportc: "sk".}: bool  # Shrink, not available for polygons
-
+    # Shrink, not available for polygons
+    sk* {.exportc: "sk".}: bool
+    # Rectangle width and height
     bxW* {.exportc: "w".}: float
     bxH* {.exportc: "h".}: float
-
+    # Circle radius
     ciR* {.exportc: "r".}: float
-
-    poS* {.exportc: "s".}: float # Scale
+    # Polygon scale and vertices
+    poS* {.exportc: "s".}: float
     poV* {.exportc: "v".}: seq[MapPosition]
 
   MapJoint* = ref object
-    ba*, bb*: int # ba: Joint body, bb: attached body, -1 if none
+    # ba: Joint body
+    # bb: attached body, -1 if none
+    ba*, bb*: int
 
 func shapeType*(s: MapShape): MapShapeType = parseEnum[MapShapeType]($s.stype)
 
@@ -139,6 +182,7 @@ func rotatePoint*(p: MapPosition; a: float): MapPosition =
 
 template moph*: untyped = mapObject.physics
 
+# Delete a fixture from the map
 proc deleteFx*(fxId: int) =
   let shId = fxId.getFx.sh
   moph.fixtures.delete fxId
@@ -187,6 +231,7 @@ let jsNull* {.importc: "null".}: float
 proc docElemById*(s: cstring): Element =
   document.getElementById(s)
 
+# Set explanation text at bottom middle of editor
 proc setEditorExplanation*(text: string) =
   docElemById("mapeditor_midbox_explain").innerText = text
 

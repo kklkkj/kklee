@@ -47,7 +47,7 @@ func getGradientColourAt*(
   func mixHue(a, b: float): float =
     let diff = b - a
     var p: float
-
+    # Decide direction of hue transition
     if diff > 180.0:
       p = a - (360 - diff) * pos
     elif diff < -180.0:

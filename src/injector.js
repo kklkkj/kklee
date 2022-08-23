@@ -101,7 +101,8 @@ window.kklee.mapEncoder=${mapEncoderName};`
     "UndoButtons",
     "ModeDropdown",
   ];
-  // Create functions that update or check for updates
+  // Create functions that update or hook into updates of parts of the map
+  // editor UI
   for (const i in updateFunctionNames) {
     const on = updateFunctionNames[i],
       nn = apiUpdateFunctionNames[i];
@@ -111,7 +112,8 @@ if(window.kklee.afterUpdate${nn})window.kklee.afterUpdate${nn}(...arguments);};\
 window.kklee.update${nn}=${on};`;
   }
 
-  // Creates functions to get or set these variables
+  // Creates functions to get or set IDs of currently selected elements in the
+  // elements list on the left of the editor
   const apiCurrentlySelectedNames = ["Body", "Spawn", "CapZone"];
   for (const i in currentlySelectedNames) {
     const on = currentlySelectedNames[i],
@@ -154,8 +156,8 @@ JSON\\[.{1,40}\\]\\(${monEsc}\\)`
     new RegExp("(function ...\\(\\)\\{)"),
     "$1window.kklee.afterSaveHistory();"
   );
-  // Add function that sets new map object and make function that saves map to
-  // undo history accessible
+  // Add function that sets new map object and expose function that saves map
+  // to undo history
   replace(
     saveHistoryFunction,
     `;window.kklee.setMapObject=\
@@ -164,6 +166,7 @@ window.kklee.saveToUndoHistoryOLD=${saveHistoryFunctionName};\
 ${newSaveHistoryFunction}`
   );
 
+  // Map Backups
   // Backups are stored in IndexedDB rather than localStorage because
   // localStorage has a size limit of 5MB while IndexedDB doesn't
   const dbOpenRequest = window.indexedDB.open("kkleeStorage_347859220", 1);
@@ -201,11 +204,13 @@ ${newSaveHistoryFunction}`
     delete localStorage.kkleeMapBackups;
   };
 
+  // Label used in backup loader UI
   kklee.getBackupLabel = (b) =>
     `${b.mapLabel} - ${new Date(b.timestamp).toLocaleString()}`;
   kklee.loadBackup = (b) =>
     kklee.setMapObject(kklee.mapEncoder.decodeFromDatabase(b.mapData));
 
+  // A session ID is used so only 1 backup from each editing session is saved
   function newBackupSessionId() {
     kklee.backupSessionId =
       Date.now().toString(36) + Math.random().toString(36);
@@ -216,6 +221,7 @@ ${newSaveHistoryFunction}`
     const lastBackup = kklee.backups[kklee.backups.length - 1];
 
     if (
+      // Check if it is the same map from the same editing session
       lastBackup &&
       lastBackup.sessionId == kklee.backupSessionId &&
       lastBackup.mapLabel == mapLabel
@@ -231,6 +237,7 @@ ${newSaveHistoryFunction}`
       });
     }
 
+    // Remove older backups if backup database is larger than 1 MB
     let i = kklee.backups.length - 1;
     let size = 0;
     while (i >= 0) {
@@ -238,8 +245,8 @@ ${newSaveHistoryFunction}`
       if (size > 1e6) break;
       else i--;
     }
-
     kklee.backups = kklee.backups.slice(i + 1);
+
     saveBackups();
   }
   newBackupSessionId();
@@ -310,7 +317,7 @@ let Kscpa=this["showColorPicker"];window.kklee.setColourPickerColour=\
 function(c){Kscpa(c,...window.kklee.showColourPickerArguments.slice(1));};\
 window.kklee.bonkShowColorPicker=Kscpa;`
   );
-  // Map editor test TimeMS
+  // Map editor preview test time between each frame
   window.kklee.editorPreviewTimeMs = 30;
   replace(
     new RegExp(
@@ -331,6 +338,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
     `$& window.kklee.scopedData=${scopedDataObjectName};`
   );
 
+  // Only if the user's account is the original author
   kklee.canTransferOwnership = () =>
     !kklee.scopedData.guest &&
     (kklee.mapObject.m.rxa == "" ||
@@ -455,6 +463,7 @@ window.kklee.bonkShowColorPicker=Kscpa;`
 
   kklee.dataLimitInfo = () => {
     try {
+      // Check how many bytes the decompressed map is
       const d = atob(
         window.LZString.decompressFromEncodedURIComponent(
           kklee.mapEncoder.encodeToDatabase(kklee.mapObject)
@@ -465,7 +474,9 @@ window.kklee.bonkShowColorPicker=Kscpa;`
       return "Over data limit";
     }
   };
+
   kklee.dispatchInputEvent = (el) => el.dispatchEvent(new InputEvent("input"));
+
   kklee.setEnableUpdateChecks = (enable) => {
     if (enable) {
       window.localStorage["kkleeEnableUpdateChecks"] = true;
@@ -476,7 +487,9 @@ window.kklee.bonkShowColorPicker=Kscpa;`
   kklee.areUpdateChecksEnabled = () =>
     Boolean(window.localStorage["kkleeEnableUpdateChecks"]);
 
+  // Load kklee
   require("./___nimBuild___.js");
+
   console.log("kklee injector run");
   return src;
 }
@@ -503,9 +516,12 @@ kklee.
 });
 console.log("kklee injector loaded");
 
+// Automatic update checking
+
 const currentVersion = require("../dist/manifest.json")
   .version.split(".")
-  .map(Number); // "0.10" --> [0,10]
+  // "0.10" --> [0,10]
+  .map(Number);
 
 (async () => {
   if (
