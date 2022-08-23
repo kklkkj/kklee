@@ -324,6 +324,7 @@ proc shapeGenerator*(body: MapBody): VNode =
           circleRadius1: 30, circleRadius2: 150,
           gradient: defaultMultiColourGradient()
         )
+        shapesNoPhysics = true
 
         generateProc = () => generateGradient(settings)
         gradientProp(settings.gradient, update)
